@@ -1,0 +1,4 @@
+*.css    linguist-detectable=false
+jquery.min.js    linguist-detectable=false
+index.js    linguist-detectable=false
+*.py text eol=lf

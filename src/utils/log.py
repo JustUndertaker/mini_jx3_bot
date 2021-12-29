@@ -1,5 +1,6 @@
 import atexit
 import sys as sys
+from pathlib import Path
 from typing import Union
 
 from loguru import _defaults
@@ -36,7 +37,7 @@ console_format = (
     "{message}")
 
 # debug级别
-loger_debug = config.get('default').get('logger-debug')
+loger_debug: bool = config.default['logger_debug']
 if loger_debug:
     custom_level = 'DEBUG'
 else:
@@ -76,7 +77,9 @@ if _defaults.LOGURU_AUTOINIT and sys.stderr:
                )
 
 # 添加到日志文件
-logger_path = config.get('path').get('log')
+workdir = Path.cwd()
+path_cfg = config.path
+
 logger.add(
     logger_path+"debug/{time:YYYY-MM-DD}.log",
     rotation="00:00",

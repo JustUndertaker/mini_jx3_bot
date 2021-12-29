@@ -1,33 +1,58 @@
-import os
-from typing import Optional, Union
+from pathlib import Path
 
 import yaml
 
-config: Optional[dict[str, dict[str, Union[str, int, bool]]]] = None
-'''全局配置字典'''
+
+class Config():
+    '''配置文件类'''
+
+    def __new__(cls, *args, **kwargs):
+        '''单例'''
+        if not hasattr(cls, '_instance'):
+            orig = super(Config, cls)
+            cls._instance = orig.__new__(cls, *args, **kwargs)
+        return cls._instance
+
+    def __getattr__(self, item) -> dict:
+        '''获取配置'''
+        value = self._config.get(item)
+        if value:
+            return value
+        raise AttributeError("未找到该配置字段，请检查config.yml文件！")
+
+    def __init__(self):
+        '''初始化'''
+        workdir = Path.cwd()
+        config_file = workdir / "config.yml"
+        with open(config_file, 'r', encoding='utf-8') as f:
+            cfg = f.read()
+            self._config: dict = yaml.load(cfg, Loader=yaml.FullLoader)
+
+        # 创建目录
+        path: dict = self._config.get('path')
+
+        # data文件夹
+        data: str = path.get('data')
+        datadir = workdir / data
+        if not Path.exists(datadir):
+            Path.mkdir(datadir, parents=True)
+
+        # log文件夹
+        info: str = path.get('info')
+        infodir = workdir / info
+        if not Path.exists(infodir):
+            Path.mkdir(infodir, parents=True)
+
+        debug: str = path.get('debug')
+        debugdir = workdir / debug
+        if not Path.exists(debugdir):
+            Path.mkdir(debugdir, parents=True)
+
+        error: str = path.get('error')
+        errordir = workdir / error
+        if not Path.exists(errordir):
+            Path.mkdir(errordir, parents=True)
 
 
-def config_init():
-    '''
-    初始化读取配置文件，需要在所有项目之前启动
-    '''
-    global config
-    with open('config.yml', 'r', encoding='utf-8') as f:
-        cfg = f.read()
-        config = yaml.load(cfg, Loader=yaml.FullLoader)
-
-    # 判断项目目录是否存在
-    path = config.get('path')
-    data = path.get('data')
-    if not os.path.exists(data):
-        os.makedirs(data)
-    log = path.get('log')
-    info = log+'info'
-    if not os.path.exists(info):
-        os.makedirs(info)
-    debug = log+'debug'
-    if not os.path.exists(debug):
-        os.makedirs(debug)
-    error = log+'error'
-    if not os.path.exists(error):
-        os.makedirs(error)
+config = Config()
+'''项目配置文件'''

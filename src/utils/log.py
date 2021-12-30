@@ -1,6 +1,5 @@
 import atexit
 import sys as sys
-from pathlib import Path
 from typing import Union
 
 from loguru import _defaults
@@ -77,11 +76,12 @@ if _defaults.LOGURU_AUTOINIT and sys.stderr:
                )
 
 # 添加到日志文件
-workdir = Path.cwd()
+
 path_cfg = config.path
+debug_path = f"./{path_cfg['debug']}/"
 
 logger.add(
-    logger_path+"debug/{time:YYYY-MM-DD}.log",
+    debug_path+"{time:YYYY-MM-DD}.log",
     rotation="00:00",
     retention="10 days",
     level="DEBUG",
@@ -90,8 +90,9 @@ logger.add(
     encoding="utf-8"
 )
 
+info_path = f"./{path_cfg['info']}/"
 logger.add(
-    logger_path+"info/{time:YYYY-MM-DD}.log",
+    info_path+"{time:YYYY-MM-DD}.log",
     rotation="00:00",
     retention="10 days",
     level="INFO",
@@ -100,8 +101,9 @@ logger.add(
     encoding="utf-8"
 )
 
+error_path = f"./{path_cfg['error']}/"
 logger.add(
-    logger_path+"error/{time:YYYY-MM-DD}.log",
+    error_path+"{time:YYYY-MM-DD}.log",
     rotation="00:00",
     retention="10 days",
     level="ERROR",

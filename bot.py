@@ -8,6 +8,8 @@ from src.utils.database import database_init
 from src.utils.moinkeypath import monkeypatch
 from src.utils.scheduler import start_scheduler
 
+# 猴子补丁，针对windows平台，更换事件循环
+monkeypatch()
 nonebot.init()
 app = nonebot.get_asgi()
 
@@ -26,6 +28,5 @@ nonebot.load_plugins("src/plugins")
 
 
 if __name__ == "__main__":
-    monkeypatch()  # 猴子补丁，针对windows平台，更换事件循环
-    nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")
+    nonebot.logger.warning("建议使用指令[nb run]来运行此项目!")
     nonebot.run(app="__mp_main__:app")

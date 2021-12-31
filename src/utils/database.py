@@ -1,5 +1,6 @@
-from log import logger
 from tortoise import Tortoise
+
+from .log import logger
 
 
 async def database_init():

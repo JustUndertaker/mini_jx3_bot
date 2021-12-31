@@ -2,9 +2,10 @@ import atexit
 import sys as sys
 from typing import Union
 
-from config import config
 from loguru import _defaults
 from loguru._logger import Core, Logger
+
+from .config import config
 
 logger = Logger(Core(), None, 0, False, False, False, False, True, None, {})
 '''自定义的logger对象'''

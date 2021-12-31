@@ -5,7 +5,7 @@ import nonebot
 from nonebot.adapters.cqhttp import Bot as CQHTTPBot
 
 from src.utils.database import database_init
-from src.utils.monkeypatch import monkeypatch
+from src.utils.moinkeypath import monkeypatch
 from src.utils.scheduler import start_scheduler
 
 nonebot.init()

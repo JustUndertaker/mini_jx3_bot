@@ -1,5 +1,5 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from nonebot.log import logger
+from log import logger
 from pydantic import BaseSettings, Field
 
 

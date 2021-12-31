@@ -3,11 +3,10 @@ import json
 import os
 from typing import Optional
 
+from config import config
+from log import logger
 from playwright.async_api import BrowserContext, async_playwright
 from playwright.async_api._generated import Playwright as AsyncPlaywright
-
-from .config import config
-from .log import logger
 
 playwright: AsyncPlaywright
 '''全局playwright进程'''

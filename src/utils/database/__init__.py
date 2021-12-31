@@ -1,4 +1,4 @@
-from nonebot.log import logger
+from log import logger
 from tortoise import Tortoise
 
 

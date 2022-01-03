@@ -51,16 +51,10 @@ voice:
 
 # 天气插件设置
 weather:
-  # 和风天气api-key
-  api-key: ~
-  # 天气api地址
-  url-weather: https://devapi.qweather.com/v7/weather/
-  # 城市api地址
-  url-geoapi: https://geoapi.qweather.com/v2/city/
-  # 图标位置
-  icon-dir: ./resources/img/weather/icon/
-  # 背景图标位置
-  background: ./resources/img/weather/backgroud.png
+  # 和风天气apikey
+  api_key: ~
+  # 是否使用商业版apikey
+  commercial: false
 
 # 疫情插件设置
 yiqing:

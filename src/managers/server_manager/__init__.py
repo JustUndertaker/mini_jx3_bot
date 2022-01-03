@@ -37,9 +37,11 @@ async def _():
     logger.opt(colors=True).info("<y>正在关闭浏览器……</y>")
     await browser.shutdown()
     logger.opt(colors=True).info("<g>浏览器关闭成功。</g>")
+
     logger.opt(colors=True).info("<y>正在关闭数据库……</y>")
     await Tortoise.close_connections()
     logger.opt(colors=True).info("<g>数据库关闭成功。</g>")
+
     logger.opt(colors=True).info("<y>关闭ws链接……</y>")
     await ws_client.close()
     logger.opt(colors=True).info("<g>ws链接关闭成功。</g>")

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf8">
+  <style type="text/css">
+    body {
+      background-image: linear-gradient(to bottom, #bdc3c7, #2c3e50);
+      color: white;
+      padding: 10px;
+    }
+
+    .today-weather {
+      padding: 20px;
+      border-radius: 20px;
+      background-image: linear-gradient(225deg, #2193b0, #6dd5ed);
+    }
+
+    h1 {
+      padding-top: 0px;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      font-size: 40px;
+    }
+
+    p {
+      padding-top: 0px;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      font-size: 30px;
+    }
+
+    .today-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0px 40px;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .realtime-tem {
+      font-size: 100px;
+    }
+
+    .obs-time {
+      font-size: 20px;
+      margin-bottom: 5px !important;
+      color: rgba(232, 230, 227, 0.55);
+    }
+
+    em {
+      font-size: 100px;
+    }
+
+    p.realtime-text {
+      font-size: 35px;
+    }
+
+    .today-button {
+      margin-top: 5px;
+      background-color: #0000001e;
+      border-radius: 20px;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .des {
+      font-size: 30px;
+      color: rgba(232, 230, 227, 0.55);
+    }
+
+    .icon-size {
+      font-size: 60px;
+    }
+
+    .date {
+      color: rgba(232, 230, 227, 0.55);
+      font-size: 20px;
+      text-size-adjust: 100%;
+    }
+
+    .weeks {
+      color: white;
+      font-size: 30px;
+    }
+
+    .days-weather {
+      padding: 20px 50px;
+      border-radius: 20px;
+      margin-top: 20px;
+      background-image: linear-gradient(225deg, #0F2027, #2C5364);
+    }
+
+    .tem-line {
+      height: 10px;
+      border-radius: 10px;
+      background-image: linear-gradient(to right, #f18360, #427bff);
+    }
+
+    .days-icon {
+      column-count: 2;
+    }
+
+    .icon-night {
+      text-align: right;
+    }
+
+    .days {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+    }
+
+
+    .tem-line-box {
+      width: 250px;
+    }
+
+    .days-temp {
+      font-size: 40px;
+    }
+
+    .days-text {
+      font-size: 30px
+    }
+
+
+    .warning-box {
+      padding: 20px;
+      border-radius: 20px;
+      background-image: linear-gradient(225deg, #b78c579d, #f2d5b2b6);
+      margin-top: 20px;
+    }
+
+    .warning-side {
+      display: flex;
+      align-items: center
+    }
+
+    .warning-header {
+      padding-left: 30px;
+    }
+
+    .warning-time {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.55)
+    }
+
+    .warning-info {
+      padding: 20px;
+    }
+
+    .tem-text {
+      width: 80px;
+      text-align: right;
+    }
+
+    .week-date {
+      width: 90px;
+    }
+  </style>
+  <link rel="stylesheet" href="css/qweather-icons.css">
+</head>
+
+<body>
+  <div class="main">
+    <div class="today-weather">
+      <div class="today-top">
+        <div class="text-center">
+          <h1 class="city">{{ city }}</h1>
+          <p class="realtime-tem">{{ now['temp'] }}°</p>
+        </div>
+
+        <div class="text-center">
+          <p class="obs-time">{{ now['obsTime'] }}</p>
+          <em class="qi-{{ now['icon'] }}"></em>
+          <p class="realtime-text">{{ now['text'] }}</p>
+        </div>
+      </div>
+
+
+
+      <div class="today-button">
+        <div>
+          <p>{{ now['windScale'] }}级</p>
+          <p class="des">{{ now['windDir'] }}</p>
+        </div>
+        <div>
+          <p>{{ now['humidity'] }}%</p>
+          <p class="des">相对湿度</p>
+        </div>
+        <div>
+          <p>{{ now['precip'] }}mm</p>
+          <p class="des">降水量</p>
+        </div>
+        <div>
+          <p>{{ now['vis'] }}km</p>
+          <p class="des">能见度</p>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="days-weather">
+      {% for day in days %}
+      <div class="days">
+        <!-- 1 -->
+        <div class="week-date">
+          <p class="weeks">{{ day["week"] }}</p>
+          <p class="date">{{ day["date"] }}</p>
+        </div>
+        <!-- 2 -->
+        <div class="tem-text">
+          <p class="days-temp">{{ day["tempMax"] }}°</p>
+          <p class="days-text">{{ day["textDay"] }}</p>
+        </div>
+        <!-- 3 -->
+        <div class="tem-line-box">
+
+          <div class="days-icon">
+            <div>
+              <em class="qi-{{ day['iconDay'] }} icon-size icon-day"></em>
+
+            </div>
+            <div class="icon-night">
+              <em class="qi-{{ day['iconNight'] }} icon-size icon-night"></em>
+            </div>
+          </div>
+
+          <div class="tem-line-outbox">
+            <div class="tem-line"></div>
+          </div>
+
+        </div>
+        <!-- 4 -->
+        <div class="tem-text">
+          <p class="days-temp">{{ day["tempMin"] }}°</p>
+          <p class="days-text">{{ day["textNight"]}}</p>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% for w in warning["warning"] %}
+    <div class="warning-box">
+      <div class="warning-side">
+        <div class="warning-icon"><em class="qi-{{ w['type'] }}"></em></div>
+        <div class="warning-header">
+          <p class="warning-title">{{ w['title'] }}</p>
+          <p class="warning-time">{{ w['startTime'] }}</p>
+        </div>
+      </div>
+      <div class="warning-info">
+        <p>{{ w['text'] }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  </div>
+</body>

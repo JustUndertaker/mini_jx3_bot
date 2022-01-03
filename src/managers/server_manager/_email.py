@@ -5,9 +5,6 @@ from aiosmtplib import SMTP, SMTPException
 from src.utils.config import config
 from src.utils.log import logger
 
-_mail_config = config.mail
-'''邮件配置'''
-
 
 class MailClient(object):
     '''发送邮件class'''
@@ -33,12 +30,12 @@ class MailClient(object):
 
     def __init__(self):
         '''初始化'''
-        self._host = _mail_config['host']
-        self._pord = _mail_config['pord']
-        self._user = _mail_config['user']
-        self._pass = _mail_config['pass']
-        self._sender = _mail_config['sender']
-        self._receiver = _mail_config['receiver']
+        self._host = config.mail['host']
+        self._pord = config.mail['pord']
+        self._user = config.mail['user']
+        self._pass = config.mail['pass']
+        self._sender = config.mail['sender']
+        self._receiver = config.mail['receiver']
 
     async def send_mail(self, robot_id: int) -> None:
         '''

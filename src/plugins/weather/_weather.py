@@ -11,6 +11,8 @@ class Weather(object):
 
     _api_key: str
     '''和风天气的apikey'''
+    _days_type: str
+    '''最多请求天数，普通版只能3天'''
     _weather_api: str
     '''api地址'''
     _geoapi: str
@@ -29,17 +31,25 @@ class Weather(object):
 
     def __init__(self):
         self._api_key = config.weather['api_key']
-        is_commercial = config.weather['commercial']
-        if is_commercial:
-            # 商业apikey
+        api_type = config.weather['api_type']
+        if api_type == 0:
+            # 普通版apikey
             self._weather_api = "https://api.qweather.com/v7/weather/"
             self._geoapi = "https://geoapi.qweather.com/v2/city/"
             self._weather_warning = "https://api.qweather.com/v7/warning/now"
+            self._days_type = "3d"
+        elif api_type == 1:
+            # 个人开发版apikey
+            self._weather_api = "https://api.qweather.com/v7/weather/"
+            self._geoapi = "https://geoapi.qweather.com/v2/city/"
+            self._weather_warning = "https://api.qweather.com/v7/warning/now"
+            self._days_type = "7d"
         else:
-            # 开发版apikey
+            # 商业版apikey
             self._weather_api = "https://devapi.qweather.com/v7/weather/"
             self._geoapi = "https://geoapi.qweather.com/v2/city/"
             self._weather_warning = "https://devapi.qweather.com/v7/warning/now"
+            self._days_type = "7d"
         self._client = AsyncClient()
 
     @classmethod
@@ -161,7 +171,7 @@ class Weather(object):
         city_id, city_name = await self._get_city_info(city)
         if not city_id:
             return None
-        daily_info = await self._get_weather_info("3d", city_id)
+        daily_info = await self._get_weather_info(self._days_type, city_id)
         now_info = await self._get_weather_info("now", city_id)
         if not daily_info or not now_info:
             return None

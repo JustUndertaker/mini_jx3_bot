@@ -53,8 +53,8 @@ voice:
 weather:
   # 和风天气apikey
   api_key: ~
-  # 是否使用商业版apikey
-  commercial: false
+  # api_key类型，普通版:0，个人开发版:1，商业版:2
+  api_type: 0
 
 # 疫情插件设置
 yiqing:

@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Union
 
 import yaml
 
@@ -13,7 +14,7 @@ class Config():
             cls._instance = orig.__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def __getattr__(self, item) -> dict:
+    def __getattr__(self, item) -> dict[str, Union[str, int, bool]]:
         '''获取配置'''
         value = self._config.get(item)
         if value:

@@ -1,5 +1,6 @@
 from tortoise import Tortoise
 
+from .config import config
 from .log import logger
 
 
@@ -8,7 +9,8 @@ async def database_init():
     初始化建表
     '''
     logger.debug('正在注册数据库')
-    database_path = "./data/data.db"
+    path = config.path["data"]
+    database_path = f"./{path}/data.db"
     db_url = f'sqlite://{database_path}'
     # 这里填要加载的表
     models = [
@@ -22,4 +24,4 @@ async def database_init():
     modules = {"models": models}
     await Tortoise.init(db_url=db_url, modules=modules)
     await Tortoise.generate_schemas()
-    logger.debug('数据库注册完成')
+    logger.opt(colors=True).info('<g>数据库初始化成功。</g>')

@@ -22,4 +22,4 @@ async def start_scheduler():
     if not scheduler.running:
         scheduler.configure(plugin_config.apscheduler_config)
         scheduler.start()
-        logger.opt(colors=True).info("<y>定时器模块已开启。</y>")
+        logger.opt(colors=True).info("<g>定时器模块已开启。</g>")

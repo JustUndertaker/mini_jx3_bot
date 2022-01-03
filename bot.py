@@ -17,7 +17,7 @@ driver = nonebot.get_driver()
 driver.register_adapter("cqhttp", CQHTTPBot)
 
 # 开启数据库
-# driver.on_startup(database_init)
+driver.on_startup(database_init)
 # 开启定时器
 driver.on_startup(start_scheduler)
 

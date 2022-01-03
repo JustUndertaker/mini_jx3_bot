@@ -14,11 +14,10 @@ async def database_init():
     db_url = f'sqlite://{database_path}'
     # 这里填要加载的表
     models = [
-        'src.modules.bot_info',
         'src.modules.group_info',
         'src.modules.plugin_info',
         'src.modules.user_info',
-        'src.modules.token_info',
+        'src.modules.ticket_info',
         'src.modules.search_record'
     ]
     modules = {"models": models}

@@ -34,21 +34,21 @@ class Weather(object):
         api_type = config.weather['api_type']
         if api_type == 0:
             # 普通版apikey
-            self._weather_api = "https://api.qweather.com/v7/weather/"
-            self._geoapi = "https://geoapi.qweather.com/v2/city/"
-            self._weather_warning = "https://api.qweather.com/v7/warning/now"
-            self._days_type = "3d"
-        elif api_type == 1:
-            # 个人开发版apikey
-            self._weather_api = "https://api.qweather.com/v7/weather/"
-            self._geoapi = "https://geoapi.qweather.com/v2/city/"
-            self._weather_warning = "https://api.qweather.com/v7/warning/now"
-            self._days_type = "7d"
-        else:
-            # 商业版apikey
             self._weather_api = "https://devapi.qweather.com/v7/weather/"
             self._geoapi = "https://geoapi.qweather.com/v2/city/"
             self._weather_warning = "https://devapi.qweather.com/v7/warning/now"
+            self._days_type = "3d"
+        elif api_type == 1:
+            # 个人开发版apikey
+            self._weather_api = "https://devapi.qweather.com/v7/weather/"
+            self._geoapi = "https://geoapi.qweather.com/v2/city/"
+            self._weather_warning = "https://devapi.qweather.com/v7/warning/now"
+            self._days_type = "7d"
+        else:
+            # 商业版apikey
+            self._weather_api = "https://api.qweather.com/v7/weather/"
+            self._geoapi = "https://geoapi.qweather.com/v2/city/"
+            self._weather_warning = "https://api.qweather.com/v7/warning/now"
             self._days_type = "7d"
         self._client = AsyncClient()
 

@@ -73,7 +73,7 @@ class MyBrowser():
         async with self._get_new_page(**kwargs) as page:
             await page.set_content(html, wait_until="networkidle")
             await page.wait_for_timeout(wait)
-            img_raw = await page.screenshot(type="jpeg", quality=100)
+            img_raw = await page.screenshot(full_page=True, type="jpeg", quality=100)
         return img_raw
 
     @classmethod

@@ -28,9 +28,6 @@ class MyBrowser():
             cls._instance = orig.__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def __init__(self):
-        pass
-
     async def _launch_browser(self, **kwargs) -> Browser:
         return await self._playwright.chromium.launch(**kwargs)
 
@@ -99,7 +96,7 @@ class MyBrowser():
 
         return await template.render_async(**kwargs)
 
-    async def init(self):
+    async def init(self) -> Browser:
         '''初始化playwright'''
         self._playwright = await async_playwright().start()
         try:
@@ -107,6 +104,7 @@ class MyBrowser():
         except Error:
             await self._install_browser()
             self._browser = await self._launch_browser()
+        return self._browser
 
     async def shutdown(self):
         '''关闭浏览器'''

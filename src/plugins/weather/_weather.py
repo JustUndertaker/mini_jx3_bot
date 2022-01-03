@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Tuple
 
 from httpx import AsyncClient
@@ -41,6 +42,24 @@ class Weather(object):
             self._weather_warning = "https://devapi.qweather.com/v7/warning/now"
         self._client = AsyncClient()
 
+    @classmethod
+    def _handle_days(cls, days: list[dict[str, str]]) -> dict:
+        '''处理days数据，增加week，date字段'''
+        week_map = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
+        data = []
+        today = True
+        for one_day in days:
+            _date = one_day['fxDate'].split("-")
+            _year = int(_date[0])
+            _month = int(_date[1])
+            _day = int(_date[2])
+            week = int(datetime(_year, _month, _day).strftime("%w"))
+            one_day['week'] = "今日" if today else week_map[week]
+            today = False
+            one_day['date'] = f"{_month}月{_day}日"
+            data.append(one_day)
+        return data
+
     async def _get_city_info(self, city_kw: str, api_type: str = "lookup") -> Optional[Tuple[int, str]]:
         '''
         :说明
@@ -57,11 +76,12 @@ class Weather(object):
         url = self._geoapi+api_type
         params = {"location": city_kw, "key": self._api_key}
         try:
-            req_json: dict = await self._client.get(url=url, params=params).json()
+            req = await self._client.get(url=url, params=params)
+            req_json: dict = req.json()
             code = req_json['code']
-            city_id: int = req_json["location"][0]['id']
+            city_id: int = int(req_json["location"][0]['id'])
             city_name: str = req_json["location"][0]["name"]
-            if code != 200:
+            if code != "200":
                 log = f"<r>获取城市id失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
                 logger.opt(colors=True).error(log)
                 return None
@@ -72,7 +92,7 @@ class Weather(object):
             logger.opt(colors=True).error(log)
             return None
 
-    async def _get_weather_info(self, api_type: str, city_id: str) -> Optional[dict]:
+    async def _get_weather_info(self, api_type: str, city_id: int) -> Optional[dict]:
         '''
         :说明
             获取城市天气信息
@@ -87,9 +107,10 @@ class Weather(object):
         url = self._weather_api+api_type
         params = {"location": city_id, "key": self._api_key}
         try:
-            req_json = await self._client.get(url=url, params=params).json()
+            req = await self._client.get(url=url, params=params)
+            req_json: dict = req.json()
             code = req_json['code']
-            if code != 200:
+            if code != "200":
                 log = f"<r>获取天气消息失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
                 logger.opt(colors=True).error(log)
                 return None
@@ -112,9 +133,10 @@ class Weather(object):
         '''
         params = {"location": city_id, "key": self._api_key}
         try:
-            req_json = await self._client.get(url=self._weather_warning, params=params).json()
+            req = await self._client.get(url=self._weather_warning, params=params)
+            req_json: dict = req.json()
             code = req_json['code']
-            if code != 200:
+            if code != "200":
                 log = f"<r>获取天气预警失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
                 logger.opt(colors=True).error(log)
                 return None
@@ -139,25 +161,20 @@ class Weather(object):
         city_id, city_name = await self._get_city_info(city)
         if not city_id:
             return None
-        daily_info = await self._get_weather_info("7d", city_id)
+        daily_info = await self._get_weather_info("3d", city_id)
         now_info = await self._get_weather_info("now", city_id)
         if not daily_info or not now_info:
             return None
         warning = await self._get_weather_warning(city_id)
         if not warning:
             return None
-        daily = daily_info["daily"]
+        days: list = daily_info["daily"]
+        days = self._handle_days(days)
         now = now_info["now"]
         data = {
             "city": city_name,
             "now": now,
-            "day1": daily[0],
-            "day2": daily[1],
-            "day3": daily[2],
-            "day4": daily[3],
-            "day5": daily[4],
-            "day6": daily[5],
-            "day7": daily[6],
+            "days": days,
             "warning": warning
         }
         return data

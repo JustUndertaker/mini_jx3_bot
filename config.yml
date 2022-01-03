@@ -56,15 +56,6 @@ weather:
   # api_key类型，普通版:0，个人开发版:1，商业版:2
   api_type: 0
 
-# 疫情插件设置
-yiqing:
-  # api地址
-  url: https://api.yimian.xyz/coro
-  # 字体位置
-  font: ./resources/font/font.ttc
-  # 背景图片位置
-  background: ./resources/img/yiqing/backgroud.png
-
 # 默认设置
 default:
   # 插件debug日志是否显示在控制台

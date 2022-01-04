@@ -70,7 +70,7 @@ class Weather(object):
             data.append(one_day)
         return data
 
-    async def _get_city_info(self, city_kw: str, api_type: str = "lookup") -> Optional[Tuple[int, str]]:
+    async def _get_city_info(self, city_kw: str, api_type: str = "lookup") -> Tuple[Optional[int], Optional[str]]:
         '''
         :说明
             获取城市信息
@@ -94,13 +94,13 @@ class Weather(object):
             if code != "200":
                 log = f"<r>获取城市id失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
                 logger.opt(colors=True).error(log)
-                return None
+                return None, None
             return city_id, city_name
 
         except Exception as e:
             log = f"<r>获取城市id接口失败：{str(e)}</r>"
             logger.opt(colors=True).error(log)
-            return None
+            return None, None
 
     async def _get_weather_info(self, api_type: str, city_id: int) -> Optional[dict]:
         '''

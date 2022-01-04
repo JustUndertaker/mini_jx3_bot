@@ -102,7 +102,7 @@ class MyBrowser():
 
     async def init(self) -> Browser:
         '''初始化playwright'''
-        path = Path(config.path['templates']).absolute()
+        path = Path(TEMPLATES_PATH).absolute()
         self._base_url = f"file://{path}/"
         self._playwright = await async_playwright().start()
         try:

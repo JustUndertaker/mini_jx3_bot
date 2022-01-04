@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import AsyncIterator, Optional
 
 import jinja2
@@ -20,6 +21,7 @@ class MyBrowser():
     '''自定义浏览类'''
     _browser: Optional[Browser] = None
     _playwright = None
+    _base_url: str = None
 
     def __new__(cls, *args, **kwargs):
         '''单例'''
@@ -55,19 +57,21 @@ class MyBrowser():
         except SystemExit:
             pass
 
-    async def _html_to_pic(self, html: str, wait: int = 0, **kwargs) -> bytes:
+    async def _html_to_pic(self, pagename: str, html: str, wait: int = 0) -> bytes:
         """
         :说明
             html转图片
 
         :参数
+            * pagename: 页面名称
             * html (str): html文本
             * wait (int, optional): 等待时间. Defaults to 0.
 
         :返回
             * bytes: 图片, 可直接发送
         """
-        async with self._get_new_page(**kwargs) as page:
+        async with self._get_new_page(base_url=self._base_url) as page:
+            await page.goto(pagename)
             await page.set_content(html, wait_until="networkidle")
             await page.wait_for_timeout(wait)
             img_raw = await page.screenshot(full_page=True, type="jpeg", quality=100)
@@ -98,6 +102,8 @@ class MyBrowser():
 
     async def init(self) -> Browser:
         '''初始化playwright'''
+        path = Path(config.path['templates']).absolute()
+        self._base_url = f"file://{path}/"
         self._playwright = await async_playwright().start()
         try:
             self._browser = await self._launch_browser()
@@ -125,7 +131,7 @@ class MyBrowser():
         '''
 
         html = await self._template_to_html(template_path=TEMPLATES_PATH, template_name=pagename, **kwargs)
-        return await self._html_to_pic(html)
+        return await self._html_to_pic(pagename, html)
 
 
 browser = MyBrowser()

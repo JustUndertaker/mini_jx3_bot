@@ -1,0 +1,160 @@
+ body {
+      background-image: linear-gradient(to bottom, #bdc3c7, #2c3e50);
+      color: white;
+      padding: 10px;
+    }
+
+    .today-weather {
+      padding: 20px;
+      border-radius: 20px;
+      background-image: linear-gradient(225deg, #2193b0, #6dd5ed);
+    }
+
+    h1 {
+      padding-top: 0px;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      font-size: 40px;
+    }
+
+    p {
+      padding-top: 0px;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      font-size: 30px;
+    }
+
+    .today-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0px 40px;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .realtime-tem {
+      font-size: 100px;
+    }
+
+    .obs-time {
+      font-size: 20px;
+      margin-bottom: 5px !important;
+      color: rgba(232, 230, 227, 0.55);
+    }
+
+    em {
+      font-size: 100px;
+    }
+
+    p.realtime-text {
+      font-size: 35px;
+    }
+
+    .today-button {
+      margin-top: 5px;
+      background-color: #0000001e;
+      border-radius: 20px;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .des {
+      font-size: 30px;
+      color: rgba(232, 230, 227, 0.55);
+    }
+
+    .icon-size {
+      font-size: 60px;
+    }
+
+    .date {
+      color: rgba(232, 230, 227, 0.55);
+      font-size: 20px;
+      text-size-adjust: 100%;
+    }
+
+    .weeks {
+      color: white;
+      font-size: 30px;
+    }
+
+    .days-weather {
+      padding: 20px 50px;
+      border-radius: 20px;
+      margin-top: 20px;
+      background-image: linear-gradient(225deg, #0F2027, #2C5364);
+    }
+
+    .tem-line {
+      height: 10px;
+      border-radius: 10px;
+      background-image: linear-gradient(to right, #f18360, #427bff);
+    }
+
+    .days-icon {
+      column-count: 2;
+    }
+
+    .icon-night {
+      text-align: right;
+    }
+
+    .days {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+    }
+
+
+    .tem-line-box {
+      width: 250px;
+    }
+
+    .days-temp {
+      font-size: 40px;
+    }
+
+    .days-text {
+      font-size: 30px
+    }
+
+
+    .warning-box {
+      padding: 20px;
+      border-radius: 20px;
+      background-image: linear-gradient(225deg, #b78c579d, #f2d5b2b6);
+      margin-top: 20px;
+    }
+
+    .warning-side {
+      display: flex;
+      align-items: center
+    }
+
+    .warning-header {
+      padding-left: 30px;
+    }
+
+    .warning-time {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.55)
+    }
+
+    .warning-info {
+      padding: 20px;
+    }
+
+    .tem-text {
+      width: 80px;
+      text-align: right;
+    }
+
+    .week-date {
+      width: 90px;
+    }

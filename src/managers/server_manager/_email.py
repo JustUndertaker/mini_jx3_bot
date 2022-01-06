@@ -56,9 +56,9 @@ class MailClient(object):
                 await smtp.send_message(message)
         except SMTPException as e:
             log = f"发送邮件失败，原因：{str(e)}"
-            logger.opt(colors=True).error(log)
+            logger.error(log)
         except Exception as e:
-            logger.opt(colors=True).error(f"<r>发送邮件失败，可能是你的配置有问题：{str(e)}</r>")
+            logger.error(f"<r>发送邮件失败，可能是你的配置有问题：{str(e)}</r>")
 
 
 mail_client = MailClient()

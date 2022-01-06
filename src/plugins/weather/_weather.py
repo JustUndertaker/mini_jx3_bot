@@ -93,13 +93,13 @@ class Weather(object):
             city_name: str = req_json["location"][0]["name"]
             if code != "200":
                 log = f"<r>获取城市id失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
-                logger.opt(colors=True).error(log)
+                logger.error(log)
                 return None, None
             return city_id, city_name
 
         except Exception as e:
             log = f"<r>获取城市id接口失败：{str(e)}</r>"
-            logger.opt(colors=True).error(log)
+            logger.error(log)
             return None, None
 
     async def _get_weather_info(self, api_type: str, city_id: int) -> Optional[dict]:
@@ -122,12 +122,12 @@ class Weather(object):
             code = req_json['code']
             if code != "200":
                 log = f"<r>获取天气消息失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
-                logger.opt(colors=True).error(log)
+                logger.error(log)
                 return None
             return req_json
         except Exception as e:
             log = f"<r>访问天气接口失败：{str(e)}</r>"
-            logger.opt(colors=True).error(log)
+            logger.error(log)
             return None
 
     async def _get_weather_warning(self, city_id: str) -> Optional[dict]:
@@ -148,13 +148,13 @@ class Weather(object):
             code = req_json['code']
             if code != "200":
                 log = f"<r>获取天气预警失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
-                logger.opt(colors=True).error(log)
+                logger.error(log)
                 return None
             return req_json
 
         except Exception as e:
             log = f"<r>访问天气预警接口失败：{str(e)}</r>"
-            logger.opt(colors=True).error(log)
+            logger.error(log)
             return None
 
     async def get_weather(self, city: str) -> Optional[dict]:

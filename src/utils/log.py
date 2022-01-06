@@ -7,7 +7,7 @@ from loguru._logger import Core, Logger
 
 from .config import config
 
-logger = Logger(Core(), None, 0, False, False, False, False, True, None, {})
+logger = Logger(Core(), None, 0, False, False, True, False, True, None, {})
 '''自定义的logger对象'''
 
 # 清理

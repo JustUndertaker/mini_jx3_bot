@@ -32,10 +32,10 @@ class Jx3WebSocket(object):
             pass
 
         except ConnectionClosedOK:
-            logger.opt(colors=True).debug("<g>jx3api > ws链接已主动关闭！</g>")
+            logger.debug("<g>jx3api > ws链接已主动关闭！</g>")
 
         except Exception as e:
-            logger.opt(colors=True).error(
+            logger.error(
                 f"<r>jx3api > ws链接被关闭：{str(e)}</r>")
 
     async def _handle_msg(self, message: str):
@@ -57,7 +57,7 @@ class Jx3WebSocket(object):
             asyncio.create_task(self._task())
 
         except Exception as e:
-            logger.opt(colors=True).error(
+            logger.error(
                 f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
 
     async def close(self):

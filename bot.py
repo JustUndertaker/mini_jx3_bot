@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import nonebot
-from nonebot.adapters.cqhttp import Bot as CQHTTPBot
+from nonebot.adapters.onebot.v11 import Adapter
 
 from src.utils.database import database_init
 from src.utils.moinkeypath import monkeypatch
@@ -14,7 +14,7 @@ nonebot.init()
 app = nonebot.get_asgi()
 
 driver = nonebot.get_driver()
-driver.register_adapter("cqhttp", CQHTTPBot)
+driver.register_adapter(Adapter)
 
 # 开启数据库
 driver.on_startup(database_init)

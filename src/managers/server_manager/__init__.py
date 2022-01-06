@@ -1,5 +1,5 @@
 from nonebot import get_driver
-from nonebot.adapters.cqhttp import Bot
+from nonebot.adapters.onebot.v11 import Bot
 from src.utils.browser import browser
 from src.utils.log import logger
 from tortoise import Tortoise

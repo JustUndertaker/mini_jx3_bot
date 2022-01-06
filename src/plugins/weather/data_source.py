@@ -1,4 +1,4 @@
-from nonebot.adapters.cqhttp import MessageSegment
+from nonebot.adapters.onebot.v11 import MessageSegment
 from src.utils.browser import browser
 
 from ._weather import weather_client

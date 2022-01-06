@@ -1,7 +1,7 @@
 from nonebot import on_regex
-from nonebot.adapters.cqhttp import Bot
-from nonebot.adapters.cqhttp.event import GroupMessageEvent
-from nonebot.adapters.cqhttp.permission import GROUP
+from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
+from nonebot.adapters.onebot.v11.permission import GROUP
 
 from .data_source import get_weather
 

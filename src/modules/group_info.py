@@ -1,6 +1,16 @@
+import json
+
 from src.utils.config import config
 from tortoise import fields
 from tortoise.models import Model
+
+
+def encode_text(text: str):
+    data = [{
+        "type": "text",
+        "data": text
+    }]
+    return json.dumps(data, ensure_ascii=False)
 
 
 class GroupInfo(Model):
@@ -19,15 +29,15 @@ class GroupInfo(Model):
     '''活跃值'''
     welcome_status = fields.BooleanField(default=config.default['robot_welcome_status'])
     '''进群通知开关'''
-    welcome_text = fields.JSONField(default=config.default['robot_welcome'])
+    welcome_text = fields.JSONField(default=encode_text(config.default['robot_welcome']))
     '''进群通知内容'''
     someoneleft_status = fields.BooleanField(default=config.default['robot_someone_left_status'])
     '''离群通知开关'''
-    someoneleft_text = fields.JSONField(default=config.default['robot_someone_left'])
+    someoneleft_text = fields.JSONField(default=encode_text(config.default['robot_someone_left']))
     '''离群通知内容'''
     goodnight_status = fields.BooleanField(default=config.default['robot_goodnight_status'])
     '''晚安通知开关'''
-    goodnight_text = fields.JSONField(default=config.default['robot_goodnight'])
+    goodnight_text = fields.JSONField(default=encode_text(config.default['robot_goodnight']))
     '''晚安通知内容'''
 
     class Meta:
@@ -38,5 +48,8 @@ class GroupInfo(Model):
     async def group_init(cls, group_id: int, group_name: str):
         '''给一个群注册数据，刷新群名'''
         record = await GroupInfo.get_or_none(group_id=group_id)
-        record.group_name = group_name
-        await record.save(update_fields=["group_name"])
+        if record:
+            record.group_name = group_name
+            await record.save(update_fields=["group_name"])
+        else:
+            await GroupInfo.create(group_id=group_id, group_name=group_name)

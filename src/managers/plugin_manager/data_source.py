@@ -9,6 +9,6 @@ async def get_plugin_status(group_id: int, module_name: str) -> Optional[bool]:
     return await PluginInfo.get_plugin_status(group_id, module_name)
 
 
-async def get_bot_status(group_id: int) -> bool:
+async def get_bot_status(group_id: int) -> Optional[bool]:
     '''获取机器人开启情况'''
     return await GroupInfo.get_bot_status(group_id)

@@ -1,9 +1,16 @@
-from nonebot import on_regex
+from nonebot import export, on_regex
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 
 from .data_source import get_weather
+
+Export = export()
+Export.plugin_name = "天气查询"
+Export.plugin_command = "XX天气 | 天气 XX"
+Export.plugin_usage = "查询天气，使用和风天气"
+Export.default_status = True
+
 
 weather_regex = r"([\u4e00-\u9fa5]+天气$)|(^天气 [\u4e00-\u9fa5]+$)"
 weather = on_regex(pattern=weather_regex, permission=GROUP, priority=5, block=True)

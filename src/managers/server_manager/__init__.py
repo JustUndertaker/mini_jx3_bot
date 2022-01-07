@@ -4,13 +4,33 @@ from src.utils.browser import browser
 from src.utils.log import logger
 from tortoise import Tortoise
 
+from . import data_source as source
 from ._email import mail_client
 from ._websocket import ws_client
 
 driver = get_driver()
 
 
-# TODO:Bot是基类，后续需要更换
+@driver.on_bot_connect
+async def _(bot: Bot):
+    '''机器人连接处理'''
+    # 获取群
+    logger.info(
+        f"<y>Bot {bot.self_id}</y> 已连接，正在注册……"
+    )
+    group_list = await bot.get_group_list()
+    for group in group_list:
+        group_id = group['group_id']
+        group_name = group['group_name']
+        # 注册群信息
+        await source.group_init(group_id, group_name)
+        # 注册插件
+        await source.load_plugins(group_id)
+    logger.info(
+        f"<y>Bot {bot.self_id}</y> 注册完毕。"
+    )
+
+
 @driver.on_bot_disconnect
 async def _(bot: Bot):
     '''bot链接关闭'''

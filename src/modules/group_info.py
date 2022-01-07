@@ -33,3 +33,10 @@ class GroupInfo(Model):
     class Meta:
         table = "group_info"
         table_description = "管理QQ群信息"
+
+    @classmethod
+    async def group_init(cls, group_id: int, group_name: str):
+        '''给一个群注册数据，刷新群名'''
+        record = await GroupInfo.get_or_none(group_id=group_id)
+        record.group_name = group_name
+        await record.save(update_fields=["group_name"])

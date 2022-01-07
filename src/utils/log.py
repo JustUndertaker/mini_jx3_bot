@@ -54,10 +54,13 @@ class Filter:
         if module:
             module_name = getattr(module, "__module_name__", module_name)
         name_list = module_name.split(".")
-        if name_list[0] == "src":
-            record["name"] = name_list[1]
-        else:
+        length = len(name_list)
+        if length < 2:
             record["name"] = name_list[0]
+        elif length == 3:
+            record["name"] = name_list[-1]
+        else:
+            record["name"] = name_list[-2]
         levelno = logger.level(self.level).no if isinstance(self.level,
                                                             str) else self.level
         return record["level"].no >= levelno

@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from src.utils.config import config
 from tortoise import fields
@@ -53,3 +54,11 @@ class GroupInfo(Model):
             await record.save(update_fields=["group_name"])
         else:
             await GroupInfo.create(group_id=group_id, group_name=group_name)
+
+    @classmethod
+    async def get_bot_status(cls, group_id: int) -> Optional[bool]:
+        '''获取机器人开启情况'''
+        record = await GroupInfo.get_or_none(group_id=group_id)
+        if record:
+            return record.robot_status
+        return None

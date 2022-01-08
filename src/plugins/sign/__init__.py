@@ -2,6 +2,7 @@ from nonebot import export, on_regex
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
+from src.utils.log import logger
 
 from . import data_source as source
 
@@ -20,5 +21,8 @@ async def _(bot: Bot, event: GroupMessageEvent):
     '''签到系统'''
     user_id = event.user_id
     group_id = event.group_id
+    logger.info(
+        f"<y>群{group_id}</y> | <g>{user_id}</g> | 请求签到"
+    )
     msg = await source.get_sign_in(user_id, group_id)
     await sign.finish(msg)

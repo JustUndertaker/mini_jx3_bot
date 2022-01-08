@@ -1,6 +1,7 @@
 from nonebot.plugin import get_loaded_plugins
 from src.modules.group_info import GroupInfo
 from src.modules.plugin_info import PluginInfo
+from src.modules.user_info import UserInfo
 
 
 async def group_init(group_id: int, group_name: str):
@@ -30,3 +31,8 @@ async def load_plugins(group_id: int):
                                      usage=export.get("plugin_usage"),
                                      status=export.get("default_status")
                                      )
+
+
+async def user_init(user_id: int, group_id: int, user_name: str):
+    '''用户注册'''
+    await UserInfo.user_init(user_id, group_id, user_name)

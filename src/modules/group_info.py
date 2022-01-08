@@ -48,12 +48,9 @@ class GroupInfo(Model):
     @classmethod
     async def group_init(cls, group_id: int, group_name: str):
         '''给一个群注册数据，刷新群名'''
-        record = await GroupInfo.get_or_none(group_id=group_id)
-        if record:
-            record.group_name = group_name
-            await record.save(update_fields=["group_name"])
-        else:
-            await GroupInfo.create(group_id=group_id, group_name=group_name)
+        record, _ = await GroupInfo.get_or_create(group_id=group_id)
+        record.group_name = group_name
+        await record.save(update_fields=["group_name"])
 
     @classmethod
     async def get_bot_status(cls, group_id: int) -> Optional[bool]:
@@ -62,3 +59,11 @@ class GroupInfo(Model):
         if record:
             return record.robot_status
         return None
+
+    @classmethod
+    async def group_sign_in(cls, group_id: int) -> int:
+        '''群内签到，返回已签到数量'''
+        record, _ = await GroupInfo.get_or_create(group_id=group_id)
+        record.sign_nums += 1
+        await record.save(update_fields=["sign_nums"])
+        return record.sign_nums

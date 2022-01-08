@@ -27,8 +27,8 @@ class PluginInfo(Model):
     @ classmethod
     async def check_inited(cls, group_id: int) -> bool:
         '''检查是否注册过插件'''
-        record = await PluginInfo.get_or_none(group_id=group_id)
-        return (record is not None)
+        record = await PluginInfo.filter(group_id=group_id)
+        return bool(record)
 
     @ classmethod
     async def init_plugin(cls,

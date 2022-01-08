@@ -52,9 +52,9 @@ voice:
 # 天气插件设置
 weather:
   # 和风天气apikey
-  api_key: ~
+  api_key: 559b9a197dd2409b973afa67967df9b1
   # api_key类型，普通版:0，个人开发版:1，商业版:2
-  api_type: 0
+  api_type: 1
 
 # 默认设置
 default:

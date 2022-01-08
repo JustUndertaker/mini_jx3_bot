@@ -38,7 +38,7 @@ class TicketInfo(Model):
         await TicketInfo.filter(alive=False).delete()
 
     @classmethod
-    async def depend_ticket(cls, ticket: str) -> bool:
+    async def append_ticket(cls, ticket: str) -> bool:
         '''添加一条ticket'''
         _, flag = await TicketInfo.get_or_create(ticket=ticket)
         return not flag

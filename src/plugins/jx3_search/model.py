@@ -14,7 +14,7 @@ from .config import DAILIY_LIST, JX3_APP, PROFESSION
 class TicketManager(object):
     '''ticket管理器类'''
     _client: AsyncClient
-    '''异步请求类'''
+    '''异步请求客户端'''
     _check_url: str
     '''检测ticket有效性接口'''
 
@@ -51,7 +51,11 @@ class TicketManager(object):
 
     async def get_ticket(self) -> Optional[str]:
         '''获取一条有效的ticket，如果没有则返回None'''
-        pass
+        return await TicketInfo.get_ticket()
+
+    async def append_ticket(self, ticket: str) -> bool:
+        '''添加一条ticket，重复添加会返回false'''
+        return await TicketInfo.append_ticket(ticket)
 
 
 class SearchManager(object):

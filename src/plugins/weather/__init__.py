@@ -2,6 +2,7 @@ from nonebot import export, on_regex
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
+from src.utils.log import logger
 
 from .data_source import get_weather
 
@@ -25,5 +26,8 @@ async def _(bot: Bot, event: GroupMessageEvent):
         city = msg_list[-1]
     else:
         city = get_msg[:-2]
+    logger.info(
+        f"<y>群{event.group_id}</> | <g>{event.user_id}</g> | 查询天气：{city}"
+    )
     msg = await get_weather(city)
     await weather.finish(msg)

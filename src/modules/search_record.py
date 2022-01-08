@@ -1,3 +1,5 @@
+import time
+
 from tortoise import fields
 from tortoise.models import Model
 
@@ -17,3 +19,18 @@ class SearchRecord(Model):
     class Meta:
         table = "search_record"
         table_description = "记录查询次数"
+
+    @classmethod
+    async def get_search_time(cls, group_id: int, app_name: str) -> bool:
+        '''获取上次查询记录时间'''
+        record, _ = await SearchRecord.get_or_create(group_id=group_id, app_name=app_name)
+        return record.last_time
+
+    @classmethod
+    async def use_search(cls, group_id: int, app_name: str):
+        '''使用一次查询'''
+        record, _ = await SearchRecord.get_or_create(group_id=group_id, app_name=app_name)
+        time_now = int(time.localtime())
+        record.last_time = time_now
+        record.count += 1
+        await record.save(update_fields=["last_time", "count"])

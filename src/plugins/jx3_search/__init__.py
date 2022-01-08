@@ -1,12 +1,9 @@
-from nonebot import on_regex
+from nonebot import export, on_regex
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.plugin import get_loaded_plugins
 
-chat = on_regex(pattern=r'^测试$', priority=1, block=True)
-
-
-@chat.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
-    plugin = get_loaded_plugins()
-    a = 1
+Export = export()
+Export.plugin_name = "剑三查询"
+Export.plugin_command = "参考“帮助”"
+Export.plugin_usage = "剑三游戏查询，数据源使用jx3api"
+Export.default_status = True

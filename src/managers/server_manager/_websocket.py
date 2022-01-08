@@ -13,6 +13,16 @@ class Jx3WebSocket(object):
 
     _ws: WebSocketClientProtocol = None
     '''ws链接'''
+    _open_server: bool = False
+    '''开服监控'''
+    _news: bool = False
+    '''官方资讯'''
+    _serendipity: bool = False
+    '''奇遇播报'''
+    _horse: bool = False
+    '''抓马播报'''
+    _fuyao: bool = False
+    '''扶摇播报'''
 
     def __new__(cls, *args, **kwargs):
         '''单例'''
@@ -42,8 +52,25 @@ class Jx3WebSocket(object):
         '''处理回复数据'''
         data = json.loads(message)
         logger.success(f"收到ws推送消息：{str(data)}")
-        # msg_type: int = data['type']
-        pass
+        msg_type: int = data['type']
+        # 判断首次信息
+        if msg_type == 10000:
+            self._handle_first_recv(data['data'])
+        else:
+            pass
+
+    def _handle_first_recv(self, data: dict[str, str]):
+        '''处理首次接收事件'''
+        def _to_bool(string: str) -> bool:
+            return (string == "已开启")
+        try:
+            self._open_server = _to_bool(data['开服监控'])
+            self._news = _to_bool(data['官方资讯'])
+            self._serendipity = _to_bool(data['奇遇播报'])
+            self._horse = _to_bool(data['抓马播报'])
+            self._fuyao = _to_bool(data['扶摇播报'])
+        except Exception:
+            pass
 
     async def init(self):
         '''初始化'''

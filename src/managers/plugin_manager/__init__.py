@@ -3,13 +3,13 @@ from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from nonebot.exception import IgnoredException
 from nonebot.matcher import Matcher
-from nonebot.message import run_postprocessor
+from nonebot.message import run_preprocessor
 from nonebot.permission import SUPERUSER
 
 from . import data_source as source
 
 
-@run_postprocessor
+@run_preprocessor
 async def _(matcher: Matcher, event: GroupMessageEvent):
     '''插件管理系统，插件开关实现'''
     # 检测插件是否注册

@@ -2,10 +2,14 @@ import asyncio
 import json
 
 import websockets
+from nonebot import get_bots
+from nonebot.message import handle_event
 from src.utils.config import config
 from src.utils.log import logger
 from websockets.exceptions import ConnectionClosedOK
 from websockets.legacy.client import WebSocketClientProtocol
+
+from ._jx3_event import ws_event_factory
 
 
 class Jx3WebSocket(object):
@@ -57,7 +61,13 @@ class Jx3WebSocket(object):
         if msg_type == 10000:
             self._handle_first_recv(data['data'])
         else:
-            pass
+            # 分发事件
+            event = ws_event_factory(msg_type, data['data'])
+            logger.debug(event.log)
+            if event:
+                bots = get_bots()
+                for _, one_bot in bots.items():
+                    await handle_event(one_bot, event)
 
     def _handle_first_recv(self, data: dict[str, str]):
         '''处理首次接收事件'''

@@ -8,19 +8,12 @@ from playwright.async_api import Browser, Error, Page, async_playwright
 from .config import config
 from .log import logger
 
-TEMPLATES_PATH: str = config.path['templates']
-
-env = jinja2.Environment(
-    extensions=["jinja2.ext.loopcontrols"],
-    loader=jinja2.FileSystemLoader(TEMPLATES_PATH),
-    enable_async=True,
-)
-
 
 class MyBrowser():
     '''自定义浏览类'''
     _browser: Optional[Browser] = None
     _playwright = None
+    _template_env: jinja2.Environment
     _base_url: str = None
 
     def __new__(cls, *args, **kwargs):
@@ -77,14 +70,12 @@ class MyBrowser():
             img_raw = await page.screenshot(full_page=True, type="jpeg", quality=100)
         return img_raw
 
-    @classmethod
-    async def _template_to_html(cls, template_path: str, template_name: str, **kwargs,) -> str:
+    async def _template_to_html(self, template_name: str, **kwargs,) -> str:
         """
         :说明
             使用jinja2模板引擎通过html生成图片
 
         :参数
-            * template_path (str): 模板路径
             * template_name (str): 模板名
             * **kwargs: 模板内容
 
@@ -92,19 +83,20 @@ class MyBrowser():
             * str: html
         """
 
-        template_env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(template_path),
-            enable_async=True,
-        )
-        template = template_env.get_template(template_name)
+        template = self._template_env.get_template(template_name)
 
         return await template.render_async(**kwargs)
 
     async def init(self) -> Browser:
         '''初始化playwright'''
-        path = Path(TEMPLATES_PATH).absolute()
+        template_path = config.path['templates']
+        path = Path(template_path).absolute()
         self._base_url = f"file://{path}/"
         self._playwright = await async_playwright().start()
+        self._template_env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(template_path),
+            enable_async=True,
+        )
         try:
             self._browser = await self._launch_browser()
         except Error:
@@ -120,7 +112,7 @@ class MyBrowser():
     async def template_to_image(self, pagename: str, **kwargs) -> bytes:
         '''
         :说明
-            将页面转化成图片
+            将模板页面转化成图片
 
         :参数
             * pagename：模板文件名
@@ -130,7 +122,7 @@ class MyBrowser():
             * bytes：图片数据
         '''
 
-        html = await self._template_to_html(template_path=TEMPLATES_PATH, template_name=pagename, **kwargs)
+        html = await self._template_to_html(template_name=pagename, **kwargs)
         return await self._html_to_pic(pagename, html)
 
 

@@ -12,7 +12,7 @@ Export.plugin_usage = "查询天气，使用和风天气"
 Export.default_status = True
 
 
-weather_regex = r"([\u4e00-\u9fa5]+天气$)|(^天气 [\u4e00-\u9fa5]+$)"
+weather_regex = r"(^[\u4e00-\u9fa5]+天气$)|(^天气 [\u4e00-\u9fa5]+$)"
 weather = on_regex(pattern=weather_regex, permission=GROUP, priority=5, block=True)
 
 

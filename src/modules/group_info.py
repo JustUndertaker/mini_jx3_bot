@@ -136,3 +136,8 @@ class GroupInfo(Model):
             await record.save(update_fields=[config_type])
             return True
         return False
+
+    @classmethod
+    async def reset_sign_nums(cls):
+        '''重置签到人数'''
+        await GroupInfo.all().update(sign_nums=0)

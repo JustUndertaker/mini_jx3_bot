@@ -32,4 +32,6 @@ async def _(bot: Bot, event: GroupMessageEvent):
 @scheduler.scheduled_job("cron", hour=0, minute=0)
 async def _():
     '''每天零点重置签到人数'''
+    logger.info("正在重置签到人数")
     await source.reset_sign_nums()
+    logger.info("签到人数已重置")

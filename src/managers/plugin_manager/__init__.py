@@ -48,29 +48,29 @@ plugin_status = on_regex(pattern=regex,
 
 
 @group_status.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
+async def _(matcher: Matcher, event: GroupMessageEvent):
     '''群设置开关'''
     get_msg = event.get_plaintext().split(" ")
     status = get_msg[0]
     config_type = get_msg[-1]
     flag = await source.change_group_config(event.group_id, config_type, status)
     if flag:
-        group_status.block = True
+        matcher.stop_propagation()
         await group_status.finish(
-            f"设置成功！\n{config_type} 当前已 {status}"
+            f"设置成功！\n[{config_type}]当前已 {status}"
         )
     await group_status.finish()
 
 
 @plugin_status.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
+async def _(event: GroupMessageEvent):
     '''设置插件开关'''
     get_msg = event.get_plaintext().split(" ")
     status = get_msg[0]
     plugin_name = get_msg[-1]
     flag = await source.change_plugin_status(event.group_id, plugin_name, status)
     if flag:
-        msg = f"设置成功！\n{plugin_name} 当前已 {status}"
+        msg = f"设置成功！\n插件[{plugin_name}]当前已 {status}"
     else:
-        msg = f"设置失败！未找到插件：{plugin_name}"
+        msg = f"设置失败！未找到插件[{plugin_name}]"
     await plugin_status.finish(msg)

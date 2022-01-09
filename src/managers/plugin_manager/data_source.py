@@ -34,16 +34,16 @@ async def change_group_config(group_id: int, config_type: str, status: Literal["
         * bool：如果有设置，则成功，没有改设置会返回False
     '''
 
-    config_type = None
+    _config_type = None
     if config_type == "进群通知":
-        config_type = "welcome_status"
+        _config_type = "welcome_status"
     if config_type == "离群通知":
-        config_type = "someoneleft_status"
+        _config_type = "someoneleft_status"
     if config_type == "晚安通知":
-        config_type = "goodnight_status"
-    if config_type:
+        _config_type = "goodnight_status"
+    if _config_type:
         _status = _chinese_to_bool(status)
-        await GroupInfo.set_config_status(group_id, config_type, _status)
+        await GroupInfo.set_config_status(group_id, _config_type, _status)
         return True
     return False
 

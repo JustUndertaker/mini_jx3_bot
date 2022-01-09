@@ -1,5 +1,4 @@
 from nonebot import export, on_regex
-from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 from src.utils.log import logger
@@ -18,7 +17,7 @@ sign = on_regex(r"^签到$", permission=GROUP, priority=5, block=True)
 
 
 @sign.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
+async def _(event: GroupMessageEvent):
     '''签到系统'''
     user_id = event.user_id
     group_id = event.group_id

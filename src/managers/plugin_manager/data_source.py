@@ -41,6 +41,16 @@ async def change_group_config(group_id: int, config_type: str, status: Literal["
         _config_type = "someoneleft_status"
     if config_type == "晚安通知":
         _config_type = "goodnight_status"
+    if config_type == "开服推送":
+        _config_type = "ws_server"
+    if config_type == "新闻推送":
+        _config_type = "ws_news"
+    if config_type == "奇遇推送":
+        _config_type = "ws_serendipity"
+    if config_type == "抓马监控":
+        _config_type = "ws_horse"
+    if config_type == "扶摇监控":
+        _config_type = "ws_fuyao"
     if _config_type:
         _status = _chinese_to_bool(status)
         await GroupInfo.set_config_status(group_id, _config_type, _status)

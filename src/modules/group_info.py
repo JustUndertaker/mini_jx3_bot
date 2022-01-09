@@ -120,7 +120,7 @@ class GroupInfo(Model):
 
     @classmethod
     async def set_config_status(cls, group_id: int,
-                                config_type: Literal["welcome_status", "goodnight_status", "someoneleft_status"],
+                                config_type: Literal["welcome_status", "goodnight_status", "someoneleft_status", "ws_server", "ws_news", "ws_serendipity", "ws_horse", "ws_fuyao"],
                                 status: bool
                                 ) -> bool:
         '''设置群内容开关'''
@@ -133,6 +133,16 @@ class GroupInfo(Model):
                 record.goodnight_status = status
             if config_type == "someoneleft_status":
                 record.someoneleft_status = status
+            if config_type == "ws_server":
+                record.ws_server = status
+            if config_type == "ws_news":
+                record.ws_news = status
+            if config_type == "ws_serendipity":
+                record.ws_serendipity = status
+            if config_type == "ws_horse":
+                record.ws_horse = status
+            if config_type == "ws_fuyao":
+                record.ws_fuyao = status
             await record.save(update_fields=[config_type])
             return True
         return False

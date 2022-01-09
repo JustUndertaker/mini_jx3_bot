@@ -1,5 +1,4 @@
 from nonebot import export, on_regex
-from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 from src.utils.log import logger
@@ -18,7 +17,7 @@ weather = on_regex(pattern=weather_regex, permission=GROUP, priority=5, block=Tr
 
 
 @weather.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
+async def _(event: GroupMessageEvent):
     '''查询天气'''
     get_msg = event.get_plaintext()
     msg_list = get_msg.split(" ")

@@ -102,3 +102,37 @@ class GroupInfo(Model):
             if recv_type == "fuyao":
                 return record.ws_fuyao
         return None
+
+    @classmethod
+    async def get_config_status(cls, group_id: int,
+                                config_type: Literal["welcome_status", "goodnight_status", "someoneleft_status"]
+                                ) -> Optional[bool]:
+        '''获取群设置开关'''
+        record = await GroupInfo.get_or_none(group_id=group_id)
+        if record:
+            if config_type == "welcome_status":
+                return record.welcome_status
+            if config_type == "goodnight_status":
+                return record.goodnight_status
+            if config_type == "someoneleft_status":
+                return record.someoneleft_status
+        return None
+
+    @classmethod
+    async def set_config_status(cls, group_id: int,
+                                config_type: Literal["welcome_status", "goodnight_status", "someoneleft_status"],
+                                status: bool
+                                ) -> bool:
+        '''设置群内容开关'''
+        record = await GroupInfo.get_or_none(group_id=group_id)
+        if record:
+            if config_type == "welcome_status":
+                record.welcome_status = status
+                await record.save(update_fields=["welcome_status"])
+            if config_type == "goodnight_status":
+                record.goodnight_status = status
+            if config_type == "someoneleft_status":
+                record.someoneleft_status = status
+            await record.save(update_fields=[config_type])
+            return True
+        return False

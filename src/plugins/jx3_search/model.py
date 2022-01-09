@@ -2,13 +2,12 @@ import time
 from typing import Optional, Tuple, Union
 
 from httpx import AsyncClient
-from src.modules.group_info import GroupInfo
 from src.modules.search_record import SearchRecord
 from src.modules.ticket_info import TicketInfo
 from src.utils.config import config
 from src.utils.log import logger
 
-from .config import DAILIY_LIST, JX3_APP, PROFESSION
+from .config import JX3_APP
 
 
 class TicketManager(object):

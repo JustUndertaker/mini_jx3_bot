@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Literal, Optional
 
 from src.utils.config import config
 from tortoise import fields
@@ -40,6 +40,16 @@ class GroupInfo(Model):
     '''晚安通知开关'''
     goodnight_text = fields.JSONField(default=encode_text(config.default['robot_goodnight']))
     '''晚安通知内容'''
+    ws_server = fields.BooleanField(default=True)
+    '''ws-开服推送开关'''
+    ws_news = fields.BooleanField(default=True)
+    '''ws-新闻推送开关'''
+    ws_serendipity = fields.BooleanField(default=True)
+    '''ws-奇遇推送开关'''
+    ws_horse = fields.BooleanField(default=True)
+    '''ws-抓马推送开关'''
+    ws_fuyao = fields.BooleanField(default=True)
+    '''ws-扶摇推送开关'''
 
     class Meta:
         table = "group_info"
@@ -67,3 +77,28 @@ class GroupInfo(Model):
         record.sign_nums += 1
         await record.save(update_fields=["sign_nums"])
         return record.sign_nums
+
+    @classmethod
+    async def get_server(cls, group_id: int) -> Optional[str]:
+        '''获取绑定服务器'''
+        record = await GroupInfo.get_or_none(group_id=group_id)
+        return record.server if record else None
+
+    @classmethod
+    async def get_ws_status(cls, group_id: int,
+                            recv_type: Literal["server", "news", "serendipity", "horse", "fuyao"]
+                            ) -> Optional[bool]:
+        '''获取ws通知状态'''
+        record = await GroupInfo.get_or_none(group_id=group_id)
+        if record:
+            if recv_type == "server":
+                return record.ws_server
+            if recv_type == "news":
+                return record.ws_news
+            if recv_type == "serendipity":
+                return record.ws_serendipity
+            if recv_type == "horse":
+                return record.ws_horse
+            if recv_type == "fuyao":
+                return record.ws_fuyao
+        return None

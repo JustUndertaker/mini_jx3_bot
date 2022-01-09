@@ -1,11 +1,17 @@
+import asyncio
+import random
+
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Bot
+from nonebot.plugin import on
 from src.utils.browser import browser
 from src.utils.log import logger
+from src.utils.utils import GroupList_Async
 from tortoise import Tortoise
 
 from . import data_source as source
 from ._email import mail_client
+from ._jx3_event import RecvEvent
 from ._websocket import ws_client
 
 driver = get_driver()
@@ -71,3 +77,31 @@ async def _():
     logger.info("<y>关闭ws链接……</y>")
     await ws_client.close()
     logger.info("<g>ws链接关闭成功。</g>")
+
+# ----------------------------------------------------------------
+#       ws消息事件处理
+# ----------------------------------------------------------------
+
+ws_recev = on(type="WsRecv", priority=4, block=True)
+
+
+@ws_recev.handle()
+async def _(bot: Bot, event: RecvEvent):
+    '''ws推送事件'''
+    group_list = await bot.get_group_list()
+    async for group_id in GroupList_Async(group_list):
+        # 是否需要验证服务器
+        if event.server:
+            group_server = await source.get_server(group_id)
+            if group_server != event.server:
+                continue
+
+        # 判断事件接受开启状态
+        status = await source.get_ws_status(group_id, event)
+        if status:
+            try:
+                await bot.send_group_msg(group_id=group_id, message=event.get_message())
+                await asyncio.sleep(random.uniform(0.3, 0.5))
+            except Exception:
+                pass
+    await ws_recev.finish()

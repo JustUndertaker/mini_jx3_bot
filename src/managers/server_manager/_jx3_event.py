@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from typing import Optional
 
 from nonebot.adapters import Event as BaseEvent
@@ -8,10 +9,12 @@ from nonebot.utils import escape_tag
 
 
 class RecvEvent(BaseEvent):
-    '''事件基类'''
+    '''ws推送事件基类'''
     __event__ = "WsRecv"
     post_type: str = "WsRecv"
     message_type: Optional[str]
+    server: Optional[str] = None
+    '''影响服务器'''
 
     @property
     def log(self) -> str:
@@ -58,8 +61,6 @@ class ServerStatusEvent(RecvEvent):
     '''服务器状态推送事件'''
     __event__ = "WsRecv.ServerStatus"
     message_type = "ServerStatus"
-    server: Optional[str]
-    '''服务器名'''
     status: Optional[bool]
     '''服务器状态'''
 
@@ -80,6 +81,18 @@ class ServerStatusEvent(RecvEvent):
             status = "已维护"
         log = f"开服推送事件：[{self.server}]状态-{status}"
         return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        time_now = datetime.now().strftime("%H时%M分")
+        if self.status:
+            return Message(
+                f'时间：{time_now}\n[{self.server}] 开服啦！'
+            )
+        else:
+            return Message(
+                f'时间{time_now}\n[{self.server}]维护惹。'
+            )
 
 
 class NewsRecvEvent(RecvEvent):
@@ -110,13 +123,17 @@ class NewsRecvEvent(RecvEvent):
         log = f"[{self.news_type}]事件：{self.news_tittle}"
         return log
 
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[{self.news_type}]来惹\n标题：{self.news_tittle}\n链接：{self.news_url}\n日期：{self.news_date}"
+        )
+
 
 class SerendipityEvent(RecvEvent):
     '''奇遇推送事件'''
     __event__ = "WsRecv.Serendipity"
     message_type = "Serendipity"
-    server: Optional[str]
-    '''服务器'''
     name: Optional[str]
     '''触发角色'''
     serendipity: Optional[str]
@@ -144,13 +161,17 @@ class SerendipityEvent(RecvEvent):
         log = f"奇遇推送事件：[{self.server}]的[{self.name}]抱走了奇遇：{self.serendipity}"
         return log
 
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f'奇遇推送 {self.time}\n{self.serendipity} 被 {self.name} 抱走惹。'
+        )
+
 
 class HorseRefreshEvent(RecvEvent):
     '''马驹刷新事件'''
     __event__ = "WsRecv.HorseRefresh"
     message_type = "HorseRefresh"
-    server: Optional[str]
-    '''服务器名'''
     map: Optional[str]
     '''刷新地图'''
     min: Optional[int]
@@ -173,18 +194,22 @@ class HorseRefreshEvent(RecvEvent):
         start_trans = time.localtime(get_time)
         self.time = time.strftime('%H:%M:%S', start_trans)
 
-    @overrides(RecvEvent)
+    @property
     def log(self) -> str:
         log = f"马驹刷新推送：[{self.server}]的[{self.map}]将要在 {str(self.min)}-{str(self.max)} 分后刷新马驹。"
         return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[抓马监控] 时间：{self.time}\n{self.map} 将在[{self.min} - {self.max}分]后刷新马驹。"
+        )
 
 
 class HorseCatchedEvent(RecvEvent):
     '''马驹被抓事件'''
     __event__ = "WsRecv.HorseCatched"
     message_type = "HorseCatched"
-    server: Optional[str]
-    '''服务器名'''
     name: Optional[str]
     '''触发角色名'''
     map: Optional[str]
@@ -212,13 +237,17 @@ class HorseCatchedEvent(RecvEvent):
         log = f"马驹被抓事件：[{self.server}]的[{self.name}]在[{self.map}]捕获了 {self.horse} 。"
         return log
 
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[抓马监控] 时间：{self.time}\n{self.map} 的 {self.horse} 被 {self.name} 抓走了~"
+        )
+
 
 class FuyaoRefreshEvent(RecvEvent):
     '''扶摇开启事件'''
     __event__ = "WsRecv.FuyaoRefresh"
     message_type = "FuyaoRefresh"
-    server: Optional[str]
-    '''服务器名'''
     time: Optional[str]
     '''事件时间'''
 
@@ -237,13 +266,17 @@ class FuyaoRefreshEvent(RecvEvent):
         log = f"扶摇刷新事件：[{self.server}]的扶摇开始刷新 。"
         return log
 
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[扶摇监控]\n扶摇九天在 {self.time} 开启了。"
+        )
+
 
 class FuyaoNamedEvent(RecvEvent):
     '''扶摇点名事件'''
     __event__ = "WsRecv.FuyaoNamed"
     message_type = "FuyaoNamed"
-    server: Optional[str]
-    '''服务器名'''
     names: Optional[list[str]]
     '''点名角色组'''
     time: Optional[str]
@@ -265,6 +298,13 @@ class FuyaoNamedEvent(RecvEvent):
         name = ",".join(self.names)
         log = f"扶摇点名事件：[{self.server}]的扶摇点名了，玩家[{name}] 。"
         return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        name = ",".join(self.names)
+        return Message(
+            f"[扶摇监控] 时间：{self.time}\n唐文羽点名了[{name}]。"
+        )
 
 
 def ws_event_factory(_type: int, data: dict) -> Optional[RecvEvent]:

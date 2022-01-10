@@ -4,6 +4,8 @@
 jx3api:
   # ws链接地址
   ws_path: wss://socket.nicemoe.cn
+  # ws的token授权，关联ws服务器推送消息类型
+  ws_token: ~
   # 主站地址
   jx3_url:  https://www.jx3api.com
   # 主站token，不填将不能访问带ticket的接口
@@ -52,7 +54,7 @@ voice:
 # 天气插件设置
 weather:
   # 和风天气apikey
-  api_key: 559b9a197dd2409b973afa67967df9b1
+  api_key: ~
   # api_key类型，普通版:0，个人开发版:1，商业版:2
   api_type: 1
 

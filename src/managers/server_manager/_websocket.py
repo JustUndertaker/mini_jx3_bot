@@ -55,6 +55,7 @@ class Jx3WebSocket(object):
     async def _handle_msg(self, message: str):
         '''处理回复数据'''
         data = json.loads(message)
+        logger.success(data)
         msg_type: int = data['type']
         # 判断首次信息
         if msg_type == 10000:
@@ -84,9 +85,14 @@ class Jx3WebSocket(object):
     async def init(self):
         '''初始化'''
         ws_path: str = config.jx3api['ws_path']
+        ws_token = config.jx3api['ws_token']
+        if ws_token is None:
+            ws_token = ""
+        headers = {"token": ws_token}
         logger.debug(f"正在链接jx3api的ws服务器：{ws_path}")
         try:
             self._ws = await websockets.connect(uri=ws_path,
+                                                extra_headers=headers,
                                                 ping_interval=20,
                                                 ping_timeout=20,
                                                 close_timeout=10)

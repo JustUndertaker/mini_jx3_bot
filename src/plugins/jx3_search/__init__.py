@@ -12,7 +12,7 @@ Export.plugin_command = "参考“帮助”"
 Export.plugin_usage = "剑三游戏查询，数据源使用jx3api"
 Export.default_status = True
 
-weather = on_command("weather", aliases={"天气", "天气预报"}, priority=5)
+weather = on_command("weather", priority=5)
 
 
 @weather.handle()

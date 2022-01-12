@@ -1,11 +1,15 @@
+import re
+from datetime import datetime
+
 from nonebot import export, on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
+from nonebot.adapters.onebot.v11.message import MessageSegment
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
 
 from . import data_source as source
-from .config import DAILIY_LIST
+from .config import DAILIY_LIST, PROFESSION
 
 Export = export()
 Export.plugin_name = "剑三查询"
@@ -44,7 +48,7 @@ Regex = {
 # ----------------------------------------------------------------
 daily_query = on_regex(pattern=Regex['日常查询'], permission=GROUP, priority=5, block=True)
 server_query = on_regex(pattern=Regex['开服查询'], permission=GROUP, priority=5, block=True)
-glod_query = on_regex(pattern=Regex['金价查询'], permission=GROUP, priority=5, block=True)
+gold_query = on_regex(pattern=Regex['金价查询'], permission=GROUP, priority=5, block=True)
 qixue_query = on_regex(pattern=Regex['奇穴查询'], permission=GROUP, priority=5, block=True)
 medicine_query = on_regex(pattern=Regex['小药查询'], permission=GROUP, priority=5, block=True)
 equip_group_query = on_regex(pattern=Regex['配装查询'], permission=GROUP, priority=5, block=True)
@@ -59,6 +63,8 @@ zili_query = on_regex(pattern=Regex['资历排行'], permission=GROUP, priority=
 match_query = on_regex(pattern=Regex['战绩查询'], permission=GROUP, priority=5, block=True)
 equip_query = on_regex(pattern=Regex['装备查询'], permission=GROUP, priority=5, block=True)
 rank_query = on_regex(pattern=Regex['名剑排行'], permission=GROUP, priority=5, block=True)
+
+
 # ----------------------------------------------------------------
 #   Depends函数，用来获取相关参数
 # ----------------------------------------------------------------
@@ -78,14 +84,42 @@ async def get_server(matcher: Matcher, event: GroupMessageEvent) -> str:
     return server
 
 
+def get_ex_name(event: GroupMessageEvent) -> str:
+    '''从前置这些可前可后的消息中获取name'''
+    text = event.get_plaintext()
+    text_list = text.split(" ")
+    # 判断是否为宏查询
+    if re.match(pattern=r"(^宏 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+宏$)", string=text):
+        if len(text_list) == 1:
+            return text_list[0][:-1]
+        else:
+            return text_list[-1]
+
+    if len(text_list) == 1:
+        return text_list[0][:-2]
+    else:
+        return text_list[-1]
+
+
 def get_name(event: GroupMessageEvent) -> str:
     '''获取消息中的name字段，取最后分页'''
     return event.get_plaintext().split(" ")[-1]
 
 
-# ----------------------------------------------------------------
-#   handler列表，具体实现回复内容
-# ----------------------------------------------------------------
+async def get_profession(matcher: Matcher, name: str = Depends(get_ex_name)) -> str:
+    '''获取职业名称'''
+    for key, xinfa in PROFESSION.items():
+        for one_name in xinfa:
+            if one_name == name:
+                return key
+
+    # 未找到职业
+    msg = f"未找到职业[{name}]，请检查配置。"
+    await matcher.finish(msg)
+
+    # ----------------------------------------------------------------
+    #   handler列表，具体实现回复内容
+    # ----------------------------------------------------------------
 
 
 @daily_query.handle()
@@ -94,7 +128,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     params = {
         "server": server
     }
-    msg, data = await source.get_data_from_api(group_id=event.group_id, app_name="日常查询", params=params)
+    msg, data = await source.get_data_from_api(app_name="日常查询", group_id=event.group_id, params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await daily_query.finish(msg)
@@ -112,3 +146,57 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     msg += f'武林通鉴·秘境任务\n{data.get("weekFive")}\n'
     msg += f'武林通鉴·团队秘境\n{data.get("weekTeam")}'
     await daily_query.finish(msg)
+
+
+@server_query.handle()
+async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+    '''开服查询'''
+    params = {
+        "server": server
+    }
+    msg, data = await source.get_data_from_api(app_name="开服查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await daily_query.finish(msg)
+
+    status = "已开服" if data['status'] == 1 else "维护中"
+    msg = f'{data.get("server")} 当前状态是[{status}]'
+    await server_query.finish(msg)
+
+
+@gold_query.handle()
+async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+    '''金价查询'''
+    params = {
+        "server": server
+    }
+    msg, data = await source.get_data_from_api(app_name="开服查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await daily_query.finish(msg)
+
+    data = data[0]
+    date_now = datetime.now().strftime("%m-%d %H:%M")
+    msg = f'金价[{data.get("server")}] {date_now}\n'
+    msg += f'官方平台：1元={data.get("wanbaolou")}金\n'
+    msg += f'百度贴吧：1元={data.get("tieba")}金\n'
+    msg += f'悠悠平台：1元={data.get("uu898")}金\n'
+    msg += f'嘟嘟平台：1元={data.get("dd373")}金\n'
+    msg += f'其他平台：1元={data.get("5173")}金'
+    await gold_query.finish(msg)
+
+
+@qixue_query.handle()
+async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+    '''奇穴查询'''
+    params = {
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await daily_query.finish(msg)
+
+    img = data.get('all')
+    msg = MessageSegment.image(img)
+    await qixue_query.finish(msg)

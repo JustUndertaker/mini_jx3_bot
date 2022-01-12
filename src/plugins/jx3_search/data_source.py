@@ -16,14 +16,14 @@ async def get_main_server(server: str) -> Optional[str]:
     return await jx3_searcher.get_server(server)
 
 
-async def get_data_from_api(group_id: int, app_name: str, params: dict, need_ticket: bool = False) -> Tuple[str, dict]:
+async def get_data_from_api(app_name: str, group_id: int, params: dict, need_ticket: bool = False) -> Tuple[str, dict]:
     '''
     :说明
         从jx3api获取内容
 
     :参数
-        * group_id：QQ群号
         * app_name：查询分类
+        * group_id：QQ群号
         * params：参数字典
         * need_ticket：是否需要ticket
 

@@ -117,9 +117,10 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_ex_name)) -> 
     msg = f"未找到职业[{name}]，请检查配置。"
     await matcher.finish(msg)
 
-    # ----------------------------------------------------------------
-    #   handler列表，具体实现回复内容
-    # ----------------------------------------------------------------
+
+# ----------------------------------------------------------------
+#   handler列表，具体实现回复内容
+# ----------------------------------------------------------------
 
 
 @daily_query.handle()
@@ -200,3 +201,59 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     img = data.get('all')
     msg = MessageSegment.image(img)
     await qixue_query.finish(msg)
+
+
+@medicine_query.handle()
+async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+    '''小药查询'''
+    params = {
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await daily_query.finish(msg)
+
+    name = data.get('name')
+    data = data.get('data')
+    msg = f'[{name}]小药：\n'
+    msg += f'增强食品：{data.get("heighten_food")}\n'
+    msg += f'辅助食品：{data.get("auxiliary_food")}\n'
+    msg += f'增强药品：{data.get("heighten_drug")}\n'
+    msg += f'辅助药品：{data.get("auxiliary_drug")}'
+
+    await medicine_query.finish(msg)
+
+
+@equip_group_query.handle()
+async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+    '''配装查询'''
+    params = {
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await daily_query.finish(msg)
+
+    msg = MessageSegment.text(f'{data.get("name")}配装：\nPve装备：\n')+MessageSegment.image(data.get("pve")) + \
+        MessageSegment.text("Pvp装备：\n")+MessageSegment.image(data.get("pvp"))
+    await equip_group_query.finish(msg)
+
+
+@macro_query.handle()
+async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+    '''宏查询'''
+    params = {
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await daily_query.finish(msg)
+
+    msg = f'宏 {data.get("name")} 更新时间：{data.get("time")}\n'
+    msg += f'{data.get("macro")}\n'
+    msg += f'奇穴：{data.get("qixue")}'
+
+    await macro_query.finish(msg)

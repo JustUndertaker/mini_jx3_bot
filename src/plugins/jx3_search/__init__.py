@@ -160,7 +160,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     msg, data = await source.get_data_from_api(app_name="开服查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
-        await daily_query.finish(msg)
+        await server_query.finish(msg)
 
     status = "已开服" if data['status'] == 1 else "维护中"
     msg = f'{data.get("server")} 当前状态是[{status}]'
@@ -176,7 +176,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     msg, data = await source.get_data_from_api(app_name="开服查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
-        await daily_query.finish(msg)
+        await gold_query.finish(msg)
 
     data = data[0]
     date_now = datetime.now().strftime("%m-%d %H:%M")
@@ -198,7 +198,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
-        await daily_query.finish(msg)
+        await qixue_query.finish(msg)
 
     img = data.get('all')
     msg = MessageSegment.image(img)
@@ -214,7 +214,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
-        await daily_query.finish(msg)
+        await medicine_query.finish(msg)
 
     name = data.get('name')
     data = data.get('data')
@@ -236,7 +236,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
-        await daily_query.finish(msg)
+        await equip_group_query.finish(msg)
 
     msg = MessageSegment.text(f'{data.get("name")}配装：\nPve装备：\n')+MessageSegment.image(data.get("pve")) + \
         MessageSegment.text("Pvp装备：\n")+MessageSegment.image(data.get("pvp"))
@@ -252,7 +252,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
-        await daily_query.finish(msg)
+        await macro_query.finish(msg)
 
     msg = f'宏 {data.get("name")} 更新时间：{data.get("time")}\n'
     msg += f'{data.get("macro")}\n'
@@ -270,7 +270,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
-        await daily_query.finish(msg)
+        await condition_query.finish(msg)
 
     url = data.get("upload")
     msg = MessageSegment.image(url)
@@ -286,6 +286,21 @@ async def _(event: GroupMessageEvent):
     log = f"群{event.group_id} | 查询更新公告"
     logger.info(log)
     await update_query.finish(msg)
+
+
+@saohua_query.handle()
+async def _(event: GroupMessageEvent):
+    '''骚话'''
+    msg, data = await source.get_data_from_api(app_name="骚话", group_id=event.group_id, params=None)
+    if msg != "success":
+        msg = f"请求失败，{msg}"
+        await saohua_query.finish(msg)
+
+    await saohua_query.finish(data['text'])
+
+# -------------------------------------------------------------
+#   下面是使用模板生成的图片事件
+# -------------------------------------------------------------
 
 
 @price_query.handle()

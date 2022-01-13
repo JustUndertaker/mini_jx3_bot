@@ -159,15 +159,14 @@ class Jx3Searcher(object):
             msg = f"[{app_name}]冷却中（{cd_time}）"
             return msg, {}
 
+        # 记录一次查询
+        await self._search_manager.search_once(group_id, app_name)
         # 获取url
         url = self._search_manager.get_search_url(app_name)
         try:
             req = await self._client.get(url=url, params=params)
             req_json: dict = req.json()
             msg: str = req_json['msg']
-            if req_json['msg'] == "success":
-                # 查询成功，记录一次
-                await self._search_manager.search_once(group_id, app_name)
             return msg, req_json['data']
         except Exception as e:
             error = str(e)

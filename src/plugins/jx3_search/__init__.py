@@ -7,6 +7,8 @@ from nonebot.adapters.onebot.v11.message import MessageSegment
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
+from src.utils.browser import browser
+from src.utils.log import logger
 
 from . import data_source as source
 from .config import DAILIY_LIST, PROFESSION
@@ -257,3 +259,30 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     msg += f'奇穴：{data.get("qixue")}'
 
     await macro_query.finish(msg)
+
+
+@condition_query.handle()
+async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
+    '''前置查询'''
+    params = {
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="奇穴查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await daily_query.finish(msg)
+
+    url = data.get("upload")
+    msg = MessageSegment.image(url)
+    await condition_query.finish(msg)
+
+
+@update_query.handle()
+async def _(event: GroupMessageEvent):
+    '''更新公告'''
+    url = "https://jx3.xoyo.com/launcher/update/latest.html"
+    img = await browser.get_image_from_url(url=url, width=130)
+    msg = MessageSegment.image(img)
+    log = f"群{event.group_id} | 查询更新公告"
+    logger.info(log)
+    await update_query.finish(msg)

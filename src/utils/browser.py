@@ -125,6 +125,17 @@ class MyBrowser():
         html = await self._template_to_html(template_name=pagename, **kwargs)
         return await self._html_to_pic(pagename, html)
 
+    async def get_image_from_url(self, url: str, width: int) -> bytes:
+        '''从url获取截图'''
+        async with self._get_new_page() as page:
+            viewport_size = {
+                "width": width, "height": 480
+            }
+            await page.set_viewport_size(viewport_size)
+            await page.goto(url)
+            await page.wait_for_load_state("networkidle")
+            return await page.screenshot(type="jpeg", quality=100, full_page=True)
+
 
 browser = MyBrowser()
 '''全局浏览器'''

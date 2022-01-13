@@ -286,3 +286,28 @@ async def _(event: GroupMessageEvent):
     log = f"群{event.group_id} | 查询更新公告"
     logger.info(log)
     await update_query.finish(msg)
+
+
+@price_query.handle()
+async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
+    '''物价查询'''
+    params = {
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="物价查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await daily_query.finish(msg)
+
+    pagename = "price.html"
+    item_name = data.get("name")
+    item_info = data.get("info")
+    item_img = data.get("upload")
+    item_data = source.handle_data_price(data.get("data"))
+    img = await browser.template_to_image(pagename=pagename,
+                                          name=item_name,
+                                          info=item_info,
+                                          image=item_img,
+                                          data=item_data
+                                          )
+    await price_query.finish(MessageSegment.image(img))

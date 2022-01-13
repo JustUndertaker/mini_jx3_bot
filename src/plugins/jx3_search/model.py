@@ -86,7 +86,7 @@ class SearchManager(object):
     async def search_record(self, group_id: int, app_name: str) -> Tuple[bool, int]:
         '''是否能够查询'''
         time_last = await SearchRecord.get_search_time(group_id, app_name)
-        time_now = int(time.localtime())
+        time_now = int(time.time())
         cd_time = self._get_cd_time(app_name)
         over_time = over_time = time_now-time_last
         if over_time > cd_time:
@@ -153,6 +153,12 @@ class Jx3Searcher(object):
             * str：返回消息
             * dict：网站返回数据
         '''
+        # 判断cd
+        flag, cd_time = await self._search_manager.search_record(group_id, app_name)
+        if not flag:
+            msg = f"[{app_name}]冷却中（{cd_time}）"
+            return msg, {}
+
         # 获取url
         url = self._search_manager.get_search_url(app_name)
         try:

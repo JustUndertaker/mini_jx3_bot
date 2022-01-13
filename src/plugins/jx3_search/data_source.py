@@ -56,3 +56,20 @@ async def get_data_from_api(app_name: str, group_id: int, params: dict, need_tic
             f"查询遇到了问题：{str(e)}"
         )
         return f"遇到了问题：{str(e)}。", {}
+
+# -------------------------------------------------------------
+# 返回数据处理阶段，处理api返回data，方便模板使用
+# -------------------------------------------------------------
+
+
+def handle_data_price(data: list[list[dict]]) -> dict:
+    '''处理物价数据'''
+    req_data = {}
+    for one_data in data:
+        try:
+            get_data = one_data[0]
+            zone = get_data['zone']
+            req_data[zone] = one_data
+        except IndexError:
+            pass
+    return req_data

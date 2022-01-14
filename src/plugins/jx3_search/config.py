@@ -188,7 +188,7 @@ JX3_APP = {
         "app": "/advent/result",
         "cd": 10
     },
-    "奇遇列表": {
+    "奇遇统计": {
         "app": "/advent/statistical",
         "cd": 10
     },

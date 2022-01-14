@@ -36,7 +36,7 @@ Regex = {
     "更新公告": r"(^更新$)|(^公告$)|(^更新公告$)",
     "物价查询": r"^物价 [\u4e00-\u9fa5]+$",
     "奇遇查询": r"(^查询 [(\u4e00-\u9fa5)|(@)]+$)|(^查询 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
-    "奇遇列表": r"(^奇遇 [\u4e00-\u9fa5]+$)|(^奇遇 [\u4e00-\u9fa5]+ [\u4e00-\u9fa5]+$)",
+    "奇遇统计": r"(^奇遇 [\u4e00-\u9fa5]+$)|(^奇遇 [\u4e00-\u9fa5]+ [\u4e00-\u9fa5]+$)",
     "骚话": r"^骚话$",
     "战绩查询": r"(^战绩 [(\u4e00-\u9fa5)|(@)]+$)|(^战绩 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
     "装备查询": r"(^((装备)|(属性)) [(\u4e00-\u9fa5)|(@)]+$)|(^((装备)|(属性)) [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
@@ -57,7 +57,7 @@ condition_query = on_regex(pattern=Regex['前置查询'], permission=GROUP, prio
 update_query = on_regex(pattern=Regex['更新公告'], permission=GROUP, priority=5, block=True)
 price_query = on_regex(pattern=Regex['物价查询'], permission=GROUP, priority=5, block=True)
 serendipity_query = on_regex(pattern=Regex['奇遇查询'], permission=GROUP, priority=5, block=True)
-serendipity_list_query = on_regex(pattern=Regex['奇遇列表'], permission=GROUP, priority=5, block=True)
+serendipity_list_query = on_regex(pattern=Regex['奇遇统计'], permission=GROUP, priority=5, block=True)
 saohua_query = on_regex(pattern=Regex['骚话'], permission=GROUP, priority=5, block=True)
 match_query = on_regex(pattern=Regex['战绩查询'], permission=GROUP, priority=5, block=True)
 equip_query = on_regex(pattern=Regex['装备查询'], permission=GROUP, priority=5, block=True)
@@ -367,7 +367,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
         "server": server,
         "serendipity": name
     }
-    msg, data = await source.get_data_from_api(app_name="奇遇列表", group_id=event.group_id,  params=params, need_ticket=True)
+    msg, data = await source.get_data_from_api(app_name="奇遇统计", group_id=event.group_id,  params=params, need_ticket=True)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await serendipity_list_query.finish(msg)

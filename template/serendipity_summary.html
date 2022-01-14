@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>奇遇汇总</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                        <div class="text-center text-success fs-3">
+                            <p><img src="./img/location.png" height="40" width="40">{{ server }}</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="text-center text-success fs-3">
+                            <p><img src="./img/book.png" height="40" width="40">奇遇汇总</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for one in data %}
+                    <div class="col-4">
+                        <div class="card border-0" style="width: 18rem;">
+                            <img src="./serendipity/{{ one.serendipity }}.png">
+                            <div class="card-body text-center fs-5">
+                                <p><img src="img/header_blue.png" height="30" width="30">{{ one.name }}</p>
+                                <p><img src="img/calendar.png" height="30" width="30">{{ one.time }}</p>
+                                <p>{{ one.day }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <h6 class="text-center text-success fs-3">数据来源：www.jx3api.com</h6>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

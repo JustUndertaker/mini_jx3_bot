@@ -37,6 +37,7 @@ Regex = {
     "物价查询": r"^物价 [\u4e00-\u9fa5]+$",
     "奇遇查询": r"(^查询 [(\u4e00-\u9fa5)|(@)]+$)|(^查询 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
     "奇遇统计": r"(^奇遇 [\u4e00-\u9fa5]+$)|(^奇遇 [\u4e00-\u9fa5]+ [\u4e00-\u9fa5]+$)",
+    "奇遇汇总": r"(^汇总$)|(^汇总 [\u4e00-\u9fa5]+$)",
     "骚话": r"^骚话$",
     "战绩查询": r"(^战绩 [(\u4e00-\u9fa5)|(@)]+$)|(^战绩 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
     "装备查询": r"(^((装备)|(属性)) [(\u4e00-\u9fa5)|(@)]+$)|(^((装备)|(属性)) [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
@@ -58,6 +59,7 @@ update_query = on_regex(pattern=Regex['更新公告'], permission=GROUP, priorit
 price_query = on_regex(pattern=Regex['物价查询'], permission=GROUP, priority=5, block=True)
 serendipity_query = on_regex(pattern=Regex['奇遇查询'], permission=GROUP, priority=5, block=True)
 serendipity_list_query = on_regex(pattern=Regex['奇遇统计'], permission=GROUP, priority=5, block=True)
+serendipity_summary_query = on_regex(pattern=Regex['奇遇汇总'], permission=GROUP, priority=5, block=True)
 saohua_query = on_regex(pattern=Regex['骚话'], permission=GROUP, priority=5, block=True)
 match_query = on_regex(pattern=Regex['战绩查询'], permission=GROUP, priority=5, block=True)
 equip_query = on_regex(pattern=Regex['装备查询'], permission=GROUP, priority=5, block=True)
@@ -362,12 +364,12 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
 
 @serendipity_list_query.handle()
 async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
-    '''奇遇列表查询'''
+    '''奇遇统计查询'''
     params = {
         "server": server,
         "serendipity": name
     }
-    msg, data = await source.get_data_from_api(app_name="奇遇统计", group_id=event.group_id,  params=params, need_ticket=True)
+    msg, data = await source.get_data_from_api(app_name="奇遇统计", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await serendipity_list_query.finish(msg)
@@ -380,3 +382,23 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
                                           data=get_data
                                           )
     await serendipity_list_query.finish(MessageSegment.image(img))
+
+
+@serendipity_summary_query.handle()
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
+    '''奇遇汇总查询'''
+    params = {
+        "server": server
+    }
+    msg, data = await source.get_data_from_api(app_name="奇遇汇总", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await serendipity_summary_query.finish(msg)
+
+    pagename = "serendipity_summary.html"
+    get_data = source.handle_data_serendipity_summary(data)
+    img = await browser.template_to_image(pagename=pagename,
+                                          server=server,
+                                          data=get_data
+                                          )
+    await serendipity_summary_query.finish(MessageSegment.image(img))

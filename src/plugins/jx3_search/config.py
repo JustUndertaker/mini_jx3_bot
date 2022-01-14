@@ -192,7 +192,7 @@ JX3_APP = {
         "app": "/advent/statistical",
         "cd": 10
     },
-    "服务器最近奇遇": {
+    "奇遇汇总": {
         "app": "/advent/collect",
         "cd": 10
     },

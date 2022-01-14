@@ -110,3 +110,22 @@ def handle_data_serendipity_list(data: list[dict]) -> list[dict]:
         one_dict = {"time": time_str, "day": day, "name": one_data['name']}
         req_data.append(one_dict)
     return req_data
+
+
+def handle_data_serendipity_summary(data: list[dict]) -> list[dict]:
+    '''处理奇遇汇总数据'''
+    req_data = []
+    for _data in data:
+        one_data = _data['data']
+        get_time: int = one_data['time']
+        if get_time == 0:
+            time_str = "未知"
+            day = "过去太久啦"
+        else:
+            time_now = datetime.now()
+            time_pass = datetime.utcfromtimestamp(get_time)
+            time_str = time_pass.strftime("%Y-%m-%d %H:%M:%S")
+            day = f"{(time_now-time_pass).days} 天前"
+        one_dict = {"time": time_str, "day": day, "name": one_data['name'], "serendipity": one_data['serendipity']}
+        req_data.append(one_dict)
+    return req_data

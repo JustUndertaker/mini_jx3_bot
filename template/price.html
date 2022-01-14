@@ -31,15 +31,15 @@
                                 <thead>
                                     <p class="text-center fs-3"><strong>电信点卡</strong></p>
                                 </thead>
-                                {% for one in data.电信点卡 %}
-                                <tr>
-                                    <td class='text-center text-warning'>{{ one.time }}</td>
-                                    <td class='text-center'>{{ one.server }}</td>
-                                    <td class='text-center text-primary'>￥{{ one.price }}</td>
-                                    <td class='text-center'>{{ one.sales }}</td>
-                                </tr>
-                                {% endfor %}
                                 <tbody>
+                                    {% for one in data.电信点卡 %}
+                                    <tr>
+                                        <td class='text-center text-warning'>{{ one.time }}</td>
+                                        <td class='text-center'>{{ one.server }}</td>
+                                        <td class='text-center text-primary'>￥{{ one.price }}</td>
+                                        <td class='text-center'>{{ one.sales }}</td>
+                                    </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </td>

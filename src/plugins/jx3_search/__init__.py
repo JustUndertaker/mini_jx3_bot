@@ -402,3 +402,25 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
                                           data=get_data
                                           )
     await serendipity_summary_query.finish(MessageSegment.image(img))
+
+
+@match_query.handle()
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
+    '''战绩查询'''
+    params = {
+        "server": server,
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="战绩查询", group_id=event.group_id,  params=params, need_ticket=True)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await match_query.finish(msg)
+
+    pagename = "match.html"
+    get_data = source.handle_data_match(data)
+    img = await browser.template_to_image(pagename=pagename,
+                                          server=server,
+                                          name=name,
+                                          data=get_data
+                                          )
+    await match_query.finish(MessageSegment.image(img))

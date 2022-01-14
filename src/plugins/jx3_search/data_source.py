@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 from typing import Optional, Tuple
 
@@ -128,4 +129,61 @@ def handle_data_serendipity_summary(data: list[dict]) -> list[dict]:
             day = f"{(time_now-time_pass).days} 天前"
         one_dict = {"time": time_str, "day": day, "name": one_data['name'], "serendipity": one_data['serendipity']}
         req_data.append(one_dict)
+    return req_data
+
+
+def handle_data_match(data: dict) -> dict:
+    '''处理战绩数据'''
+    req_data = {}
+    req_data['performance'] = data['performance']
+    history: list = data['history']
+    req_data["history"] = []
+    for one_data in history:
+        one_req_data = {}
+        one_req_data['kungfu'] = one_data['kungfu']
+        one_req_data['avgGrade'] = one_data['avgGrade']
+        one_req_data['won'] = one_data['won']
+        one_req_data['totalMmr'] = one_data['totalMmr']
+        one_req_data['mmr'] = abs(one_data['mmr'])
+
+        pvp_type = one_data.get('pvpType')
+        if pvp_type == 2:
+            one_req_data['pvpType'] = "2v2"
+        elif pvp_type == 3:
+            one_req_data['pvpType'] = "3v3"
+        else:
+            one_req_data['pvpType'] = "5v5"
+        start_time = one_data.get('startTime')
+        end_time = one_data.get('endTime')
+        time_keep = end_time-start_time
+        pvp_time = int((time_keep+30)/60)
+        if pvp_time == 0:
+            pvp_time = 1
+        one_req_data['time'] = str(pvp_time)+" 分钟"
+
+        time_now = time.time()
+        time_ago = time_now-end_time
+        if time_ago < 3600:
+            # 一小时内用分钟表示
+            time_end = int((time_ago+30)/60)
+            if time_end == 0:
+                time_end = 1
+            one_req_data['ago'] = str(time_end)+" 分钟"
+        elif time_ago < 86400:
+            # 一天内用小时表示
+            time_end = int((time_ago+1800)/3600)
+            if time_end == 0:
+                time_end = 1
+            one_req_data['ago'] = str(time_end)+" 小时"
+        elif time_ago < 864000:
+            # 10天内用天表示
+            time_end = int((time_ago+43200)/86400)
+            if time_end == 0:
+                time_end = 1
+            one_req_data['ago'] = str(time_end)+" 天"
+        else:
+            # 超过10天用日期表示
+            timeArray = time.localtime(end_time)
+            one_req_data['ago'] = time.strftime("%Y年%m月%d日", timeArray)
+        req_data["history"].append(one_req_data)
     return req_data

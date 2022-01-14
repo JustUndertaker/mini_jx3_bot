@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>角色奇遇</title>
+    <title>奇遇统计</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -15,18 +15,18 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col">
-                        <div class="text-center text-primary fs-3">
+                        <div class="text-center text-success fs-3">
                             <p><img src="./img/location.png" height="40" width="40">{{ server }}</p>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="text-center text-primary fs-3">
-                            <p><img src="./img/header.png" height="40" width="40">{{ name }}</p>
+                        <div class="text-center text-success fs-3">
+                            <p><img src="./img/book.png" height="40" width="40">{{ name }}</p>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="text-center text-primary fs-3">
-                            <p><img src="./img/book.png" height="40" width="40">奇遇统计</p>
+                        <div class="text-center text-success fs-3">
+                            <p><img src="./img/tag.png" height="40" width="40">奇遇记录</p>
                         </div>
                     </div>
                 </div>
@@ -36,8 +36,9 @@
                     {% for one in data %}
                     <div class="col-4">
                         <div class="card border-0" style="width: 18rem;">
-                            <img src="./serendipity/{{ one.serendipity }}.png">
                             <div class="card-body text-center fs-5">
+                                <p class="text-primary"><img src="./img/header_blue.png" height="30" width="30">
+                                    {{ one.name }}</p>
                                 <p><img src="img/calendar.png" height="30" width="30">{{ one.time }}</p>
                                 <p>{{ one.day }}</p>
                             </div>

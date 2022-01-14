@@ -38,10 +38,8 @@ Regex = {
     "奇遇查询": r"(^查询 [(\u4e00-\u9fa5)|(@)]+$)|(^查询 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
     "奇遇列表": r"(^奇遇 [\u4e00-\u9fa5]+$)|(^奇遇 [\u4e00-\u9fa5]+ [\u4e00-\u9fa5]+$)",
     "骚话": r"^骚话$",
-    "资历排行": r"(^资历排行 [\u4e00-\u9fa5]+$)|(^资历排行 [\u4e00-\u9fa5]+ [\u4e00-\u9fa5]+$)",
     "战绩查询": r"(^战绩 [(\u4e00-\u9fa5)|(@)]+$)|(^战绩 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
     "装备查询": r"(^((装备)|(属性)) [(\u4e00-\u9fa5)|(@)]+$)|(^((装备)|(属性)) [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)",
-    "名剑排行": r"(^名剑排行 [0-9]+$)|(^名剑排行$)",
 }
 '''查询正则字典'''
 
@@ -61,10 +59,8 @@ price_query = on_regex(pattern=Regex['物价查询'], permission=GROUP, priority
 serendipity_query = on_regex(pattern=Regex['奇遇查询'], permission=GROUP, priority=5, block=True)
 serendipity_list_query = on_regex(pattern=Regex['奇遇列表'], permission=GROUP, priority=5, block=True)
 saohua_query = on_regex(pattern=Regex['骚话'], permission=GROUP, priority=5, block=True)
-zili_query = on_regex(pattern=Regex['资历排行'], permission=GROUP, priority=5, block=True)
 match_query = on_regex(pattern=Regex['战绩查询'], permission=GROUP, priority=5, block=True)
 equip_query = on_regex(pattern=Regex['装备查询'], permission=GROUP, priority=5, block=True)
-rank_query = on_regex(pattern=Regex['名剑排行'], permission=GROUP, priority=5, block=True)
 
 
 # ----------------------------------------------------------------
@@ -362,3 +358,25 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
                                           data=get_data
                                           )
     await serendipity_query.finish(MessageSegment.image(img))
+
+
+@serendipity_list_query.handle()
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
+    '''奇遇列表查询'''
+    params = {
+        "server": server,
+        "serendipity": name
+    }
+    msg, data = await source.get_data_from_api(app_name="奇遇列表", group_id=event.group_id,  params=params, need_ticket=True)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await serendipity_list_query.finish(msg)
+
+    pagename = "serendipity_list.html"
+    get_data = source.handle_data_serendipity_list(data)
+    img = await browser.template_to_image(pagename=pagename,
+                                          server=server,
+                                          name=name,
+                                          data=get_data
+                                          )
+    await serendipity_list_query.finish(MessageSegment.image(img))

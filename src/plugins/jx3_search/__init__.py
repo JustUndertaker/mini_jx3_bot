@@ -72,10 +72,24 @@ rank_query = on_regex(pattern=Regex['名剑排行'], permission=GROUP, priority=
 # ----------------------------------------------------------------
 
 
-async def get_server(matcher: Matcher, event: GroupMessageEvent) -> str:
-    '''通过depend获取服务器'''
+async def get_server_1(matcher: Matcher, event: GroupMessageEvent) -> str:
+    '''最多2个参数，获取server'''
     text_list = event.get_plaintext().split(" ")
     if len(text_list) == 1:
+        server = await source.get_server(event.group_id)
+    else:
+        get_server = text_list[1]
+        server = await source.get_main_server(get_server)
+        if not server:
+            msg = f"未找到服务器[{get_server}]，请验证后查询。"
+            await matcher.finish(msg)
+    return server
+
+
+async def get_server_2(matcher: Matcher, event: GroupMessageEvent) -> str:
+    '''最多3个参数，获取server'''
+    text_list = event.get_plaintext().split(" ")
+    if len(text_list) == 2:
         server = await source.get_server(event.group_id)
     else:
         get_server = text_list[1]
@@ -126,7 +140,7 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_ex_name)) -> 
 
 
 @daily_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
     '''日常查询'''
     params = {
         "server": server
@@ -152,7 +166,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
 
 
 @server_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
     '''开服查询'''
     params = {
         "server": server
@@ -168,7 +182,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
 
 
 @gold_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
     '''金价查询'''
     params = {
         "server": server
@@ -312,7 +326,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     msg, data = await source.get_data_from_api(app_name="物价查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
-        await daily_query.finish(msg)
+        await price_query.finish(msg)
 
     pagename = "price.html"
     item_name = data.get("name")
@@ -326,3 +340,25 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
                                           data=item_data
                                           )
     await price_query.finish(MessageSegment.image(img))
+
+
+@serendipity_query.handle()
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
+    '''奇遇统计查询'''
+    params = {
+        "server": server,
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="奇遇查询", group_id=event.group_id,  params=params, need_ticket=True)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await serendipity_query.finish(msg)
+
+    pagename = "serendipity.html"
+    get_data = source.handle_data_serendipity(data)
+    img = await browser.template_to_image(pagename=pagename,
+                                          server=server,
+                                          name=name,
+                                          data=get_data
+                                          )
+    await serendipity_query.finish(MessageSegment.image(img))

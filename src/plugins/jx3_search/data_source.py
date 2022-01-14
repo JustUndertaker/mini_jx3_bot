@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Tuple
 
 from src.modules.group_info import GroupInfo
@@ -35,7 +36,7 @@ async def get_data_from_api(app_name: str, group_id: int, params: dict, need_tic
         # 获取ticket
 
         while True:
-            ticket = ticket_manager.get_ticket()
+            ticket = await ticket_manager.get_ticket()
             params["ticket"] = ticket
             if not ticket:
                 return "未找到合适的ticket，请联系管理员", {}
@@ -72,4 +73,22 @@ def handle_data_price(data: list[list[dict]]) -> dict:
             req_data[zone] = one_data
         except IndexError:
             pass
+    return req_data
+
+
+def handle_data_serendipity(data: list[dict]) -> list[dict]:
+    '''处理奇遇统计'''
+    req_data = []
+    for one_data in data:
+        get_time: int = one_data['time']
+        if get_time == 0:
+            time_str = "未知"
+            day = "过去太久啦"
+        else:
+            time_now = datetime.now()
+            time_pass = datetime.utcfromtimestamp(get_time)
+            time_str = time_pass.strftime("%Y-%m-%d %H:%M:%S")
+            day = f"{(time_now-time_pass).days} 天前"
+        one_dict = {"time": time_str, "day": day, "serendipity": one_data['serendipity']}
+        req_data.append(one_dict)
     return req_data

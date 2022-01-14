@@ -67,7 +67,8 @@ class MyBrowser():
             await page.goto(pagename)
             await page.set_content(html, wait_until="networkidle")
             await page.wait_for_timeout(wait)
-            img_raw = await page.screenshot(full_page=True, type="jpeg", quality=100)
+            element_handle = await page.query_selector("#main")
+            img_raw = await element_handle.screenshot(type="jpeg", quality=100)
         return img_raw
 
     async def _template_to_html(self, template_name: str, **kwargs,) -> str:

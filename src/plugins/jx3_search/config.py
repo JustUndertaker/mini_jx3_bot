@@ -185,7 +185,7 @@ JX3_APP = {
         "cd": 0
     },
     "奇遇查询":  {
-        "app": "/advent/result",
+        "app": "/advent/serendipity",
         "cd": 10
     },
     "奇遇统计": {

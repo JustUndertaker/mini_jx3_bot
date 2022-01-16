@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>奇遇统计</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container " id="main">
+        <div class="card" style="width: 70rem;">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                        <div class="text-center text-success fs-3">
+                            <p><img src="./img/location.png" height="40" width="40">{{ server }}</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="text-center text-success fs-3">
+                            <p><img src="./img/book.png" height="40" width="40">{{ name }}</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="text-center text-success fs-3">
+                            <p><img src="./img/tag.png" height="40" width="40">装备属性</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!--角色属性-->
+                <div class="row">
+                    <div class="alert alert-primary text-center fs-4">
+                        <div class="row">
+                            <div class="col-4">{{ data.kungfu }}</div>
+                            <div class="col-4">装分：{{ data.score }}</div>
+                            <div class="col-4">{{ data.dateTime }}</div>
+                        </div>
+                    </div>
+                    <div class="card bg-light p-3 mb-4">
+                        <div class="row text-center text-secondary fs-4 p-1">
+                            {% for one in data.info %}
+                            <div class="col-2">
+                                <p class="text-primary">{{ one.name }}</p>
+                                <p class="text-success fs-5">{{ one.value }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <!--角色装备-->
+                <div class="row">
+                    <div class="alert alert-success text-center fs-4">角色装备</div>
+                    {% for one in data.equip %}
+                    <div class="card bg-light">
+                        <div class="row align-items-center">
+                            <div class="col-1 text-center ">
+                                <span class="badge bg-primary fs-5">{{ one.kind }}</span>
+                            </div>
+                            <div class="col-1">
+                                <img src="{{ one.icon }}" width="70" height="70">
+                            </div>
+                            <div class="col-4">
+                                <p style="margin:1px;">{{ one.name }}</p>
+                                <p style="margin:1px;">{{ one.modifyType }}</p>
+                                <p style="margin:1px;">{{ one.source }}</p>
+                            </div>
+                            <div class="col text-end fs-5 offset-md-3 justify-content-end">
+                                <p style="margin:1px;">
+                                    {% for i in range(one.strengthLevel) %}
+                                    <img src="img/star.png" width="25" height="25">
+                                    {% endfor %}
+                                </p>
+                                <p style="margin:1px;">{{ one.permanentEnchant }}</p>
+                                <p style="margin:1px;">
+                                    {% for icon in one.fiveStone %}
+                                    <img src="{{ icon }}" width="30" height="30">
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+                </div>
+                <!--角色奇穴-->
+                <div style="margin-top:10px;"></div>
+                <div class="row">
+                    <div class=" alert alert-danger text-center fs-4">角色奇穴</div>
+                    {% for one in data.qixue %}
+                    <div class="col-1 text-center fs-5">
+                        <div class="card align-items-center">
+                            <img src="{{ one.icon }}" width="50" height="50" style="margin-top:20px;">
+                            <p>{{ one.name }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <h6 class="text-center text-success fs-3">数据来源：www.jx3api.com</h6>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

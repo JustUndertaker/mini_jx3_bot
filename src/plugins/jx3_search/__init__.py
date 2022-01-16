@@ -424,3 +424,25 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
                                           data=get_data
                                           )
     await match_query.finish(MessageSegment.image(img))
+
+
+@equip_query.handle()
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
+    '''装备属性查询'''
+    params = {
+        "server": server,
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="装备属性", group_id=event.group_id,  params=params, need_ticket=True)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await equip_query.finish(msg)
+
+    pagename = "equip.html"
+    get_data = source.handle_data_equip(data)
+    img = await browser.template_to_image(pagename=pagename,
+                                          server=server,
+                                          name=name,
+                                          data=get_data
+                                          )
+    await equip_query.finish(MessageSegment.image(img))

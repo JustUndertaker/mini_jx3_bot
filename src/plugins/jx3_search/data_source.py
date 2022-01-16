@@ -187,3 +187,66 @@ def handle_data_match(data: dict) -> dict:
             one_req_data['ago'] = time.strftime("%Y年%m月%d日", timeArray)
         req_data["history"].append(one_req_data)
     return req_data
+
+
+def handle_data_equip(data: dict) -> dict:
+    '''处理装备属性'''
+    req_data = {}
+    req_data['kungfu'] = data['kungfu']
+    req_data['dateTime'] = data['dateTime']
+    info = data['info']
+    req_data['score'] = info['score']
+
+    # 处理info数据
+    info_panel: list[dict] = info['panel']
+    data_info = []
+    for one in info_panel:
+        value = str(one['value'])
+        if one['percent']:
+            value += "%"
+        one_data = {"name": one['name'], "value": value}
+        data_info.append(one_data)
+    req_data['info'] = data_info
+
+    # 处理equip数据
+    equip: list[dict] = data['equip']
+    data_equip = []
+    for one in equip:
+        one_data = {
+            "name": one['name'],
+            "kind": one['subKind'],
+            "icon": one['icon'],
+            "strengthLevel": int(one['strengthLevel']),
+            "source": one['source'].split("；")[0],
+        }
+        # 五行石图标
+        five_stone: list = one.get('fiveStone')
+        if five_stone is not None:
+            one_data['fiveStone'] = [i['icon'] for i in five_stone]
+        # 属性描述
+        modifyType: list = one.get('modifyType')
+        if modifyType is not None:
+            name_list = [i['name'] for i in modifyType]
+            one_data['modifyType'] = " ".join(name_list)
+        # 附魔描述
+        permanentEnchant: list = one.get("permanentEnchant")
+        if permanentEnchant is not None:
+            name_list = [i['name'] for i in permanentEnchant]
+            one_data['permanentEnchant'] = " ".join(name_list)
+        else:
+            one_data['permanentEnchant'] = ""
+        data_equip.append(one_data)
+    req_data['equip'] = data_equip
+
+    # 处理qixue数据
+    qixue: list = data['qixue']
+    data_qixue = []
+    for one in qixue:
+        one_data = {
+            "name": one['name'],
+            "icon": one['icon'],
+        }
+        data_qixue.append(one_data)
+    req_data['qixue'] = data_qixue
+
+    return req_data

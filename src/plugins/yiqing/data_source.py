@@ -21,7 +21,7 @@ def _get_city(name: str) -> Tuple[bool, Optional[str], Optional[str]]:
     if city is None:
         return False, None, None
     if city == "":
-        return True, city, None
+        return True, name, None
     return True, city, name
 
 
@@ -47,15 +47,20 @@ async def get_data(name: str) -> MessageSegment:
             result = req.json()
             data = {}
             if city:
-                data['name'] = result['cityName']
+                data['name'] = result.get('cityName') if result.get('cityName') is not None else "-"
             else:
-                data['name'] = result['provinceName']
-            data['currentConfirmedCount'] = result['currentConfirmedCount']  # 现存确诊
-            data['confirmedCount'] = result['confirmedCount']  # 累计确诊
-            data['suspectedCount'] = result['suspectedCount']  # 疑似病例
-            data['curedCount'] = result['curedCount']  # 累计治愈
-            data['deadCount'] = result['deadCount']  # 累计死亡
-            data['highDangerCount'] = result['highDangerCount']  # 重症病例
+                data['name'] = result.get('provinceName') if result.get('provinceName') is not None else "-"
+            # 现存确诊
+            data['currentConfirmedCount'] = result.get(
+                'currentConfirmedCount') if result.get('currentConfirmedCount') is not None else "-"
+            data['confirmedCount'] = result.get('confirmedCount') if result.get(
+                'confirmedCount') is not None else "-"  # 累计确诊
+            data['suspectedCount'] = result.get('suspectedCount') if result.get(
+                'suspectedCount') is not None else "-"  # 疑似病例
+            data['curedCount'] = result.get('curedCount') if result.get('curedCount') is not None else "-"  # 累计治愈
+            data['deadCount'] = result.get('deadCount') if result.get('deadCount') is not None else "-"  # 累计死亡
+            data['highDangerCount'] = result.get('highDangerCount') if result.get(
+                'highDangerCount') is not None else "-"  # 重症病例
         except Exception as e:
             return MessageSegment.text(f"查询失败，{str(e)}")
 

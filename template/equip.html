@@ -35,8 +35,11 @@
                 <!--角色属性-->
                 <div class="row">
                     <div class="alert alert-primary text-center fs-4">
-                        <div class="row">
-                            <div class="col-4">{{ data.kungfu }}</div>
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                <img src="sect/{{ data.kungfu }}.png" height="40" width="40">
+                                <span class="badge bg-primary fs-5">{{ data.kungfu }}</span>
+                            </div>
                             <div class="col-4">装分：{{ data.score }}</div>
                             <div class="col-4">{{ data.dateTime }}</div>
                         </div>

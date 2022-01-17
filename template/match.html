@@ -115,17 +115,20 @@
                     <tbody>
                         {% for one in data.history %}
                         <tr class="text-center align-middle fs-5">
-                            <td>{{ one.kungfu }}</td>
                             <td>
-                                <p><span class="badge bg-primary">{{ one.pvpType }}</span></p>
+                                <img src="sect/{{ one.kungfu }}.png" width="40" height="40">
+                                <span class="badge bg-info fs-5">{{ one.kungfu }}</span>
+                            </td>
+                            <td>
+                                <p><span class="badge bg-success">{{ one.pvpType }}</span></p>
                                 <p>{{ one.avgGrade }}段局</p>
                             </td>
                             {% if one.won %}
-                            <td>{{ one.totalMmr }}(<a class="text-primary" style="text-decoration:none;">+ {{ one.mmr
-                                    }}</a>)</td>
+                            <td>{{ one.totalMmr }} <span class="badge bg-primary">+ {{ one.mmr
+                                    }}</span></td>
                             {% else %}
-                            <td>{{ one.totalMmr }}(<a class="text-danger" style="text-decoration:none;">- {{ one.mmr
-                                    }}</a>)</td>
+                            <td>{{ one.totalMmr }} <span class="badge bg-danger">- {{ one.mmr
+                                    }}</span></td>
                             {% endif %}
                             <td>{{ one.time }}</td>
                             <td>{{ one.ago }}</td>

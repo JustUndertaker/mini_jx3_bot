@@ -63,7 +63,7 @@ def get_notice_type(event: GroupMessageEvent) -> Literal["晚安通知", "离群
     return event.get_plaintext()[:4]
 
 
-async def get_msg(bot: Bot, event: GroupMessageEvent) -> Message:
+async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
     '''返回要说的话'''
     msg = event.get_message()
     group = await bot.get_group_info(group_id=event.group_id)
@@ -136,7 +136,7 @@ async def _():
 
 
 @didi.handle()
-async def _(bot: Bot, event: GroupMessageEvent, msg: Message = Depends(get_msg)):
+async def _(bot: Bot, msg: Message = Depends(get_didi_msg)):
     '''滴滴功能'''
     superusers = list(bot.config.superusers)
     if not superusers:

@@ -1,7 +1,7 @@
 from typing import Literal
 
 from nonebot import on_regex
-from nonebot.adapters.onebot.v11 import Bot, MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
 from nonebot.adapters.onebot.v11.event import (GroupDecreaseNoticeEvent,
                                                GroupIncreaseNoticeEvent,
                                                GroupMessageEvent)
@@ -63,9 +63,21 @@ def get_notice_type(event: GroupMessageEvent) -> Literal["晚安通知", "离群
     return event.get_plaintext()[:4]
 
 
+async def get_msg(bot: Bot, event: GroupMessageEvent) -> Message:
+    '''返回要说的话'''
+    msg = event.get_message()
+    group = await bot.get_group_info(group_id=event.group_id)
+    group_name = group['group_name']
+    user_name = event.sender.card if event.sender.card != "" else event.sender.nickname
+    msg_header = f"收到 | {user_name}({event.user_id}) | @群【{group_name}】({event.group_id}) | 的滴滴消息\n\n"
+    msg[0] = MessageSegment.text(msg_header + str(msg[0])[3:])
+    return msg
+
 # ----------------------------------------------------------------
 #  matcher实现
 # ----------------------------------------------------------------
+
+
 @bind_server.handle()
 async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     '''绑定服务器'''
@@ -121,3 +133,14 @@ async def _():
     pagename = "admin_help.html"
     img = await browser.template_to_image(pagename=pagename)
     await admin_help.finish(MessageSegment.image(img))
+
+
+@didi.handle()
+async def _(bot: Bot, event: GroupMessageEvent, msg: Message = Depends(get_msg)):
+    '''滴滴功能'''
+    superusers = list(bot.config.superusers)
+    if not superusers:
+        await didi.finish("本机器人没有管理员，不知道发给谁呀。")
+    for user in superusers:
+        await bot.send_private_msg(user_id=int(user), message=msg)
+    await didi.finish()

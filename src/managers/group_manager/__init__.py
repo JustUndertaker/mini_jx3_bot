@@ -113,3 +113,11 @@ async def _(bot: Bot, event: GroupMessageEvent):
                                           bot_id=bot_id
                                           )
     await meau.finish(MessageSegment.image(img))
+
+
+@admin_help.handle()
+async def _():
+    '''管理员帮助'''
+    pagename = "admin_help.html"
+    img = await browser.template_to_image(pagename=pagename)
+    await admin_help.finish(MessageSegment.image(img))

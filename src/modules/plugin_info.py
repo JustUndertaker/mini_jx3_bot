@@ -70,3 +70,8 @@ class PluginInfo(Model):
             await record.save(update_fields=["status"])
             return True
         return False
+
+    @classmethod
+    async def get_meau_data(cls, group_id: int) -> list[dict]:
+        '''获取菜单数据'''
+        return await cls.filter(group_id=group_id).order_by("plugin_name").values("plugin_name", "command", "usage", "status")

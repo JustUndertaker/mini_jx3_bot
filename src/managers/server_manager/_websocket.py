@@ -107,6 +107,17 @@ class Jx3WebSocket(object):
         if self._ws:
             await self._ws.close()
 
+    def get_ws_status(self) -> dict:
+        '''获取ws状态'''
+        return {
+            "closed": self.closed,
+            "open_server": self._open_server,
+            "news": self._news,
+            "serendipity": self._serendipity,
+            "horse": self._horse,
+            "fuyao": self._fuyao
+        }
+
     @property
     def closed(self) -> bool:
         '''ws是否关闭'''

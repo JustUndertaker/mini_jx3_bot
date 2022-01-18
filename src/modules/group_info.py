@@ -151,3 +151,44 @@ class GroupInfo(Model):
     async def reset_sign_nums(cls):
         '''重置签到人数'''
         await GroupInfo.all().update(sign_nums=0)
+
+    @classmethod
+    async def bind_server(cls, group_id: int, server: str):
+        '''绑定服务器'''
+        record, _ = await cls.get_or_create(group_id=group_id)
+        record.server = server
+        await record.save(update_fields=["server"])
+
+    @classmethod
+    async def set_activity(cls, group_id: int, activity: int):
+        '''设置活跃值'''
+        record, _ = await cls.get_or_create(group_id=group_id)
+        record.robot_active = activity
+        await record.save(update_fields=["robot_active"])
+
+    @classmethod
+    async def set_status(cls, group_id: int, status: bool):
+        '''设置机器人开关'''
+        record, _ = await cls.get_or_create(group_id=group_id)
+        record.robot_status = status
+        await record.save(update_fields=["robot_status"])
+
+    @classmethod
+    async def get_meau_data(cls, group_id: int) -> dict:
+        '''获取菜单数据'''
+        record, _ = await cls.get_or_create(group_id=group_id)
+        data = {
+            "robot_status": record.robot_status,
+            "sign_nums": record.sign_nums,
+            "server": record.server,
+            "robot_active": record.robot_active,
+            "welcome_status": record.welcome_status,
+            "someoneleft_status": record.someoneleft_status,
+            "goodnight_status": record.goodnight_status,
+            "ws_server": record.ws_server,
+            "ws_news": record.ws_news,
+            "ws_serendipity": record.ws_serendipity,
+            "ws_horse": record.ws_horse,
+            "ws_fuyao": record.ws_fuyao,
+        }
+        return data

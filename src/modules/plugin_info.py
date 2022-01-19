@@ -25,10 +25,10 @@ class PluginInfo(Model):
         table_description = "用来记录插件状态"
 
     @ classmethod
-    async def check_inited(cls, group_id: int) -> bool:
+    async def check_inited(cls, group_id: int, module_name: str) -> bool:
         '''检查是否注册过插件'''
-        record = await PluginInfo.filter(group_id=group_id)
-        return bool(record)
+        record = await PluginInfo.get_or_none(group_id=group_id, module_name=module_name)
+        return not(record is None)
 
     @ classmethod
     async def init_plugin(cls,

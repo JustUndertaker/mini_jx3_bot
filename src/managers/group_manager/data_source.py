@@ -113,6 +113,9 @@ async def handle_data_notice(group_id: int, notice_type: Literal["晚安通知",
     path = Path(_path)/notice_type/str(group_id)
     if not path.exists():
         path.mkdir(parents=True)
+    else:
+        for one_file in path.iterdir():
+            one_file.unlink()
 
     data = []
     msg0 = str(message.pop(0))[5:]

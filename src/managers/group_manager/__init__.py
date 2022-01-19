@@ -48,7 +48,7 @@ admin_help = on_regex(pattern=r"^管理员帮助$", permission=GROUP, priority=3
 
 didi = on_regex(pattern=r"^滴滴 ", permission=GROUP_ADMIN | GROUP_OWNER, priority=3, block=True)  # 滴滴
 
-ontice = on_notice(permission=GROUP, priority=3, block=True)  # 通知事件
+get_notice = on_notice(priority=3, block=True)  # 通知事件
 
 # -------------------------------------------------------------
 #   Depends依赖
@@ -157,13 +157,12 @@ async def _(bot: Bot, msg: Message = Depends(get_didi_msg)):
     await didi.finish()
 
 
-@notice.handle()
+@get_notice.handle()
 async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
     '''群成员增加事件'''
     # 判断是否为自己
     group_id = event.group_id
-    user_id = str(event.user_id)
-    if bot.self_id == user_id:
+    if event.self_id == event.user_id:
         # 机器人被邀请进群，注册消息
         group = await bot.get_group_info(group_id=group_id)
         group_name = group['group_name']
@@ -183,7 +182,7 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
 
         # 给管理员发送消息
         superusers = list(bot.config.superusers)
-        msg = f"我加入了群【{group_name}】！"
+        msg = f"我加入了群【{group_name}】({str(group_id)})！"
         for user in superusers:
             try:
                 await bot.send_private_msg(user_id=int(user), message=msg)
@@ -192,23 +191,22 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
 
         # 发送欢迎语
         nickname = list(bot.config.nickname)[0]
-        await notice.finish(f"{nickname}驾到，有什么问题来问我吧！")
+        await get_notice.finish(f"{nickname}驾到，有什么问题来问我吧！")
 
     # 有人进群，发送欢迎语
     flag = await source.get_notice_status(group_id, "welcome_status")
     msg = None
     if flag:
         msg = await source.message_decoder(group_id, "进群通知")
-    await notice.finish(msg)
+    await get_notice.finish(msg)
 
 
-@notice.handle()
+@get_notice.handle()
 async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
     '''有人离群事件'''
     # 判断是否为自己
     group_id = event.group_id
-    user_id = str(event.user_id)
-    if bot.self_id == user_id:
+    if event.self_id == event.user_id:
         # 注销数据
         await source.bot_group_quit(group_id)
 
@@ -221,17 +219,18 @@ async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
                 logger.info(
                     f"退出群【<g>{group_name}</g>】({str(group_id)}) | 操作者：<y>{str(event.operator_id)}</y>"
                 )
-                msg = f"我退出了群【{group_name}】！"
+                msg = f"我退出了群【{group_name}】({str(group_id)})！"
                 await bot.send_private_msg(user_id=int(user), message=msg)
             except Exception:
                 pass
+        await get_notice.finish()
 
     # 有人退群，发送退群消息
     flag = await source.get_notice_status(group_id, "someoneleft_status")
     msg = None
     if flag:
         msg = await source.message_decoder(group_id, "离群通知")
-    await notice.finish(msg)
+    await get_notice.finish(msg)
 
 
 # -------------------------------------------------------------

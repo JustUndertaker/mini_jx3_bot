@@ -118,7 +118,10 @@ async def handle_data_notice(group_id: int, notice_type: Literal["晚安通知",
             one_file.unlink()
 
     data = []
-    msg0 = str(message.pop(0))[5:]
+    msg0 = {
+        "type": "text",
+        "data": str(message.pop(0))[5:]
+    }
     data.append(msg0)
     data += await _message_encoder(message, path)
     await GroupInfo.set_notice_msg(group_id, notice_type, data)

@@ -10,6 +10,7 @@ from src.modules.user_info import UserInfo
 from src.utils.config import config
 
 from ..server_manager._websocket import ws_client
+from .model import ImageHandler
 
 
 async def get_main_server(server: str) -> Optional[str]:
@@ -57,19 +58,14 @@ async def _message_encoder(message: Message, path: Path) -> list[dict]:
         if one.type == "image":
             url = one.data['url']
             file_name = path/f"{str(index)}.image"
-            async with AsyncClient() as client:
-                try:
-                    req = await client.get(url=url)
-                    with open(file_name, mode='wb') as f:
-                        f.write(req.read())
-                    index += 1
-                    data = {
-                        "type": "image",
-                        "data": str(file_name)
-                    }
-                    req_data.append(data)
-                except Exception:
-                    pass
+            flag = await ImageHandler.save_image(file_name, url)
+            if flag:
+                index += 1
+                data = {
+                    "type": "image",
+                    "data": str(file_name)
+                }
+                req_data.append(data)
             continue
 
         if one.type == "text":
@@ -98,8 +94,8 @@ async def message_decoder(group_id: int, notice_type: Literal["晚安通知", "�
     for one in msg:
         if one['type'] == "image":
             file_name = Path(one['data'])
-            with open(file_name, 'rb') as f:
-                data = MessageSegment.image(f.read())
+            _data = await ImageHandler.load_image(file_name)
+            data = MessageSegment.image(_data)
             message.append(data)
         if one['type'] == "text":
             data = MessageSegment.text(one['data'])
@@ -114,14 +110,14 @@ async def handle_data_notice(group_id: int, notice_type: Literal["晚安通知",
     '''处理通知内容'''
     _path: str = config.path['data']
     # 创建文件夹
-    path = Path(_path)/notice_type
+    path = Path(_path)/notice_type/str(group_id)
     if not path.exists():
         path.mkdir(parents=True)
 
     data = []
     msg0 = str(message.pop(0))[5:]
     data.append(msg0)
-    data += _message_encoder(message)
+    data += await _message_encoder(message, path)
     await GroupInfo.set_notice_msg(group_id, notice_type, data)
 
 

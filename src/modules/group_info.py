@@ -192,3 +192,35 @@ class GroupInfo(Model):
             "ws_fuyao": record.ws_fuyao,
         }
         return data
+
+    @classmethod
+    async def set_notice_msg(cls, group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"], message: list[dict]):
+        '''设置通知内容'''
+        record, _ = await cls.get_or_create(group_id=group_id)
+        if notice_type == "晚安通知":
+            record.goodnight_text = message
+            await record.save(update_fields=["goodnight_text"])
+
+        if notice_type == "离群通知":
+            record.someoneleft_text = message
+            await record.save(update_fields=["someoneleft_text"])
+
+        if notice_type == "进群通知":
+            record.welcome_text = message
+            await record.save(update_fields=["welcome_text"])
+
+    @classmethod
+    async def get_notice_msg(cls, group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"]) -> list[dict]:
+        '''获取通知内容'''
+        record, _ = await cls.get_or_create(group_id=group_id)
+        if notice_type == "晚安通知":
+            return record.goodnight_text
+        if notice_type == "离群通知":
+            return record.someoneleft_text
+        if notice_type == "进群通知":
+            return record.welcome_text
+
+    @classmethod
+    async def delete_group(cls, group_id: int):
+        '''注销群'''
+        await cls.filter(group_id=group_id).delete()

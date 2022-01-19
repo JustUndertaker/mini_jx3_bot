@@ -75,3 +75,8 @@ class PluginInfo(Model):
     async def get_meau_data(cls, group_id: int) -> list[dict]:
         '''获取菜单数据'''
         return await cls.filter(group_id=group_id).order_by("plugin_name").values("plugin_name", "command", "usage", "status")
+
+    @classmethod
+    async def delete_group(cls, group_id: int):
+        '''删除群'''
+        await cls.filter(group_id=group_id).delete()

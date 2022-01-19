@@ -34,3 +34,8 @@ class SearchRecord(Model):
         record.last_time = time_now
         record.count += 1
         await record.save(update_fields=["last_time", "count"])
+
+    @classmethod
+    async def delete_group(cls, group_id: int):
+        '''删除群'''
+        await cls.filter(group_id=group_id).delete()

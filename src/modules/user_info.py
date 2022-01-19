@@ -98,3 +98,8 @@ class UserInfo(Model):
         '''获取上次签到时间'''
         record, _ = await UserInfo.get_or_create(user_id=user_id, group_id=group_id)
         return record.last_sign
+
+    @classmethod
+    async def delete_group(cls, group_id: int):
+        '''删除群'''
+        await cls.filter(group_id=group_id).delete()

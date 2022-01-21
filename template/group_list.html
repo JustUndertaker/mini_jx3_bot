@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <title>群列表</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card" style="width: 60rem;" id="main">
+            <div class="card-header">
+                <h4 class="text-center text-success">群列表</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-primary text-center fs-4" role="alert">群数量：{{ num }}</div>
+                <table class="table text-center">
+                    <thead class="fs-4">
+                        <tr>
+                            <th scope="col">群号</th>
+                            <th scope="col">群名</th>
+                            <th scope="col">绑定服务器</th>
+                            <th scope="col">签到人数</th>
+                            <th scope="col">活跃值</th>
+                            <th scope="col">开关</th>
+                        </tr>
+                    </thead>
+                    <tbody class="fs-5">
+                        {% for group in group_list %}
+                        <tr>
+                            <td>{{ group.group_id }}</td>
+                            <td>{{ group.group_name }}</td>
+                            <td>{{ group.server }}</td>
+                            <td>{{ group.sign_nums }}</td>
+                            <td>{{ group.robot_active }}</td>
+                            <td>
+                                {% if group.robot_status %}
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox"
+                                        checked></div>
+                                {% else %}
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox">
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <p class="text-center text-warning fs-4">群管理</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -2,10 +2,16 @@ from typing import Union
 
 
 class GroupList_Async():
-    '''异步计数器，用于群发消息，支持list[int]和list[dict]，返回的是group_id'''
+    '''
+    异步计数器，用于群发消息，支持list[int]和list[dict]，返回的是group_id
+    :加上了str适配，可以for superusers
+    '''
 
     def __init__(self, obj: Union[list, dict]):
         if isinstance(obj[0], int):
+            self._it = iter(obj)
+            return
+        if isinstance(obj[0], str):
             self._it = iter(obj)
             return
         if isinstance(obj[0], dict):
@@ -20,4 +26,6 @@ class GroupList_Async():
             value = next(self._it)
         except StopIteration:
             raise StopAsyncIteration
+        if isinstance(value, str):
+            value = int(value)
         return value

@@ -1,5 +1,5 @@
 import json
-from typing import Literal, Optional
+from typing import Literal, Optional, Tuple
 
 from src.utils.config import config
 from tortoise import fields
@@ -225,3 +225,16 @@ class GroupInfo(Model):
     async def delete_group(cls, group_id: int):
         '''注销群'''
         await cls.filter(group_id=group_id).delete()
+
+    @classmethod
+    async def get_group_list(cls) -> list[dict]:
+        '''获取群列表数据'''
+        return await cls.all().values("group_id", "group_name", "sign_nums", "server", "robot_status", "robot_active")
+
+    @classmethod
+    async def check_group_init(cls, group_id: int) -> Tuple[bool, str]:
+        '''检测是否注册'''
+        record = await cls.get_or_none(group_id=group_id)
+        if record:
+            return True, record.group_name
+        return False, ""

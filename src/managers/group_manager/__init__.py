@@ -5,7 +5,8 @@ from typing import Literal
 
 from nonebot import get_bots, on_notice, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
-from nonebot.adapters.onebot.v11.event import (GroupDecreaseNoticeEvent,
+from nonebot.adapters.onebot.v11.event import (FriendAddNoticeEvent,
+                                               GroupDecreaseNoticeEvent,
                                                GroupIncreaseNoticeEvent,
                                                GroupMessageEvent)
 from nonebot.adapters.onebot.v11.permission import (GROUP, GROUP_ADMIN,
@@ -230,6 +231,21 @@ async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
     msg = None
     if flag:
         msg = await source.message_decoder(group_id, "离群通知")
+    await get_notice.finish(msg)
+
+
+@get_notice.handle()
+async def _(bot: Bot, event: FriendAddNoticeEvent):
+    '''好友增加通知事件'''
+    friend = await bot.get_stranger_info(user_id=event.user_id)
+    nickname = friend['nickname']
+    msg = f"我添加了好友【{nickname}】({event.user_id})"
+    superusers = list(bot.config.superusers)
+    async for user_id in GroupList_Async(superusers):
+        try:
+            await bot.send_private_msg(user_id=user_id, message=msg)
+        except Exception:
+            pass
     await get_notice.finish(msg)
 
 

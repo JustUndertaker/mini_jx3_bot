@@ -212,12 +212,17 @@ def handle_data_equip(data: dict) -> dict:
     equip: list[dict] = data['equip']
     data_equip = []
     for one in equip:
+        _source = one['source']
+        if _source is None:
+            source = ""
+        else:
+            source = _source.split("；")[0]
         one_data = {
             "name": one['name'],
             "kind": one['subKind'],
             "icon": one['icon'],
             "strengthLevel": int(one['strengthLevel']),
-            "source": one['source'].split("；")[0],
+            "source": source,
         }
         # 五行石图标
         five_stone: list = one.get('fiveStone')

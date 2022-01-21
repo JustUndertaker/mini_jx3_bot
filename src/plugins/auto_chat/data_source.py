@@ -16,7 +16,7 @@ async def get_random_msg(group_id: int, nickname: str, text: str) -> Optional[Me
     '''获取随机返回值'''
     active = await _get_active(group_id)
     random_num = random.uniform(0, 200)
-    if random_num < active:
+    if random_num > active:
         return None
 
     msg = await chat.chat(nickname, text)

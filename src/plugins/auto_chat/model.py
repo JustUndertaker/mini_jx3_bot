@@ -42,7 +42,7 @@ class Chat(object):
     async def _chat_with_tencent(self, nickname: str, text: str) -> Optional[str]:
         '''使用腾讯云接口'''
         params = self._nlp_config.copy()
-        params['nickname'] = nickname
+        params['name'] = nickname
         params['question'] = text
         try:
             req = await self._client.get(url=self._tencent_url, params=params)

@@ -37,7 +37,7 @@ class Chat(object):
 
     def _check_nlp_config(self) -> bool:
         '''检查nlp配置'''
-        return (self._nlp_config['secretId'] is not None) and (self._voice_config['secretKey'] is not None)
+        return (self._nlp_config.get("secretId") is not None) and (self._voice_config.get("secretKey") is not None)
 
     async def _chat_with_tencent(self, nickname: str, text: str) -> Optional[str]:
         '''使用腾讯云接口'''
@@ -108,7 +108,7 @@ class Chat(object):
 
     def check_voice_config(self) -> bool:
         '''检查voice的配置是否齐全'''
-        return (self._voice_config['appkey'] is not None) and (self._voice_config['access'] is not None) and (self._voice_config['secret'] is not None)
+        return (self._voice_config.get("appkey") is not None) and (self._voice_config.get("access") is not None) and (self._voice_config.get("secret") is not None)
 
     async def get_voice(self, text: str) -> Optional[str]:
         '''获取语音'''

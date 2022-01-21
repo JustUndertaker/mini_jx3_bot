@@ -238,3 +238,9 @@ class GroupInfo(Model):
         if record:
             return True, record.group_name
         return False, ""
+
+    @classmethod
+    async def get_bot_active(cls, group_id: int) -> int:
+        '''获取活跃值'''
+        record, _ = await cls.get_or_create(group_id=group_id)
+        return record.robot_active

@@ -8,6 +8,7 @@ from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
 from src.utils.browser import browser
+from src.utils.config import config as all_config
 from src.utils.log import logger
 
 from . import data_source as source
@@ -63,6 +64,7 @@ serendipity_summary_query = on_regex(pattern=Regex['奇遇汇总'], permission=G
 saohua_query = on_regex(pattern=Regex['骚话'], permission=GROUP, priority=5, block=True)
 match_query = on_regex(pattern=Regex['战绩查询'], permission=GROUP, priority=5, block=True)
 equip_query = on_regex(pattern=Regex['装备查询'], permission=GROUP, priority=5, block=True)
+help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 
 
 # ----------------------------------------------------------------
@@ -446,3 +448,13 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
                                           data=get_data
                                           )
     await equip_query.finish(MessageSegment.image(img))
+
+
+@help.handle()
+async def _(event: GroupMessageEvent):
+    '''帮助'''
+    token = all_config.jx3api['jx3_token']
+    flag = token is not None
+    pagename = "search_help.html"
+    img = await browser.template_to_image(pagename=pagename, flag=flag)
+    await help.finish(MessageSegment.image(img))

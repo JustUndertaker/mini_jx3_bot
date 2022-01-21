@@ -36,7 +36,7 @@ group_delete = on_regex(pattern=r"^退群 [\d]+$", permission=SUPERUSER, priorit
 borodcast = on_regex(pattern=r"^广播 [\d]+ ", permission=SUPERUSER, priority=3, block=True)  # 广播
 borodcast_all = on_regex(pattern=r"^全体广播 ", permission=SUPERUSER, priority=3, block=True)  # 全体广播
 handle_robot = on_regex(pattern=r"^(打开|关闭) [0-9]+$", permission=SUPERUSER, priority=3, block=True)  # 打开关闭机器人
-help = on_regex(pattern=r"^帮助$", permission=SUPERUSER, priority=3, block=True)  # 帮助
+help = on_regex(pattern=r"^帮助$", permission=SUPERUSER, priority=3, block=False)  # 帮助
 # ----------------------------------------------------------------------------
 #  Depends依赖
 # ----------------------------------------------------------------------------

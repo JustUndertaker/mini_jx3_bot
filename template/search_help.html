@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <title>查询帮助</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card" style="width: 50rem;" id="main">
+            <div class="card-header">
+                <h4 class="text-center text-success">查询帮助</h2>
+            </div>
+            <div class="card-body">
+                <table class="table text-center">
+                    <thead class="fs-4">
+                        <tr>
+                            <th scope="col">指令</th>
+                            <th scope="col">用途</th>
+                        </tr>
+                    </thead>
+                    <tbody class="fs-5">
+                        <tr>
+                            <td>日常 [<span class="text-danger">服务器</span>]</td>
+                            <td>查看日常，服务器可省略</td>
+                        </tr>
+                        <tr>
+                            <td>开服 [<span class="text-danger">服务器</span>]</td>
+                            <td>查询是否开服，服务器可省略</td>
+                        </tr>
+                        <tr>
+                            <td>金价 [<span class="text-danger">服务器</span>]</td>
+                            <td>查询金价，服务器可省略</td>
+                        </tr>
+                        <tr>
+                            <td>奇穴 <span class="text-danger">职业</span> | <span class="text-danger">职业</span>奇穴</td>
+                            <td>查询职业奇穴，如“<span class="text-danger">冰心奇穴</span>”|“<span class="text-danger">奇穴 冰心</span>”
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>配装 <span class="text-danger">职业</span> | <span class="text-danger">职业</span>配装</td>
+                            <td>查询职业配装，如“<span class="text-danger">冰心配装</span>”|“<span class="text-danger">配装 冰心</span>”
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>宏 <span class="text-danger">职业</span> | <span class="text-danger">职业</span>宏</td>
+                            <td>查询职业宏，如“<span class="text-danger">冰心宏</span>”|“<span class="text-danger">宏 冰心</span>”
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>小药 <span class="text-danger">职业</span> | <span class="text-danger">职业</span>小药</td>
+                            <td>查询职业小药，如“<span class="text-danger">冰心小药</span>”|“<span class="text-danger">小药 冰心</span>”
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>攻略 <span class="text-danger">奇遇名</span>| <span class="text-danger">奇遇名</span>攻略</td>
+                            <td>查询奇遇攻略</td>
+                        </tr>
+                        <tr>
+                            <td>前置|条件 <span class="text-danger">奇遇名</span></td>
+                            <td>查询奇遇前置条件</td>
+                        </tr>
+                        <tr>
+                            <td>物价 <span class="text-danger">外观名</span></td>
+                            <td>查询外观物价</td>
+                        </tr>
+                        {% if flag %}
+                        <tr>
+                            <td>查询 [<span class="text-success">服务器</span>] <span class="text-danger">角色名</span></td>
+                            <td>查询该角色的成就，服务器可省略</td>
+                        </tr>
+                        <tr>
+                            <td>奇遇 [<span class="text-success">服务器</span>] <span class="text-danger">奇遇名</span></td>
+                            <td>查询奇遇触发情况，服务器可省略</td>
+                        </tr>
+                        <tr>
+                            <td>汇总 [<span class="text-success">服务器</span>]</td>
+                            <td>查询服务器奇遇汇总，服务器可省略</td>
+                        </tr>
+                        <tr>
+                            <td>战绩 [<span class="text-success">服务器</span>] <span class="text-danger">角色名</span></td>
+                            <td>查询角色战绩，服务器可省略</td>
+                        </tr>
+                        <tr>
+                            <td>装备|属性 [<span class="text-success">服务器</span>] <span class="text-danger">角色名</span></td>
+                            <td>查询角色装备，服务器可省略</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>骚话</td>
+                            <td>请求一条骚话</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <p class="text-center text-warning fs-4">剑网三查询帮助</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

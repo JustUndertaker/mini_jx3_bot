@@ -22,3 +22,8 @@ async def get_group_list() -> list[dict]:
 async def get_group(group_id: int) -> Tuple[bool, str]:
     '''获取群是否注册'''
     return await GroupInfo.check_group_init(group_id)
+
+
+async def set_bot_status(group_id: int, status: str):
+    '''设置机器人状态'''
+    await GroupInfo.set_status(group_id, status)

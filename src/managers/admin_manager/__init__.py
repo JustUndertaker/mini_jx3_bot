@@ -35,11 +35,12 @@ group_list = on_regex(pattern=r"^群列表$", permission=SUPERUSER, priority=3, 
 group_delete = on_regex(pattern=r"^退群 [\d]+$", permission=SUPERUSER, priority=3, block=True)  # 退群
 borodcast = on_regex(pattern=r"^广播 [\d]+ ", permission=SUPERUSER, priority=3, block=True)  # 广播
 borodcast_all = on_regex(pattern=r"^全体广播 ", permission=SUPERUSER, priority=3, block=True)  # 全体广播
-
-
+handle_robot = on_regex(pattern=r"^(打开|关闭) [0-9]+$", permission=SUPERUSER, priority=3, block=True)  # 打开关闭机器人
+help = on_regex(pattern=r"^帮助$", permission=SUPERUSER, priority=3, block=True)  # 帮助
 # ----------------------------------------------------------------------------
 #  Depends依赖
 # ----------------------------------------------------------------------------
+
 
 def get_borod_group(event: PrivateMessageEvent) -> int:
     '''获取广播的群号'''
@@ -67,9 +68,15 @@ def get_name(event: PrivateMessageEvent) -> int:
     return int(event.get_plaintext().split(" ")[-1])
 
 
+def get_status(event: PrivateMessageEvent) -> bool:
+    '''解析开关'''
+    _status = event.get_plaintext()[:2]
+    return (_status == "打开")
+
 # ----------------------------------------------------------------------------
 #  Macher实现
 # ----------------------------------------------------------------------------
+
 
 @get_request.handle()
 async def _(bot: Bot, event: FriendRequestEvent):
@@ -175,3 +182,23 @@ async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
     use = round(end-start, 2)
     msg = f"广播发送完毕，共发送{num}个群\n成功 {success}个\n失败 {success}个\n共用时 {use}秒。"
     await borodcast_all.finish(msg)
+
+
+@handle_robot.handle()
+async def _(bot: Bot, group_id: int = Depends(get_name), status: bool = Depends(get_status)):
+    '''打开关闭机器人'''
+    flag, _ = await source.get_group(group_id)
+    if flag:
+        await source.set_bot_status(group_id, status)
+        msg = "设置成功！"
+    else:
+        msg = f"设置失败，未找到群：{group_id}"
+    await handle_robot(msg)
+
+
+@help.handle()
+async def _(event: PrivateMessageEvent):
+    '''请求帮助'''
+    pagename = "super_help.html"
+    img = await browser.template_to_image(pagename=pagename)
+    await help.finish(MessageSegment.image(img))

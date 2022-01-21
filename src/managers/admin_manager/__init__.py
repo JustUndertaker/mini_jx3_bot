@@ -3,12 +3,14 @@ import random
 import time
 
 from nonebot import on_regex, on_request
+from nonebot.adapters import Event
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
 from nonebot.adapters.onebot.v11.event import (FriendRequestEvent,
                                                GroupRequestEvent,
                                                PrivateMessageEvent)
 from nonebot.params import Depends
 from nonebot.permission import SUPERUSER
+from nonebot.rule import Rule
 from src.utils.browser import browser
 from src.utils.config import config
 from src.utils.utils import GroupList_Async
@@ -23,20 +25,50 @@ from . import data_source as source
 * 超级用户帮助
 * 管理员广播
 '''
+# ----------------------------------------------------------------------------
+#   rule检查，检测到私聊消息才会触发
+# ----------------------------------------------------------------------------
+
+
+async def _event_check(event: Event) -> bool:
+    return isinstance(event, PrivateMessageEvent)
+
+
+def CheckEvent() -> bool:
+    return Depends(_event_check)
+
+
+class EventRule:
+    async def __call__(self, check: bool = CheckEvent()) -> bool:
+        return check
+
+
+def check_event() -> Rule:
+    return Rule(EventRule())
+
 
 # ----------------------------------------------------------------------------
 #  macher列表
 # ----------------------------------------------------------------------------
 get_request = on_request(priority=3, block=True)  # 请求事件
-ticket = on_regex(pattern=r"^ticket$", permission=SUPERUSER, priority=2, block=True)  # ticket管理器
-friend_list = on_regex(pattern=r"^好友列表$", permission=SUPERUSER, priority=3, block=True)  # 好友列表
-friend_delete = on_regex(pattern=r"^删除好友 [\d]+$", permission=SUPERUSER, priority=3, block=True)  # 删除好友
-group_list = on_regex(pattern=r"^群列表$", permission=SUPERUSER, priority=3, block=True)  # 群列表
-group_delete = on_regex(pattern=r"^退群 [\d]+$", permission=SUPERUSER, priority=3, block=True)  # 退群
-borodcast = on_regex(pattern=r"^广播 [\d]+ ", permission=SUPERUSER, priority=3, block=True)  # 广播
-borodcast_all = on_regex(pattern=r"^全体广播 ", permission=SUPERUSER, priority=3, block=True)  # 全体广播
-handle_robot = on_regex(pattern=r"^(打开|关闭) [0-9]+$", permission=SUPERUSER, priority=3, block=True)  # 打开关闭机器人
-help = on_regex(pattern=r"^帮助$", permission=SUPERUSER, priority=3, block=False)  # 帮助
+# ticket管理器
+ticket = on_regex(pattern=r"^ticket$", rule=check_event(), permission=SUPERUSER, priority=2, block=True)
+friend_list = on_regex(pattern=r"^好友列表$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 好友列表
+# 删除好友
+friend_delete = on_regex(pattern=r"^删除好友 [\d]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+group_list = on_regex(pattern=r"^群列表$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 群列表
+group_delete = on_regex(pattern=r"^退群 [\d]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 退群
+borodcast = on_regex(pattern=r"^广播 [\d]+ ", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 广播
+borodcast_all = on_regex(pattern=r"^全体广播 ", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 全体广播
+# 打开关闭机器人
+handle_robot = on_regex(pattern=r"^(打开|关闭) [0-9]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+help = on_regex(pattern=r"^帮助$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 帮助
+# 添加ticket
+ticket_add = on_regex(pattern=r"^添加 [^\s]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+# 删除ticket
+ticket_del = on_regex(pattern=r"^删除 [\d]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+# 清理ticket
+ticket_clean = on_regex(pattern=r"^清理$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
 # ----------------------------------------------------------------------------
 #  Depends依赖
 # ----------------------------------------------------------------------------
@@ -202,3 +234,43 @@ async def _(event: PrivateMessageEvent):
     pagename = "super_help.html"
     img = await browser.template_to_image(pagename=pagename)
     await help.finish(MessageSegment.image(img))
+
+
+@ticket.handle()
+async def _():
+    '''ticket管理器'''
+    # 获取ticket列表
+    ticket_list = await source.get_ticket_list()
+    pagename = "ticket.html"
+    img = await browser.template_to_image(pagename=pagename, ticket_list=ticket_list)
+    await ticket.send(MessageSegment.image(img))
+
+
+@ticket_add.handle()
+async def _(ticket: str = Depends(get_name)):
+    '''添加ticket'''
+    flag, _msg = await source.add_ticket(ticket)
+    if flag:
+        msg = "添加ticket成功！"
+    else:
+        msg = f"添加ticket失败，{_msg}"
+    await ticket_add.finish(msg)
+
+
+@ticket_del.handle()
+async def _(index: str = Depends(get_name)):
+    '''删除ticket'''
+    id = int(index)
+    flag = await source.delete_ticket(id)
+    if flag:
+        msg = "删除ticket成功！"
+    else:
+        msg = f"删除ticket失败，未找到ticket编号：{index}"
+    await ticket_del.finish(msg)
+
+
+@ticket_clean.handle()
+async def _():
+    '''清理ticket'''
+    await source.clean_ticket()
+    await ticket_clean.finish("ticket清理完毕。")

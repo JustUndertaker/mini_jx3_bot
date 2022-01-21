@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <title>ticket管理器</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card" style="width: 50rem;" id="main">
+            <div class="card-header">
+                <h4 class="text-center text-success">ticket管理器</h2>
+            </div>
+            <div class="card-body">
+                <table class="table text-center" style="word-break:break-all; word-wrap:break-all;">
+                    <thead class="fs-4">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">ticket值</th>
+                            <th scope="col">有效</th>
+                        </tr>
+                    </thead>
+                    <tbody class="fs-5 align-middle">
+                        {% for ticket in ticket_list %}
+                        <tr>
+                            <td>{{ ticket.id }}</td>
+                            <td>
+                                {{ ticket.ticket }}
+                            </td>
+                            <td>
+                                {% if ticket.alive %}
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox"
+                                        checked></div>
+                                {% else %}
+                                <div class="form-check form-switch"><input class="form-check-input" type="checkbox">
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+                <div class="text-center alert alert-primary fs-5">输入“添加 [ticket值]”添加一条ticket</div>
+                <div class="text-center alert alert-warning fs-5">输入“删除 [序号]”，删除指定ticket</div>
+                <div class="text-center alert alert-info fs-5">输入“清理”，清理失效的ticket</div>
+            </div>
+            <div class="card-footer">
+                <p class="text-center text-warning fs-4">ticket管理器</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

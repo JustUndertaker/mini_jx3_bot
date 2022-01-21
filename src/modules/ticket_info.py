@@ -6,7 +6,8 @@ from tortoise.models import Model
 
 class TicketInfo(Model):
     '''存储ticket表'''
-    ticket = fields.CharField(max_length=255, pk=True)
+    id = fields.IntField(pk=True, generated=True)
+    ticket = fields.CharField(max_length=255)
     '''ticket值'''
     alive = fields.BooleanField(null=True, default=True)
     '''存活'''
@@ -24,9 +25,9 @@ class TicketInfo(Model):
         return None
 
     @classmethod
-    async def del_ticket(cls, ticket: str) -> bool:
+    async def del_ticket(cls, id: int) -> bool:
         '''删除一条ticket'''
-        record = await TicketInfo.get_or_none(ticket=ticket)
+        record = await TicketInfo.get_or_none(id=id)
         if record:
             await record.delete()
             return True
@@ -50,7 +51,8 @@ class TicketInfo(Model):
             获取所有ticket
         :返回
             * list[dict]
+            * ``"id"``：ticket编号
             * ``"ticket"``：ticket值
             * ``"alive"``：是否有效
         '''
-        return await TicketInfo.all().values("ticket", "alive")
+        return await TicketInfo.all().values("id", "ticket", "alive")

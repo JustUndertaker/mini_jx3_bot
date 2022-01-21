@@ -1,6 +1,9 @@
 from typing import Tuple
 
+from httpx import AsyncClient
 from src.modules.group_info import GroupInfo
+from src.modules.ticket_info import TicketInfo
+from src.utils.config import config
 
 
 async def get_group_list() -> list[dict]:
@@ -27,3 +30,41 @@ async def get_group(group_id: int) -> Tuple[bool, str]:
 async def set_bot_status(group_id: int, status: str):
     '''设置机器人状态'''
     await GroupInfo.set_status(group_id, status)
+
+
+async def get_ticket_list() -> list[dict]:
+    '''获取ticket列表'''
+    return await TicketInfo.get_all()
+
+
+async def add_ticket(ticket: str) -> Tuple[bool, str]:
+    '''添加一条ticket'''
+    base_url = config.jx3api['jx3_url']
+    token = config.jx3api['jx3_token']
+    url = f"{base_url}/token/validity"
+    params = {
+        'token': token,
+        'ticket': ticket
+    }
+    async with AsyncClient() as client:
+        try:
+            req_url = await client.get(url=url, params=params)
+            req = req_url.json()
+            code = req['code']
+            if code == 200:
+                await TicketInfo.append_ticket(ticket)
+                return True, ""
+            else:
+                return False, req['msg']
+        except Exception as e:
+            return False, str(e)
+
+
+async def delete_ticket(id: int) -> bool:
+    '''删除ticket'''
+    return await TicketInfo.del_ticket(id)
+
+
+async def clean_ticket():
+    '''清理ticket'''
+    await TicketInfo.clean_ticket()

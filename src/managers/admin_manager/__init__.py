@@ -100,6 +100,11 @@ def get_name(event: PrivateMessageEvent) -> int:
     return int(event.get_plaintext().split(" ")[-1])
 
 
+def get_ticket(event: PrivateMessageEvent) -> str:
+    '''获取ticket'''
+    return event.get_plaintext().split(" ")[-1]
+
+
 def get_status(event: PrivateMessageEvent) -> bool:
     '''解析开关'''
     _status = event.get_plaintext()[:2]
@@ -247,7 +252,7 @@ async def _():
 
 
 @ticket_add.handle()
-async def _(ticket: str = Depends(get_name)):
+async def _(ticket: str = Depends(get_ticket)):
     '''添加ticket'''
     flag, _msg = await source.add_ticket(ticket)
     if flag:
@@ -258,7 +263,7 @@ async def _(ticket: str = Depends(get_name)):
 
 
 @ticket_del.handle()
-async def _(index: str = Depends(get_name)):
+async def _(index: str = Depends(get_ticket)):
     '''删除ticket'''
     id = int(index)
     flag = await source.delete_ticket(id)

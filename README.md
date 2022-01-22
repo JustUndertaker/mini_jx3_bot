@@ -142,6 +142,21 @@ nb run
 |全体广播 [消息]|给所有打开机器人的群发送一条广播消息|
 
 ## 常见问题
+### 0.go-cqhttp配置问题
+具体配置请参考gocq的[文档](https://docs.go-cqhttp.org/guide/config.html)，在本项目下，你可能需要修改以下：
+```yaml
+message:
+  # 上报数据类型
+  # 可选: string,array
+  post-format: array
+
+servers:
+  - ws-reverse:
+      # 反向WS Universal 地址
+      # 注意 设置了此项地址后下面两项将会被忽略
+      universal: ws://127.0.0.1:8080/onebot/v11/ws
+```
+这主要是nb2升级到了beta1，ws地址发生了变化。
 ### 1.linux下安装python3.9
 linux系统推荐使用ubuntu，自带的apt可以直接获取python3.9
 ```bash

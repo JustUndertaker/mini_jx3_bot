@@ -16,6 +16,13 @@ _✨基于[nonebot2](https://github.com/nonebot/nonebot2)的剑网三群聊机�
 </p>
 
 
+## 这是什么
+一个使用gocq作为协议端的QQ群聊机器人，可以接受处理QQ消息并回复，接入了[www.jx3api.com](https://www.jx3api.com)的数据后，可以查询《剑网三》内的游戏数据。
+
+## 工作流程
+![image](public/docs/process.jpg)
+
+
 ## 简介
 基于nonebot2的剑网三的QQ群聊机器人，采用jx3api为数据接口，提供剑网三的一些查询，娱乐功能。
 

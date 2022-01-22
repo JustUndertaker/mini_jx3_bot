@@ -17,47 +17,39 @@ _✨基于[nonebot2](https://github.com/nonebot/nonebot2)的剑网三群聊机�
 
 
 ## 这是什么
-一个使用gocq作为协议端的QQ群聊机器人，可以接受处理QQ消息并回复，接入了[www.jx3api.com](https://www.jx3api.com)的数据后，可以查询《剑网三》内的游戏数据。
+一个使用gocq作为协议端的QQ群聊机器人，可以接受处理QQ消息并回复，接入了[www.jx3api.com](https://www.jx3api.com)的数据后，可以查询《剑网三》内的游戏数据,你可以：
+- 自己部署到服务器，创建自己的机器人
+- 添加自己写的插件，适配到机器人中
+
 
 ## 工作流程
 ![image](docs/process.jpg)
 
 
-## 简介
-基于nonebot2的剑网三的QQ群聊机器人，采用jx3api为数据接口，提供剑网三的一些查询，娱乐功能。
-
-- 跨平台使用
-- 提供www.jx3api.com的事件封装
-- 使用sqlite数据库，轻量便携
-- 全异步处理，效率高效
 
 ## 更新说明
-此库用于更简易的机器人管理，只能单gocq链接，请不要链接多个gocq客户端。
+此库目前没有适配多账号，请使用单gocq链接。
 
-## 声明
-本项目数据来源：[jx3api.com](https://www.jx3api.com)
 
 ## 部署机器人
 ### 安装环境
 **项目需要python环境，且需要[python3.9+](https://www.python.org/downloads/)。**
-```
+```bash
 apt-get install python3.9
 ```
 **QQ协议端采用[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)。**
 
 - go-cqhttp需要下载ffmpeg环境，否则无法发送语音消息，具体安装请参考[文档](https://docs.go-cqhttp.org/guide/quick_start.html#%E5%AE%89%E8%A3%85-ffmpeg)。
 ### 安装依赖
-```
+```bash
+# 在bot目录下
+
 pip install -r requirements.txt
 ```
-### 安装playwright
-页面截图需要采用playwright，第一次启动需要安装，可以参考[文档](https://playwright.dev/python/docs/intro)。
-```
-playwright install
-```
+
 ### 配置设置
 #### config.yml
-```
+```yaml
 # 数据站设置
 jx3api:
   # ws链接地址
@@ -69,7 +61,7 @@ jx3api:
   # 主站token，不填将不能访问带ticket的接口
   jx3_token: ~
 
-剩余部分自行参考填写
+# 剩余部分自行参考填写
 ```
 **使用腾讯云API进行闲聊操作，如果没有将使用[青云客API](http://api.qingyunke.com/)返回聊天**
 - 申请地址：[点击申请](https://console.cloud.tencent.com/cam/capi) NLP自然语言处理：[点击申请](https://console.cloud.tencent.com/nlp)
@@ -81,13 +73,13 @@ jx3api:
 
 - 获取secret地址：[点击这里](https://usercenter.console.aliyun.com/)
 #### .env.pord
-```
+```bash
 nickname=["团子"] # 这里设置机器人的昵称
 superusers=["你的QQ"] # 这里设置超级管理员QQ
 ```
 ### 启动
-```
-# 请在bot目录下
+```bash
+# 在bot目录下
 
 nb run
 ```
@@ -148,3 +140,57 @@ nb run
 |退群 [群号]|让bot退出该群|
 |广播 [QQ群号] [消息]|给指定群发送一条广播消息|
 |全体广播 [消息]|给所有打开机器人的群发送一条广播消息|
+
+## 常见问题
+### 1.linux下安装python3.9
+linux系统推荐使用ubuntu，自带的apt可以直接获取python3.9
+```bash
+sudo apt-get install python3.9
+```
+如果需要编译安装，请自行查找相关资料
+### 2.python虚拟环境
+不论是windows下，还是linux下，都推荐使用虚拟环境进行部署项目，可以选择你喜欢的工具,venv,conda都行，这里展示venv使用。
+```dos
+# windows下，创建venv目录
+python -m venv ./venv
+
+# 激活虚拟环境
+./venv/scripts/activate
+
+# 在bot目录下安装依赖
+pip install -r requirements.txt
+
+# 运行bot
+nb run
+```
+```bash
+# linux下，需要先安装venv模块
+sudo apt-get install python3.9-venv
+
+# 创建虚拟环境，这里python需要改成你的3.9软连接
+python -m venv ./venv
+
+# 激活虚拟环境
+source ./venv/bin/activate
+
+# 在bot目录下安装依赖
+pip install -r requirements.txt
+
+# 运行bot
+nb run
+```
+### 3.截图中文方框问题
+在linux下，截图出来的字可能是方框乱码，这是你的系统没有中文字库的原因，请安装中文字库。
+### 4.职业，奇遇图片不显示问题
+因为这些图片是中文名，windows下的文件名以GBK编码，而linux下的文件 名为utf-8编码。所以需要使用个小工具进行转换
+```bash
+sudo apt-get install convmv
+
+# 在bot目录下
+convmv -f GBK -t utf-8  --notest ./*
+```
+### 5.网站token问题
+这是数据站[www.jx3api.com](https://www.jx3api.com)决定的，你可以找站长进行购买，token可以获得使用一些高级功能的权限。
+### 6.ticket问题
+这里的ticket是指《剑网三推栏》抓包到的账号token，是使用高级功能的参数之一，抓包方法可以联系api站长，也可以进群了解。
+

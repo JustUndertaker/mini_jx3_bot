@@ -194,3 +194,36 @@ convmv -f GBK -t utf-8  --notest ./*
 ### 6.ticket问题
 这里的ticket是指《剑网三推栏》抓包到的账号token，是使用高级功能的参数之一，抓包方法可以联系api站长，也可以进群了解。
 
+## 自行开发
+目前项目结构如下：
+```tree
+📦mini_jx3_bot
+ ┣ 📂data         # 运行数据目录
+ ┣ 📂docs
+ ┣ 📂log          # 运行日志目录
+ ┃ ┣ 📂debug
+ ┃ ┣ 📂error
+ ┃ ┗ 📂info
+ ┣ 📂src          # 代码目录
+ ┃ ┣ 📂managers   # 管理插件
+ ┃ ┣ 📂modules    # 数据库表
+ ┃ ┣ 📂plugins    # 自定义插件
+ ┃ ┗ 📂utils      # 工具模块
+ ┣ 📂template     # 渲染模板目录
+ ┣ 📜.env.prod    # 项目环境文件
+ ┣ 📜bot.py       # 项目入口
+ ┣ 📜config.yml   # 项目配置文件
+ ┗ 📜requirements.txt   # 项目依赖
+```
+如果需要自定义插件，则可加入在src/plugins目录下，请注意
+
+**自己加入的插件不会受到项目自带的插件管理器管理，并且不会显示在菜单中，如果有需要，请在插件__ini__.py文件中加入以下代码：**
+```python
+from nonebot import export
+
+Export = export()
+Export.plugin_name = "你的插件名"
+Export.plugin_command = "使用命令"
+Export.plugin_usage = "简单的使用说明"
+Export.default_status = True  # 默认插件开关
+```

@@ -56,6 +56,7 @@ medicine_query = on_regex(pattern=Regex['小药查询'], permission=GROUP, prior
 equip_group_query = on_regex(pattern=Regex['配装查询'], permission=GROUP, priority=5, block=True)
 macro_query = on_regex(pattern=Regex['宏查询'], permission=GROUP, priority=5, block=True)
 condition_query = on_regex(pattern=Regex['前置查询'], permission=GROUP, priority=5, block=True)
+strategy_query = on_regex(pattern=Regex['攻略查询'], permission=GROUP, priority=5, block=True)
 update_query = on_regex(pattern=Regex['更新公告'], permission=GROUP, priority=5, block=True)
 price_query = on_regex(pattern=Regex['物价查询'], permission=GROUP, priority=5, block=True)
 serendipity_query = on_regex(pattern=Regex['奇遇查询'], permission=GROUP, priority=5, block=True)
@@ -289,6 +290,21 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     url = data.get("upload")
     msg = MessageSegment.image(url)
     await condition_query.finish(msg)
+
+
+@strategy_query.handle()
+async def _(event: GroupMessageEvent, name: str = Depends(get_ex_name)):
+    '''攻略查询'''
+    params = {
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app_name="前置查询", group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await strategy_query.finish(msg)
+
+    img = data['upload']
+    await strategy_query.finish(MessageSegment.image(img))
 
 
 @update_query.handle()

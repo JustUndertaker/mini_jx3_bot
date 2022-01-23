@@ -298,12 +298,12 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_ex_name)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app_name="前置查询", group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app_name="攻略查询", group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await strategy_query.finish(msg)
 
-    img = data['upload']
+    img = data['url']
     await strategy_query.finish(MessageSegment.image(img))
 
 

@@ -1,5 +1,6 @@
 import asyncio
 import json
+from typing import Tuple
 
 import websockets
 from nonebot import get_bots
@@ -9,7 +10,7 @@ from src.utils.log import logger
 from websockets.exceptions import ConnectionClosedOK
 from websockets.legacy.client import WebSocketClientProtocol
 
-from ._jx3_event import ws_event_factory
+from ._jx3_event import WsClosed, ws_event_factory
 
 
 class Jx3WebSocket(object):
@@ -51,6 +52,15 @@ class Jx3WebSocket(object):
         except Exception as e:
             logger.error(
                 f"<r>jx3api > ws链接被关闭：{str(e)}</r>")
+            await self._raise_closed(str(e))
+
+    async def _raise_closed(self, reason: str):
+        '''处理关闭事件'''
+        event = WsClosed(reason)
+        bots = get_bots()
+        for _, one_bot in bots.items():
+            await handle_event(one_bot, event)
+            break  # 只发送一次
 
     async def _handle_msg(self, message: str):
         '''处理回复数据'''
@@ -82,7 +92,7 @@ class Jx3WebSocket(object):
         except Exception:
             pass
 
-    async def init(self):
+    async def init(self) -> Tuple[bool, str]:
         '''初始化'''
         ws_path: str = config.jx3api['ws_path']
         ws_token = config.jx3api['ws_token']
@@ -97,10 +107,11 @@ class Jx3WebSocket(object):
                                                 ping_timeout=20,
                                                 close_timeout=10)
             asyncio.create_task(self._task())
-
+            return True, ""
         except Exception as e:
             logger.error(
                 f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
+            return False, str(e)
 
     async def close(self):
         '''关闭ws链接'''

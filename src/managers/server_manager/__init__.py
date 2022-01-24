@@ -3,7 +3,9 @@ import random
 
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Bot
-from nonebot.plugin import on
+from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
+from nonebot.permission import SUPERUSER
+from nonebot.plugin import on, on_regex
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
@@ -11,10 +13,14 @@ from tortoise import Tortoise
 
 from . import data_source as source
 from ._email import mail_client
-from ._jx3_event import RecvEvent
+from ._jx3_event import RecvEvent, WsClosed
 from ._websocket import ws_client
 
 driver = get_driver()
+
+# ----------------------------------------------------------------
+#   bot服务的各种hook
+# ----------------------------------------------------------------
 
 
 @driver.on_bot_connect
@@ -79,10 +85,52 @@ async def _():
     logger.info("<g>ws链接关闭成功。</g>")
 
 # ----------------------------------------------------------------
+#  server操作的几个mathcer
+# ----------------------------------------------------------------
+check_ws = on_regex(pattern=r"^查看连接$", permission=SUPERUSER, priority=5, block=True)
+connect_ws = on_regex(pattern=r"^连接服务$", permission=SUPERUSER, priority=5, block=True)
+close_ws = on_regex(pattern=r"^关闭连接$", permission=SUPERUSER, priority=5, block=True)
+
+
+@check_ws.handle()
+async def _(bot: Bot, event: PrivateMessageEvent):
+    '''查看连接'''
+    if ws_client.closed:
+        msg = "jx3api > ws连接已关闭！"
+    else:
+        msg = "jx3api > ws连接正常！"
+    await check_ws.finish(msg)
+
+
+@connect_ws.handle()
+async def _(bot: Bot, event: PrivateMessageEvent):
+    '''连接服务器'''
+    if ws_client.closed:
+        msg = "正在连接ws服务器……"
+        await connect_ws.send(msg)
+        flag, req = await ws_client.init()
+        if flag:
+            msg = "连接成功！ws服务器已连接。"
+        else:
+            msg = f"连接失败：{req}！"
+        await connect_ws.finish(msg)
+    else:
+        msg = "ws服务器当前已连接，不要重复连接！"
+        await connect_ws.finish(msg)
+
+
+@close_ws.handle()
+async def _(bot: Bot, event: PrivateMessageEvent):
+    '''关闭连接'''
+    await ws_client.close()
+    await close_ws.finish("ws连接已关闭！")
+
+# ----------------------------------------------------------------
 #       ws消息事件处理
 # ----------------------------------------------------------------
 
 ws_recev = on(type="WsRecv", priority=4, block=True)
+ws_closed = on(type="WsClosed", priority=4, block=True)
 
 
 @ws_recev.handle()
@@ -105,3 +153,20 @@ async def _(bot: Bot, event: RecvEvent):
             except Exception:
                 pass
     await ws_recev.finish()
+
+
+@ws_closed.handle()
+async def _(bot: Bot, event: WsClosed):
+    '''ws关闭事件'''
+    superusers = list(bot.config.superusers)
+    msg = f"检测到ws链接关闭：{event.reason}\n正在重连……"
+    async for user_id in GroupList_Async(superusers):
+        await bot.send_private_msg(user_id=user_id, message=msg)
+    flag, req = await ws_client.init()
+    if flag:
+        msg = "ws重连成功！"
+    else:
+        msg = f"ws链接失败：{req}！"
+    async for user_id in GroupList_Async(superusers):
+        await bot.send_private_msg(user_id=user_id, message=msg)
+    await ws_closed.finish()

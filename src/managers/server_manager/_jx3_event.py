@@ -8,6 +8,55 @@ from nonebot.typing import overrides
 from nonebot.utils import escape_tag
 
 
+class WsClosed(BaseEvent):
+    '''ws被关闭事件'''
+    __event__ = "WsClosed"
+    post_type: str = "WsClosed"
+    reason: Optional[str]
+    '''关闭原因'''
+
+    def __init__(self, reason: str):
+        super().__init__()
+        self.reason = reason
+
+    @property
+    def log(self) -> str:
+        '''事件日志内容'''
+        return ""
+
+    @overrides(BaseEvent)
+    def get_type(self) -> str:
+        return self.post_type
+
+    @overrides(BaseEvent)
+    def get_event_name(self) -> str:
+        return self.post_type
+
+    @overrides(BaseEvent)
+    def get_event_description(self) -> str:
+        return escape_tag(str(self.dict()))
+
+    @overrides(BaseEvent)
+    def get_message(self) -> Message:
+        raise ValueError("Event has no message!")
+
+    @overrides(BaseEvent)
+    def get_plaintext(self) -> str:
+        raise ValueError("Event has no message!")
+
+    @overrides(BaseEvent)
+    def get_user_id(self) -> str:
+        raise ValueError("Event has no message!")
+
+    @overrides(BaseEvent)
+    def get_session_id(self) -> str:
+        raise ValueError("Event has no message!")
+
+    @overrides(BaseEvent)
+    def is_tome(self) -> bool:
+        return False
+
+
 class RecvEvent(BaseEvent):
     '''ws推送事件基类'''
     __event__ = "WsRecv"

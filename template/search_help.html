@@ -24,15 +24,15 @@
                     </thead>
                     <tbody class="fs-5">
                         <tr>
-                            <td>日常 [<span class="text-danger">服务器</span>]</td>
+                            <td>日常 [<span class="text-success">服务器</span>]</td>
                             <td>查看日常，服务器可省略</td>
                         </tr>
                         <tr>
-                            <td>开服 [<span class="text-danger">服务器</span>]</td>
+                            <td>开服 [<span class="text-success">服务器</span>]</td>
                             <td>查询是否开服，服务器可省略</td>
                         </tr>
                         <tr>
-                            <td>金价 [<span class="text-danger">服务器</span>]</td>
+                            <td>金价 [<span class="text-success">服务器</span>]</td>
                             <td>查询金价，服务器可省略</td>
                         </tr>
                         <tr>
@@ -70,7 +70,7 @@
                         {% if flag %}
                         <tr>
                             <td>查询 [<span class="text-success">服务器</span>] <span class="text-danger">角色名</span></td>
-                            <td>查询该角色的成就，服务器可省略</td>
+                            <td>查询该角色的奇遇，服务器可省略</td>
                         </tr>
                         <tr>
                             <td>奇遇 [<span class="text-success">服务器</span>] <span class="text-danger">奇遇名</span></td>
@@ -87,6 +87,11 @@
                         <tr>
                             <td>装备|属性 [<span class="text-success">服务器</span>] <span class="text-danger">角色名</span></td>
                             <td>查询角色装备，服务器可省略</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td>查询 [<span class="text-success">服务器</span>] <span class="text-danger">角色名</span></td>
+                            <td>免费奇遇查询，数据不全</td>
                         </tr>
                         {% endif %}
                         <tr>

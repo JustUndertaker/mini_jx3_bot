@@ -8,7 +8,7 @@ _✨基于[nonebot2](https://github.com/nonebot/nonebot2)的剑网三群聊机�
 
 <p align="center">
 <a href="https://www.python.org/">
-<img src="https://img.shields.io/badge/python-3.9%2B-blue" alt="license"></a>
+<img src="https://img.shields.io/badge/python-3.8%2B-blue" alt="license"></a>
 <a href="https://github.com/nonebot/nonebot2">
 <img src="https://img.shields.io/badge/nonebot-2.0.0b1-yellow"></a>
 <a href="https://github.com/Mrs4s/go-cqhttp">
@@ -33,9 +33,9 @@ _✨基于[nonebot2](https://github.com/nonebot/nonebot2)的剑网三群聊机�
 
 ## 部署机器人
 ### 安装环境
-**项目需要python环境，且需要[python3.9+](https://www.python.org/downloads/)。**
+**项目需要python环境，且需要[python3.8+](https://www.python.org/downloads/)，可以自行选择python版本。**
 ```bash
-apt-get install python3.9
+apt-get install python3.8
 ```
 **QQ协议端采用[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)。**
 
@@ -157,10 +157,10 @@ servers:
       universal: ws://127.0.0.1:8080/onebot/v11/ws
 ```
 这主要是nb2升级到了beta1，ws地址发生了变化。
-### 1.linux下安装python3.9
-linux系统推荐使用ubuntu，自带的apt可以直接获取python3.9
+### 1.linux下安装python
+linux系统推荐使用ubuntu20+，自带python3.8，而且apt可以获取3.9+
 ```bash
-sudo apt-get install python3.9
+sudo apt-get install python3.8
 ```
 如果需要编译安装，请自行查找相关资料
 ### 2.python虚拟环境

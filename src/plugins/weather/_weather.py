@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from httpx import AsyncClient
 from src.utils.config import config
@@ -53,7 +53,7 @@ class Weather(object):
         self._client = AsyncClient()
 
     @classmethod
-    def _handle_days(cls, days: list[dict[str, str]]) -> dict:
+    def _handle_days(cls, days: List[Dict[str, str]]) -> dict:
         '''处理days数据，增加week，date字段'''
         week_map = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
         data = []

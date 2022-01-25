@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Literal, Optional
+from typing import List, Literal, Optional
 
 from httpx import AsyncClient
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
@@ -50,7 +50,7 @@ async def get_notice_status(group_id: int, notice_type: Literal["welcome_status"
     return await GroupInfo.get_config_status(group_id, notice_type)
 
 
-async def _message_encoder(message: Message, path: Path) -> list[dict]:
+async def _message_encoder(message: Message, path: Path) -> List[dict]:
     '''将message编码成json格式，将图片保存本地'''
     req_data = []
     index = 0

@@ -1,5 +1,6 @@
 import random
 from datetime import date
+from typing import Dict
 
 from tortoise import fields
 from tortoise.models import Model
@@ -45,7 +46,7 @@ class UserInfo(Model):
                       friendly_add: int,
                       gold_base: int,
                       lucky_gold: int
-                      ) -> dict[str, int]:
+                      ) -> Dict[str, int]:
         '''
         :说明
             设置签到

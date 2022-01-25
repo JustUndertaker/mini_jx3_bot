@@ -1,5 +1,6 @@
 import asyncio
 import json
+from typing import Dict
 
 import websockets
 from nonebot import get_bots
@@ -78,7 +79,7 @@ class Jx3WebSocket(object):
                 for _, one_bot in bots.items():
                     await handle_event(one_bot, event)
 
-    def _handle_first_recv(self, data: dict[str, str]):
+    def _handle_first_recv(self, data: Dict[str, str]):
         '''处理首次接收事件'''
         def _to_bool(string: str) -> bool:
             return (string == "已开启")

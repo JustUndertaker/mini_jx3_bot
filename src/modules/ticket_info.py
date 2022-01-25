@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from tortoise import fields
 from tortoise.models import Model
@@ -45,7 +45,7 @@ class TicketInfo(Model):
         return not flag
 
     @classmethod
-    async def get_all(cls) -> list[dict]:
+    async def get_all(cls) -> List[dict]:
         '''
         :说明
             获取所有ticket

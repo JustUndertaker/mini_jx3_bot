@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple
 
 from httpx import AsyncClient
 from src.modules.group_info import GroupInfo
@@ -6,7 +6,7 @@ from src.modules.ticket_info import TicketInfo
 from src.utils.config import config
 
 
-async def get_group_list() -> list[dict]:
+async def get_group_list() -> List[dict]:
     '''
     获取群数据
 
@@ -32,7 +32,7 @@ async def set_bot_status(group_id: int, status: str):
     await GroupInfo.set_status(group_id, status)
 
 
-async def get_ticket_list() -> list[dict]:
+async def get_ticket_list() -> List[dict]:
     '''获取ticket列表'''
     return await TicketInfo.get_all()
 

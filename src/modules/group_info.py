@@ -1,5 +1,5 @@
 import json
-from typing import Literal, Optional, Tuple
+from typing import List, Literal, Optional, Tuple
 
 from src.utils.config import config
 from tortoise import fields
@@ -194,7 +194,7 @@ class GroupInfo(Model):
         return data
 
     @classmethod
-    async def set_notice_msg(cls, group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"], message: list[dict]):
+    async def set_notice_msg(cls, group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"], message: List[dict]):
         '''设置通知内容'''
         _message = json.dumps(message, ensure_ascii=False)
         record, _ = await cls.get_or_create(group_id=group_id)
@@ -211,7 +211,7 @@ class GroupInfo(Model):
             await record.save(update_fields=["welcome_text"])
 
     @classmethod
-    async def get_notice_msg(cls, group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"]) -> list[dict]:
+    async def get_notice_msg(cls, group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"]) -> List[dict]:
         '''获取通知内容'''
         record, _ = await cls.get_or_create(group_id=group_id)
         if notice_type == "晚安通知":
@@ -227,7 +227,7 @@ class GroupInfo(Model):
         await cls.filter(group_id=group_id).delete()
 
     @classmethod
-    async def get_group_list(cls) -> list[dict]:
+    async def get_group_list(cls) -> List[dict]:
         '''获取群列表数据'''
         return await cls.all().values("group_id", "group_name", "sign_nums", "server", "robot_status", "robot_active")
 

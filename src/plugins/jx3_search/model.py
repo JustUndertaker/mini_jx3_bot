@@ -1,5 +1,5 @@
 import time
-from typing import Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from httpx import AsyncClient
 from src.modules.search_record import SearchRecord
@@ -62,7 +62,7 @@ class SearchManager(object):
 
     _main_site: str
     '''jx3api主站url'''
-    _app_dict: dict[str, dict[str, Union[str, int]]]
+    _app_dict: Dict[str, Dict[str, Union[str, int]]]
     '''app字典'''
 
     def __init__(self):

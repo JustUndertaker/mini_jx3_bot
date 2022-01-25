@@ -82,6 +82,11 @@
                     </div>
                     <div class="border bordered-5 col-9 rounded">
                         <div class="row">
+                            {% if data.ws.closed %}
+                            <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
+                                <div class="btn btn-secondary">未连接到ws服务器</div>
+                            </div>
+                            {% else %}
                             {% if data.ws.open_server %}
                             {% if data.group.ws_server %}
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
@@ -135,6 +140,7 @@
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-secondary">扶摇监控</div>
                             </div>
+                            {% endif %}
                             {% endif %}
                             {% endif %}
                         </div>

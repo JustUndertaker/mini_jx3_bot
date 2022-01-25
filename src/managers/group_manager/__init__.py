@@ -90,6 +90,9 @@ async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
 @bind_server.handle()
 async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     '''绑定服务器'''
+    logger.info(
+        f"<y>群管理</y> | <g>群{event.group_id}</g> | 请求绑定服务器 | {name}"
+    )
     server = await source.get_main_server(name)
     if server is None:
         await bind_server.finish(f"绑定失败，未找到服务器：{name}")
@@ -101,6 +104,9 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
 @set_activity.handle()
 async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     '''设置活跃值'''
+    logger.info(
+        f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置活跃值 | {name}"
+    )
     activity = int(name)
     await source.set_activity(event.group_id, activity)
     await set_activity.finish(f"机器人当前活跃值为：{name}")
@@ -109,6 +115,9 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
 @robot_status.handle()
 async def _(event: GroupMessageEvent, status: bool = Depends(get_status)):
     '''设置机器人开关'''
+    logger.info(
+        f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置机器人开关 | {status}"
+    )
     await source.set_status(event.group_id, status)
     name = "开启"if status else "关闭"
     await robot_status.finish(f"设置成功，机器人当前状态为：{name}")
@@ -117,6 +126,9 @@ async def _(event: GroupMessageEvent, status: bool = Depends(get_status)):
 @notice.handle()
 async def _(event: GroupMessageEvent, notice_type: Literal["晚安通知", "离群通知", "进群通知"] = Depends(get_notice_type)):
     '''设置通知内容'''
+    logger.info(
+        f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置通知内容 | {notice_type} | {event.get_message()}"
+    )
     await source.handle_data_notice(event.group_id, notice_type, event.get_message())
     await notice.finish(
         f"设置{notice_type}成功！"
@@ -148,8 +160,11 @@ async def _():
 
 
 @didi.handle()
-async def _(bot: Bot, msg: Message = Depends(get_didi_msg)):
+async def _(bot: Bot, event: GroupMessageEvent, msg: Message = Depends(get_didi_msg)):
     '''滴滴功能'''
+    logger.info(
+        f"<y>群管理</y> | <g>群{event.group_id}</g> | 滴滴功能 | {msg}"
+    )
     superusers = list(bot.config.superusers)
     if not superusers:
         await didi.finish("本机器人没有管理员，不知道发给谁呀。")
@@ -255,6 +270,9 @@ async def _(bot: Bot, event: FriendAddNoticeEvent):
 @scheduler.scheduled_job("cron", hour=0, minute=0)
 async def _():
     '''晚安通知'''
+    logger.info(
+        "<y>群管理</y> | 晚安通知 | 正在发送晚安通知"
+    )
     all_bot = get_bots()
     for _, bot in all_bot.items():
         group_list: list[dict] = await bot.get_group_list()

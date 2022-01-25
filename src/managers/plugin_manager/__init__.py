@@ -5,6 +5,7 @@ from nonebot.exception import IgnoredException
 from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
 from nonebot.permission import SUPERUSER
+from src.utils.log import logger
 
 from . import data_source as source
 
@@ -52,6 +53,9 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
     get_msg = event.get_plaintext().split(" ")
     status = get_msg[0]
     config_type = get_msg[-1]
+    logger.info(
+        f"<y>插件管理</y> | <g>群{event.group_id}</g> | 设置通知 | {config_type} | {status}"
+    )
     flag = await source.change_group_config(event.group_id, config_type, status)
     if flag:
         matcher.stop_propagation()
@@ -67,6 +71,9 @@ async def _(event: GroupMessageEvent):
     get_msg = event.get_plaintext().split(" ")
     status = get_msg[0]
     plugin_name = get_msg[-1]
+    logger.info(
+        f"<y>插件管理</y> | <g>群{event.group_id}</g> | 插件开关 | {plugin_name} | {status}"
+    )
     flag = await source.change_plugin_status(event.group_id, plugin_name, status)
     if flag:
         msg = f"设置成功！\n插件[{plugin_name}]当前已 {status}"

@@ -13,6 +13,7 @@ from nonebot.permission import SUPERUSER
 from nonebot.rule import Rule
 from src.utils.browser import browser
 from src.utils.config import config
+from src.utils.log import logger
 from src.utils.utils import GroupList_Async
 
 from . import data_source as source
@@ -118,6 +119,9 @@ def get_status(event: PrivateMessageEvent) -> bool:
 @get_request.handle()
 async def _(bot: Bot, event: FriendRequestEvent):
     '''好友请求事件'''
+    logger.info(
+        f"<g>超级用户管理</g> | 收到好友请求：{event.user_id}"
+    )
     flag: bool = config.default['access_firend']
     if flag:
         # 接受请求
@@ -130,6 +134,9 @@ async def _(bot: Bot, event: FriendRequestEvent):
 @get_request.handle()
 async def _(bot: Bot, event: GroupRequestEvent):
     '''群请求事件'''
+    logger.info(
+        f"<g>超级用户管理</g> | 收到群邀请：{event.group_id}"
+    )
     flag: bool = config.default['access_group']
     if flag:
         await event.approve(bot)
@@ -141,6 +148,9 @@ async def _(bot: Bot, event: GroupRequestEvent):
 @friend_list.handle()
 async def _(bot: Bot, event: PrivateMessageEvent):
     '''好友列表'''
+    logger.info(
+        f"<g>超级用户管理</g> | {event.user_id} | 请求好友列表"
+    )
     user_list = await bot.get_friend_list()
     num = len(user_list)
     pagename = "friend_list.html"
@@ -151,6 +161,9 @@ async def _(bot: Bot, event: PrivateMessageEvent):
 @friend_delete.handle()
 async def _(bot: Bot, user_id: int = Depends(get_name)):
     '''删除好友'''
+    logger.info(
+        f"<g>超级用户管理</g> | 请求删除好友：{user_id}"
+    )
     user_list = await bot.get_friend_list()
     flag = False
     user_name = ""
@@ -170,6 +183,9 @@ async def _(bot: Bot, user_id: int = Depends(get_name)):
 @group_list.handle()
 async def _(bot: Bot, event: PrivateMessageEvent):
     '''群列表'''
+    logger.info(
+        f"<g>超级用户管理</g> | {event.user_id} | 请求群列表"
+    )
     _group = await source.get_group_list()
     num = len(_group)
     pagename = "group_list.html"
@@ -180,6 +196,9 @@ async def _(bot: Bot, event: PrivateMessageEvent):
 @group_delete.handle()
 async def _(bot: Bot, group_id: int = Depends(get_name)):
     '''退群'''
+    logger.info(
+        f"<g>超级用户管理</g> | 请求退群：{group_id}"
+    )
     flag, group_name = await source.get_group(group_id)
     if flag:
         await bot.set_group_leave(group_id=group_id, is_dismiss=True)
@@ -192,6 +211,9 @@ async def _(bot: Bot, group_id: int = Depends(get_name)):
 @borodcast.handle()
 async def _(bot: Bot, group_id: int = Depends(get_borod_group), message: Message = Depends(get_borod_msg)):
     '''广播消息'''
+    logger.info(
+        f"<g>超级用户管理</g> | 广播消息 | {group_id} | {message}"
+    )
     msg = None
     try:
         await bot.send_group_msg(group_id=group_id, message=message)
@@ -203,6 +225,9 @@ async def _(bot: Bot, group_id: int = Depends(get_borod_group), message: Message
 @borodcast_all.handle()
 async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
     '''广播全体消息'''
+    logger.info(
+        f"<g>超级用户管理</g> | 全体广播 | {message}"
+    )
     success = 0
     failed = 0
     group_list = await bot.get_group_list()
@@ -224,6 +249,9 @@ async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
 @handle_robot.handle()
 async def _(bot: Bot, group_id: int = Depends(get_name), status: bool = Depends(get_status)):
     '''打开关闭机器人'''
+    logger.info(
+        f"<g>超级用户管理</g> | 打开关闭机器人 | {group_id} | {status}"
+    )
     flag, _ = await source.get_group(group_id)
     if flag:
         await source.set_bot_status(group_id, status)
@@ -245,6 +273,9 @@ async def _(event: PrivateMessageEvent):
 async def _():
     '''ticket管理器'''
     # 获取ticket列表
+    logger.info(
+        "<g>超级用户管理</g> | 请求ticket表"
+    )
     ticket_list = await source.get_ticket_list()
     pagename = "ticket.html"
     img = await browser.template_to_image(pagename=pagename, ticket_list=ticket_list)
@@ -254,6 +285,9 @@ async def _():
 @ticket_add.handle()
 async def _(ticket: str = Depends(get_ticket)):
     '''添加ticket'''
+    logger.info(
+        f"<g>超级用户管理</g> | 请求添加ticket | {ticket}"
+    )
     flag, _msg = await source.add_ticket(ticket)
     if flag:
         msg = "添加ticket成功！"
@@ -265,6 +299,9 @@ async def _(ticket: str = Depends(get_ticket)):
 @ticket_del.handle()
 async def _(index: str = Depends(get_ticket)):
     '''删除ticket'''
+    logger.info(
+        f"<g>超级用户管理</g> | 请求删除ticket | index:{index}"
+    )
     id = int(index)
     flag = await source.delete_ticket(id)
     if flag:
@@ -277,5 +314,8 @@ async def _(index: str = Depends(get_ticket)):
 @ticket_clean.handle()
 async def _():
     '''清理ticket'''
+    logger.info(
+        "<g>超级用户管理</g> | 清理ticket"
+    )
     await source.clean_ticket()
     await ticket_clean.finish("ticket清理完毕。")

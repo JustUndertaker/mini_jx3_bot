@@ -26,7 +26,7 @@ async def _(event: GroupMessageEvent):
     else:
         city = get_msg[:-2]
     logger.info(
-        f"<y>群{event.group_id}</> | <g>{event.user_id}</g> | 查询天气：{city}"
+        f"<y>群{event.group_id}</> | <g>{event.user_id}</g> | 天气查询 | 请求：{city}"
     )
     msg = await get_weather(city)
     await weather.finish(msg)

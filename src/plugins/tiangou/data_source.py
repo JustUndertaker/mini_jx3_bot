@@ -25,17 +25,17 @@ async def get_tiangou() -> Optional[str]:
             if req['code'] == 200:
                 data = req['data']
                 text = data['text']
-                log = f"请求日记成功：{text}"
+                log = f"<g>舔狗日记</g> | 请求日记成功：{text}"
                 logger.debug(log)
                 date_now = datetime.now()
                 date_str = date_now.strftime('%Y年%m月%d日')
                 req_text = date_str+"\n"+text
                 return req_text
             else:
-                log = f'请求日记出错：{req["msg"]}'
+                log = f'<g>舔狗日记</g> | 请求日记出错：{req["msg"]}'
                 logger.debug(log)
                 return None
         except Exception as e:
-            log = f'请求链接失败，原因：{str(e)}'
+            log = f'<g>舔狗日记</g> | 请求链接失败，原因：{str(e)}'
             logger.error(log)
             return None

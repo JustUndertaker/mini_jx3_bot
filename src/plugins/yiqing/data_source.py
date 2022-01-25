@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 from httpx import AsyncClient
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from src.utils.browser import browser
+from src.utils.log import logger
 
 from .config import CITY_MAP
 
@@ -45,6 +46,9 @@ async def get_data(name: str) -> MessageSegment:
         try:
             req = await client.get(url=url, params=params)
             result = req.json()
+            logger.debug(
+                f"<y>疫情查询</y> | 返回：{result}"
+            )
             data = {}
             if city:
                 data['name'] = result.get('cityName') if result.get('cityName') is not None else "-"
@@ -62,6 +66,9 @@ async def get_data(name: str) -> MessageSegment:
             data['highDangerCount'] = result.get('highDangerCount') if result.get(
                 'highDangerCount') is not None else "-"  # 重症病例
         except Exception as e:
+            logger.error(
+                f"<y>疫情查询</y> | 查询失败：{str(e)}"
+            )
             return MessageSegment.text(f"查询失败，{str(e)}")
 
     time_now = date.today()

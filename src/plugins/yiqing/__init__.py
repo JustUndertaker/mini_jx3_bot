@@ -2,6 +2,7 @@ from nonebot import export, on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.params import Depends
+from src.utils.log import logger
 
 from . import data_source as source
 
@@ -25,7 +26,10 @@ def get_name(event: GroupMessageEvent) -> str:
 
 
 @yiqing.handle()
-async def _(name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     '''疫情查询'''
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 疫情查询 | 请求：{name}"
+    )
     msg = await source.get_data(name)
     await yiqing.finish(msg)

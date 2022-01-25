@@ -40,6 +40,9 @@ async def get_data_from_api(app_name: str, group_id: int, params: dict, need_tic
             ticket = await ticket_manager.get_ticket()
             params["ticket"] = ticket
             if not ticket:
+                logger.debug(
+                    f"<y>群{group_id}</y> | {app_name} | 查询失败，未找到ticket"
+                )
                 return "未找到合适的ticket，请联系管理员", {}
             try:
                 return await jx3_searcher.get_data_from_api(group_id, app_name, params)

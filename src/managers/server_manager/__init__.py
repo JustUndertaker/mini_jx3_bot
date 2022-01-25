@@ -108,11 +108,11 @@ async def _(bot: Bot, event: PrivateMessageEvent):
     if ws_client.closed:
         msg = "正在连接ws服务器……"
         await connect_ws.send(msg)
-        flag, req = await ws_client.init()
+        flag = await ws_client.init()
         if flag:
             msg = "连接成功！ws服务器已连接。"
         else:
-            msg = f"连接失败：{req}！"
+            msg = "ws服务器连接失败！"
         await connect_ws.finish(msg)
     else:
         msg = "ws服务器当前已连接，不要重复连接！"
@@ -162,11 +162,11 @@ async def _(bot: Bot, event: WsClosed):
     msg = f"检测到ws链接关闭：{event.reason}\n正在重连……"
     async for user_id in GroupList_Async(superusers):
         await bot.send_private_msg(user_id=user_id, message=msg)
-    flag, req = await ws_client.init()
+    flag = await ws_client.init()
     if flag:
         msg = "ws重连成功！"
     else:
-        msg = f"ws链接失败：{req}！"
+        msg = "ws连接失败！"
     async for user_id in GroupList_Async(superusers):
         await bot.send_private_msg(user_id=user_id, message=msg)
     await ws_closed.finish()

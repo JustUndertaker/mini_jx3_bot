@@ -1,6 +1,5 @@
 import asyncio
 import json
-from typing import Tuple
 
 import websockets
 from nonebot import get_bots
@@ -92,26 +91,34 @@ class Jx3WebSocket(object):
         except Exception:
             pass
 
-    async def init(self) -> Tuple[bool, str]:
+    async def init(self) -> bool:
         '''初始化'''
         ws_path: str = config.jx3api['ws_path']
         ws_token = config.jx3api['ws_token']
         if ws_token is None:
             ws_token = ""
         headers = {"token": ws_token}
-        logger.debug(f"正在链接jx3api的ws服务器：{ws_path}")
-        try:
-            self._ws = await websockets.connect(uri=ws_path,
-                                                extra_headers=headers,
-                                                ping_interval=20,
-                                                ping_timeout=20,
-                                                close_timeout=10)
-            asyncio.create_task(self._task())
-            return True, ""
-        except Exception as e:
-            logger.error(
-                f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
-            return False, str(e)
+        logger.debug(f"<g>ws_server</g> | 正在链接jx3api的ws服务器：{ws_path}")
+        for i in range(1, 101):
+            try:
+                logger.debug(
+                    f"<g>ws_server</g> | 正在开始第 {i} 次尝试"
+                )
+                self._ws = await websockets.connect(uri=ws_path,
+                                                    extra_headers=headers,
+                                                    ping_interval=20,
+                                                    ping_timeout=20,
+                                                    close_timeout=10)
+                asyncio.create_task(self._task())
+                logger.debug(
+                    "<g>ws_server</g> | ws连接成功！"
+                )
+                return True
+            except Exception as e:
+                logger.error(
+                    f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
+                asyncio.sleep(1)
+        return False
 
     async def close(self):
         '''关闭ws链接'''

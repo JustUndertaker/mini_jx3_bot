@@ -184,8 +184,12 @@ JX3_APP = {
         "app": "/movie/matchId",
         "cd": 0
     },
-    "奇遇查询":  {
+    "付费奇遇查询":  {
         "app": "/advent/serendipity",
+        "cd": 10
+    },
+    "免费奇遇查询": {
+        "app": "/app/serendipity",
         "cd": 10
     },
     "奇遇统计": {

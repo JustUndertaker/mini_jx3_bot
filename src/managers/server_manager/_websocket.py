@@ -65,7 +65,7 @@ class Jx3WebSocket(object):
     async def _handle_msg(self, message: str):
         '''处理回复数据'''
         data = json.loads(message)
-        logger.success(data)
+        # logger.success(data)
         msg_type: int = data['type']
         # 判断首次信息
         if msg_type == 10000:

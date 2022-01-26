@@ -22,7 +22,7 @@ file_format = (
 
 # 错误日志文件记录格式
 error_format = (
-    "<g>{time:MM-DD HH:mm:ss}</g>"
+    "<g>{time:MM-DD HH:mm:ss}</g> "
     "[<lvl>{level}</lvl>] "
     "[<c><u>{name}</u></c>] | "
     "<c>{function}:{line}</c>| "

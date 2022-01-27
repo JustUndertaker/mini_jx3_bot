@@ -205,7 +205,9 @@ sudo apt-get install convmv
 convmv -f GBK -t utf-8  --notest ./*
 ```
 ### 5.网站token问题
-这是数据站[www.jx3api.com](https://www.jx3api.com)决定的，你可以找站长进行购买，token可以获得使用一些高级功能的权限。
+这是数据站[www.jx3api.com](https://www.jx3api.com)决定的，和本项目无关，我只是做了对应适配。
+
+你可以在[这里](https://www.jx3api.shop)购买，token可以获得使用一些高级功能的权限。
 ### 6.ticket问题
 这里的ticket是指《剑网三推栏》抓包到的账号token，是使用高级功能的参数之一，抓包方法可以联系api站长，也可以进群了解。
 

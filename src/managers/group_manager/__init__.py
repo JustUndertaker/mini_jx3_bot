@@ -206,13 +206,18 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
                 pass
 
         # 发送欢迎语
-        nickname = list(bot.config.nickname)[0]
-        await get_notice.finish(f"{nickname}驾到，有什么问题来问我吧！")
+        msg = None
+        robot_status = await source.get_robot_status(group_id)
+        if robot_status:
+            nickname = list(bot.config.nickname)[0]
+            msg = f"{nickname}驾到，有什么问题来问我吧！"
+        await get_notice.finish(msg)
 
     # 有人进群，发送欢迎语
     flag = await source.get_notice_status(group_id, "welcome_status")
+    robot_status = await source.get_robot_status(group_id)
     msg = None
-    if flag:
+    if flag and robot_status:
         msg = await source.message_decoder(group_id, "进群通知")
     await get_notice.finish(msg)
 
@@ -243,8 +248,9 @@ async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
 
     # 有人退群，发送退群消息
     flag = await source.get_notice_status(group_id, "someoneleft_status")
+    robot_status = await source.get_robot_status(group_id)
     msg = None
-    if flag:
+    if flag and robot_status:
         msg = await source.message_decoder(group_id, "离群通知")
     await get_notice.finish(msg)
 

@@ -140,10 +140,9 @@ class Jx3WebSocket(object):
     @property
     def closed(self) -> bool:
         '''ws是否关闭'''
-        try:
+        if self._ws:
             return self._ws.closed
-        except Exception:
-            return False
+        return True
 
 
 ws_client = Jx3WebSocket()

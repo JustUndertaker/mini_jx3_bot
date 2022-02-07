@@ -105,7 +105,7 @@ async def _(bot: Bot, event: PrivateMessageEvent):
 @connect_ws.handle()
 async def _(bot: Bot, event: PrivateMessageEvent):
     '''连接服务器'''
-    if ws_client.closed:
+    if ws_client.closed and not ws_client.is_connecting:
         msg = "正在连接ws服务器……"
         await connect_ws.send(msg)
         flag = await ws_client.init()
@@ -115,14 +115,15 @@ async def _(bot: Bot, event: PrivateMessageEvent):
             msg = "ws服务器连接失败！"
         await connect_ws.finish(msg)
     else:
-        msg = "ws服务器当前已连接，不要重复连接！"
+        msg = "ws服务器当前已连接或连接中，请不要重复连接！"
         await connect_ws.finish(msg)
 
 
 @close_ws.handle()
 async def _(bot: Bot, event: PrivateMessageEvent):
     '''关闭连接'''
-    await ws_client.close()
+    if not ws_client.closed:
+        await ws_client.close()
     await close_ws.finish("ws连接已关闭！")
 
 # ----------------------------------------------------------------

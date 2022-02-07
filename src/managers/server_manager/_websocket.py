@@ -28,6 +28,8 @@ class Jx3WebSocket(object):
     '''抓马播报'''
     _fuyao: bool = False
     '''扶摇播报'''
+    is_connecting: bool = False
+    '''是否在连接中'''
 
     def __new__(cls, *args, **kwargs):
         '''单例'''
@@ -100,6 +102,7 @@ class Jx3WebSocket(object):
             ws_token = ""
         headers = {"token": ws_token}
         logger.debug(f"<g>ws_server</g> | 正在链接jx3api的ws服务器：{ws_path}")
+        self.is_connecting = True
         for i in range(1, 101):
             try:
                 logger.debug(
@@ -110,6 +113,7 @@ class Jx3WebSocket(object):
                                                     ping_interval=20,
                                                     ping_timeout=20,
                                                     close_timeout=10)
+                self.is_connecting = False
                 asyncio.create_task(self._task())
                 logger.debug(
                     "<g>ws_server</g> | ws连接成功！"
@@ -119,6 +123,7 @@ class Jx3WebSocket(object):
                 logger.error(
                     f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
                 asyncio.sleep(1)
+        self.is_connecting = False
         return False
 
     async def close(self):

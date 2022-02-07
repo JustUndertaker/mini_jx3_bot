@@ -146,3 +146,8 @@ async def get_meau_data(group_id: int) -> dict:
     req_data['group'] = await GroupInfo.get_meau_data(group_id)
     req_data['plugin'] = await PluginInfo.get_meau_data(group_id)
     return req_data
+
+
+async def get_robot_status(group_id: int) -> bool:
+    '''获取机器人开关'''
+    return await GroupInfo.get_bot_status(group_id)

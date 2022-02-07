@@ -283,7 +283,8 @@ async def _():
         time_start = time.time()
         async for group_id in GroupList_Async(group_list):
             goodnight_status = await source.get_notice_status(group_id, "goodnight_status")
-            if goodnight_status:
+            robot_status = await source.get_robot_status(group_id)
+            if goodnight_status and robot_status:
                 try:
                     msg = await source.message_decoder(group_id, "晚安通知")
                     await bot.send_group_msg(group_id=group_id, message=msg)

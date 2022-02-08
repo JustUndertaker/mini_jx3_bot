@@ -5,6 +5,7 @@ from typing import List, Optional, Tuple
 from src.modules.group_info import GroupInfo
 from src.utils.log import logger
 
+from .config import JX3APP
 from .model import jx3_searcher, ticket_manager
 
 
@@ -18,13 +19,13 @@ async def get_main_server(server: str) -> Optional[str]:
     return await jx3_searcher.get_server(server)
 
 
-async def get_data_from_api(app_name: str, group_id: int, params: dict, need_ticket: bool = False) -> Tuple[str, dict]:
+async def get_data_from_api(app: JX3APP, group_id: int, params: dict, need_ticket: bool = False) -> Tuple[str, dict]:
     '''
     :说明
         从jx3api获取内容
 
     :参数
-        * app_name：查询分类
+        * app：jx3app枚举
         * group_id：QQ群号
         * params：参数字典
         * need_ticket：是否需要ticket
@@ -41,11 +42,11 @@ async def get_data_from_api(app_name: str, group_id: int, params: dict, need_tic
             params["ticket"] = ticket
             if not ticket:
                 logger.debug(
-                    f"<y>群{group_id}</y> | {app_name} | 查询失败，未找到ticket"
+                    f"<y>群{group_id}</y> | {app.name} | 查询失败，未找到ticket"
                 )
                 return "未找到合适的ticket，请联系管理员", {}
             try:
-                return await jx3_searcher.get_data_from_api(group_id, app_name, params)
+                return await jx3_searcher.get_data_from_api(group_id, app, params)
 
             except Exception as e:
                 logger.error(
@@ -54,7 +55,7 @@ async def get_data_from_api(app_name: str, group_id: int, params: dict, need_tic
                 return f"遇到了问题：{str(e)}。", {}
 
     try:
-        return await jx3_searcher.get_data_from_api(group_id, app_name, params)
+        return await jx3_searcher.get_data_from_api(group_id, app, params)
 
     except Exception as e:
         logger.error(

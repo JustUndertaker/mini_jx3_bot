@@ -1,5 +1,5 @@
 import time
-from typing import Dict, Optional, Tuple, Union
+from typing import Optional, Tuple
 
 from httpx import AsyncClient
 from src.modules.search_record import SearchRecord
@@ -7,7 +7,7 @@ from src.modules.ticket_info import TicketInfo
 from src.utils.config import config
 from src.utils.log import logger
 
-from .config import JX3_APP
+from .config import JX3APP
 
 
 class TicketManager(object):
@@ -62,41 +62,28 @@ class SearchManager(object):
 
     _main_site: str
     '''jx3api主站url'''
-    _app_dict: Dict[str, Dict[str, Union[str, int]]]
-    '''app字典'''
 
     def __init__(self):
         self._main_site = config.jx3api['jx3_url']
-        self._app_dict = JX3_APP
 
-    def _get_cd_time(self, app_name: str) -> int:
-        '''获取app的冷却时间'''
-        app = self._app_dict.get(app_name)
-        if app:
-            return app.get("cd")
-        raise KeyError("未找到该app")
-
-    def get_search_url(self, app_name: str) -> str:
+    def get_search_url(self, app: JX3APP) -> str:
         '''获取app请求地址'''
-        app = self._app_dict.get(app_name)
-        if app:
-            return self._main_site+app.get("app")
-        raise KeyError("未找到该app")
+        return self._main_site+app.value.url
 
-    async def search_record(self, group_id: int, app_name: str) -> Tuple[bool, int]:
+    async def search_record(self, group_id: int, app: JX3APP) -> Tuple[bool, int]:
         '''是否能够查询'''
-        time_last = await SearchRecord.get_search_time(group_id, app_name)
+        time_last = await SearchRecord.get_search_time(group_id, app.name)
         time_now = int(time.time())
-        cd_time = self._get_cd_time(app_name)
+        cd_time: int = app.value.cd
         over_time = over_time = time_now-time_last
         if over_time > cd_time:
             return True, 0
         left_cd = cd_time-over_time
         return False, left_cd
 
-    async def search_once(self, group_id: int, app_name: str):
+    async def search_once(self, group_id: int, app: JX3APP):
         '''查询app一次'''
-        await SearchRecord.use_search(group_id, app_name)
+        await SearchRecord.use_search(group_id, app.name)
 
 
 class Jx3Searcher(object):
@@ -124,7 +111,7 @@ class Jx3Searcher(object):
 
     async def get_server(self, server: str) -> Optional[str]:
         '''获取主服务器'''
-        url = self._search_manager.get_search_url("server")
+        url = self._search_manager.get_search_url(JX3APP.主从区服)
         params = {"name": server}
         try:
             req = await self._client.get(url=url, params=params)
@@ -139,14 +126,14 @@ class Jx3Searcher(object):
             )
             return None
 
-    async def get_data_from_api(self, group_id: int, app_name: str, params: dict) -> Tuple[str, dict]:
+    async def get_data_from_api(self, group_id: int, app: JX3APP, params: dict) -> Tuple[str, dict]:
         '''
         :说明
             从jx3api获取数据
 
         :参数
             * group_id：QQ群号
-            * app_name：应用名称
+            * app：app枚举
             * params：参数
 
         :返回
@@ -154,31 +141,31 @@ class Jx3Searcher(object):
             * dict：网站返回数据
         '''
         # 判断cd
-        flag, cd_time = await self._search_manager.search_record(group_id, app_name)
+        flag, cd_time = await self._search_manager.search_record(group_id, app)
         if not flag:
             logger.debug(
-                f"<y>群{group_id}</y> | <g>{app_name}</g> | 冷却中：{cd_time}"
+                f"<y>群{group_id}</y> | <g>{app.name}</g> | 冷却中：{cd_time}"
             )
-            msg = f"[{app_name}]冷却中（{cd_time}）"
+            msg = f"[{app.name}]冷却中（{cd_time}）"
             return msg, {}
 
         # 记录一次查询
-        await self._search_manager.search_once(group_id, app_name)
+        await self._search_manager.search_once(group_id, app)
         # 获取url
-        url = self._search_manager.get_search_url(app_name)
+        url = self._search_manager.get_search_url(app)
         try:
             req = await self._client.get(url=url, params=params)
             req_json: dict = req.json()
             msg: str = req_json['msg']
             data = req_json['data']
             logger.debug(
-                f"<y>群{group_id}</y> | <g>{app_name}</g> | 返回：{data}"
+                f"<y>群{group_id}</y> | <g>{app.name}</g> | 返回：{data}"
             )
             return msg, data
         except Exception as e:
             error = str(e)
             logger.error(
-                f"<y>群{group_id}</y> | <g>{app_name}</g> | 失败：{error}"
+                f"<y>群{group_id}</y> | <g>{app.name}</g> | 失败：{error}"
             )
             return error, {}
 

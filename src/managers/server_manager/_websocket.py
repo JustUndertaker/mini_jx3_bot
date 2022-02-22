@@ -75,8 +75,8 @@ class Jx3WebSocket(object):
         else:
             # 分发事件
             event = ws_event_factory(msg_type, data['data'])
-            logger.debug(event.log)
             if event:
+                logger.debug(event.log)
                 bots = get_bots()
                 for _, one_bot in bots.items():
                     await handle_event(one_bot, event)

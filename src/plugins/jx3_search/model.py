@@ -111,7 +111,7 @@ class Jx3Searcher(object):
 
     async def get_server(self, server: str) -> Optional[str]:
         '''获取主服务器'''
-        url = self._search_manager.get_search_url(JX3APP.主从区服)
+        url = self._search_manager.get_search_url(JX3APP.主从大区)
         params = {"name": server}
         try:
             req = await self._client.get(url=url, params=params)

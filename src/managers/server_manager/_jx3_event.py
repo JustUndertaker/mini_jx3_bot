@@ -1,4 +1,5 @@
 import time
+from abc import abstractmethod
 from datetime import datetime
 from typing import List, Optional
 
@@ -18,11 +19,6 @@ class WsClosed(BaseEvent):
     def __init__(self, reason: str):
         super().__init__()
         self.reason = reason
-
-    @property
-    def log(self) -> str:
-        '''事件日志内容'''
-        return ""
 
     @overrides(BaseEvent)
     def get_type(self) -> str:
@@ -58,7 +54,7 @@ class WsClosed(BaseEvent):
 
 
 class RecvEvent(BaseEvent):
-    '''ws推送事件基类'''
+    '''ws推送事件'''
     __event__ = "WsRecv"
     post_type: str = "WsRecv"
     message_type: Optional[str]
@@ -66,9 +62,10 @@ class RecvEvent(BaseEvent):
     '''影响服务器'''
 
     @property
+    @abstractmethod
     def log(self) -> str:
         '''事件日志内容'''
-        return ""
+        raise NotImplementedError
 
     @overrides(BaseEvent)
     def get_type(self) -> str:
@@ -104,6 +101,38 @@ class RecvEvent(BaseEvent):
     @overrides(BaseEvent)
     def is_tome(self) -> bool:
         return False
+
+    @staticmethod
+    def create_event(_type: int, data: dict) -> Optional["RecvEvent"]:
+        '''根据推送类型创建事件'''
+        # 奇遇推送
+        if _type == 1001:
+            return SerendipityEvent(data)
+        # 马驹刷新
+        if _type == 1002:
+            return HorseRefreshEvent(data)
+        # 马驹捕获
+        if _type == 1003:
+            return HorseCatchedEvent(data)
+        # 扶摇开启
+        if _type == 1004:
+            return FuyaoRefreshEvent(data)
+        # 扶摇点名
+        if _type == 1005:
+            return FuyaoNamedEvent(data)
+        # 烟花播报
+        if _type == 1006:
+            return FireworksEvent(data)
+        # 游戏消息
+        if _type == 1008:
+            return GameSysMsgEvent(data)
+        # 开服监控
+        if _type == 2001:
+            return ServerStatusEvent(data)
+        # 新闻资讯
+        if _type == 2002:
+            return NewsRecvEvent(data)
+        return None
 
 
 class ServerStatusEvent(RecvEvent):
@@ -423,35 +452,3 @@ class GameSysMsgEvent(RecvEvent):
         return Message(
             f"[系统频道推送]\n时间：{self.time}\n{self.message}。"
         )
-
-
-def ws_event_factory(_type: int, data: dict) -> Optional[RecvEvent]:
-    '''接收事件工厂，根据type创建对应事件'''
-    # 奇遇推送
-    if _type == 1001:
-        return SerendipityEvent(data)
-    # 马驹刷新
-    if _type == 1002:
-        return HorseRefreshEvent(data)
-    # 马驹捕获
-    if _type == 1003:
-        return HorseCatchedEvent(data)
-    # 扶摇开启
-    if _type == 1004:
-        return FuyaoRefreshEvent(data)
-    # 扶摇点名
-    if _type == 1005:
-        return FuyaoNamedEvent(data)
-    # 烟花播报
-    if _type == 1006:
-        return FireworksEvent(data)
-    # 游戏消息
-    if _type == 1008:
-        return GameSysMsgEvent(data)
-    # 开服监控
-    if _type == 2001:
-        return ServerStatusEvent(data)
-    # 新闻资讯
-    if _type == 2002:
-        return NewsRecvEvent(data)
-    return None

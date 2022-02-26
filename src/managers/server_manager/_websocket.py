@@ -10,7 +10,7 @@ from src.utils.log import logger
 from websockets.exceptions import ConnectionClosedOK
 from websockets.legacy.client import WebSocketClientProtocol
 
-from ._jx3_event import WsClosed, ws_event_factory
+from ._jx3_event import RecvEvent, WsClosed
 
 
 class Jx3WebSocket(object):
@@ -75,11 +75,14 @@ class Jx3WebSocket(object):
             self._handle_first_recv(data['data'])
         else:
             # 分发事件
-            if event := ws_event_factory(msg_type, data['data']):
+            if event := RecvEvent.create_event(msg_type, data['data']):
                 logger.debug(event.log)
                 bots = get_bots()
                 for _, one_bot in bots.items():
                     await handle_event(one_bot, event)
+            else:
+                logger.error(
+                    f"<r>未知的ws消息：{data}</r>")
 
     def _handle_first_recv(self, data: Dict[str, str]):
         '''处理首次接收事件'''
@@ -151,4 +154,17 @@ class Jx3WebSocket(object):
 
 
 ws_client = Jx3WebSocket()
-'''ws客户端'''
+"""
+ws客户端，用于连接jx3api的ws服务器.
+
+他在init连接到ws服务器后，在接受到的ws消息自动实例化为event事件并处理。
+在ws服务器关闭后，会自动重连。
+
+使用方式：
+```
+>>>await ws_client.init() # 初始化
+>>>ws_client.closed # ws是否关闭
+>>>ws_client.get_ws_status() # 获取ws状态
+>>>await ws_client.close() # 关闭
+```
+"""

@@ -56,4 +56,12 @@ class Config():
 
 
 config = Config()
-'''项目配置文件'''
+"""
+配置文件模块，用于读取项目内的config.yml文件配置内容
+使用方法:
+```
+from src.utils.config import config
+
+>>>config.your_config_key
+```
+"""

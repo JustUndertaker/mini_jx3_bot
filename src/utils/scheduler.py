@@ -3,7 +3,16 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from .log import logger
 
 scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
-'''全局定时器对象'''
+"""
+异步定时器，用于创建定时任务，使用方法：
+```
+from src.utils.scheduler import scheduler
+
+@scheduler.scheduled_job('cron', hour=0, minute=0)
+async def _():
+    pass
+```
+"""
 
 
 def start_scheduler():

@@ -139,4 +139,14 @@ class MyBrowser():
 
 
 browser = MyBrowser()
-'''全局浏览器'''
+"""
+浏览器模块，使用playwright控制浏览器截图，使用方法：
+```
+from src.utils.browser import browser
+
+>>>await browser.init() # 初始化浏览器，使用前请先初始化
+>>>await browser.template_to_image(pagename,**kwargs) # 模板截图，kwargs为截图参数
+>>>await browser.get_image_from_url(url,width) # 从url获取图片，width为截图宽度
+>>>await browser.shutdown() # 关闭浏览器
+```
+"""

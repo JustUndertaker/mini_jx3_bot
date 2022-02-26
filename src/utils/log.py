@@ -8,7 +8,21 @@ from loguru._logger import Core, Logger
 from .config import config
 
 logger = Logger(Core(), None, 0, False, False, True, False, True, None, {})
-'''自定义的logger对象'''
+"""
+loguru模块的logger，用于记录日志并保存在log文件中.
+
+支持各种日志级别，和颜色标签<red>,<r>等等.
+
+使用方法:
+```
+from src.utils.log import logger
+
+>>>logger.info("log message")
+>>>logger.success("log message")
+>>>logger.debug("log message")
+>>>logger.error("log message")
+```
+"""
 
 # 清理
 atexit.register(logger.remove)

@@ -2,10 +2,16 @@ from typing import Union
 
 
 class GroupList_Async():
-    '''
-    异步计数器，用于群发消息，支持list[int]和list[dict]，返回的是group_id
-    :加上了str适配，可以for superusers
-    '''
+    """
+    异步计数器，用于异步发送多个消息，支持dict,list使用方法：
+    ```
+    async for group_id in GroupList_Async(group_id_list):
+        await bot.send_group_msg(group_id, message)
+
+    async for user_id in GroupList_Async(superusers):
+        await bot.send_private_msg(user_id, message)
+    ```
+    """
 
     def __init__(self, obj: Union[list, dict]):
         if isinstance(obj[0], int):

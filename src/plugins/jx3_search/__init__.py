@@ -148,7 +148,8 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 日常查询 | 请求：{server}"
     )
     params = {
-        "server": server
+        "server": server,
+        "next": 0
     }
     msg, data = await source.get_data_from_api(app=JX3APP.日常查询, group_id=event.group_id, params=params)
     if msg != "success":
@@ -157,16 +158,17 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
 
     msg = f'日常[{server}]\n'
     msg += f'当前时间：{data.get("date")} 星期{data.get("week")}\n'
-    msg += f'今日大战：{data.get("dayWar")}\n'
-    msg += f'今日战场：{data.get("dayBattle")}\n'
-    msg += f'公共任务：{data.get("dayPublic")}\n'
-    msg += f'阵营任务：{data.get("dayCamp")}\n'
+    msg += f'今日大战：{data.get("war")}\n'
+    msg += f'今日战场：{data.get("battle")}\n'
+    msg += f'公共任务：{data.get("public")}\n'
+    msg += f'阵营任务：{data.get("camp")}\n'
     msg += DAILIY_LIST.get(data.get("week"))
-    if data.get("dayDraw") is not None:
-        msg += f'美人画像：{data.get("dayDraw")}\n'
-    msg += f'\n武林通鉴·公共任务\n{data.get("weekPublic")}\n'
-    msg += f'武林通鉴·秘境任务\n{data.get("weekFive")}\n'
-    msg += f'武林通鉴·团队秘境\n{data.get("weekTeam")}'
+    if data.get("draw") is not None:
+        msg += f'美人画像：{data.get("draw")}\n'
+    team: list = data.get("team")
+    msg += f'\n武林通鉴·公共任务\n{team[0]}\n'
+    msg += f'武林通鉴·秘境任务\n{team[1]}\n'
+    msg += f'武林通鉴·团队秘境\n{team[2]}'
     await daily_query.finish(msg)
 
 

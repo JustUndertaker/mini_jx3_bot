@@ -66,16 +66,16 @@ class Jx3WebSocket(object):
 
     async def _handle_msg(self, message: str):
         '''处理回复数据'''
-        data = json.loads(message)
+        data: dict = json.loads(message)
         # logger.success(data)
-        msg_type: int = data['type']
         # 判断首次信息
-        if msg_type == 10000:
+        if (msg_type := data['type']) == 10000:
+            msg_type: int
+
             self._handle_first_recv(data['data'])
         else:
             # 分发事件
-            event = ws_event_factory(msg_type, data['data'])
-            if event:
+            if event := ws_event_factory(msg_type, data['data']):
                 logger.debug(event.log)
                 bots = get_bots()
                 for _, one_bot in bots.items():

@@ -151,7 +151,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
         "server": server,
         "next": 0
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.日常查询, group_id=event.group_id, params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.日常任务, group_id=event.group_id, params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await daily_query.finish(msg)
@@ -181,7 +181,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
     params = {
         "server": server
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.开服查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.开服检查, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await server_query.finish(msg)
@@ -200,7 +200,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
     params = {
         "server": server
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.金价查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.金价比例, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await gold_query.finish(msg)
@@ -225,7 +225,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.奇穴查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.推荐奇穴, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await qixue_query.finish(msg)
@@ -244,7 +244,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.小药查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.推荐小药, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await medicine_query.finish(msg)
@@ -269,7 +269,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.配装查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.推荐装备, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await equip_group_query.finish(msg)
@@ -288,7 +288,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.宏查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.查宏命令, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await macro_query.finish(msg)
@@ -309,7 +309,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.前置查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.奇遇前置, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await condition_query.finish(msg)
@@ -328,7 +328,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_ex_name)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.攻略查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.奇遇攻略, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await strategy_query.finish(msg)
@@ -357,7 +357,7 @@ async def _(event: GroupMessageEvent):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 骚话 | 请求骚话"
     )
-    msg, data = await source.get_data_from_api(app=JX3APP.骚话, group_id=event.group_id, params=None)
+    msg, data = await source.get_data_from_api(app=JX3APP.随机骚话, group_id=event.group_id, params=None)
     if msg != "success":
         msg = f"请求失败，{msg}"
         await saohua_query.finish(msg)
@@ -378,7 +378,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.物价查询, group_id=event.group_id,  params=params)
+    msg, data = await source.get_data_from_api(app=JX3APP.物品价格, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await price_query.finish(msg)
@@ -486,7 +486,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
         "server": server,
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.战绩查询, group_id=event.group_id,  params=params, need_ticket=True)
+    msg, data = await source.get_data_from_api(app=JX3APP.比赛战绩, group_id=event.group_id,  params=params, need_ticket=True)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await match_query.finish(msg)

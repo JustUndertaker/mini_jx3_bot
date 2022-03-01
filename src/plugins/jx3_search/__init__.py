@@ -375,7 +375,12 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_ex_name)):
     params = {
         "name": name
     }
-    msg, data = await source.get_data_from_api(app=JX3APP.奇遇攻略, group_id=event.group_id,  params=params)
+    # 判断有没有token
+    token = all_config.jx3api['jx3_token']
+    if token is None:
+        msg, data = await source.get_data_from_api(app=JX3APP.免费奇遇攻略, group_id=event.group_id,  params=params)
+    else:
+        msg, data = await source.get_data_from_api(app=JX3APP.付费奇遇攻略, group_id=event.group_id,  params=params)
     if msg != "success":
         msg = f"查询失败，{msg}"
         await strategy_query.finish(msg)

@@ -28,45 +28,49 @@ Export.default_status = True
 
 class REGEX(Enum):
     '''正则枚举'''
-    日常查询 = r"(^日常$)|(^日常 [\u4e00-\u9fa5]+$)"
-    开服查询 = r"(^开服$)|(^开服 [\u4e00-\u9fa5]+$)"
-    金价查询 = r"(^金价$)|(^金价 [\u4e00-\u9fa5]+$)"
-    奇穴查询 = r"(^奇穴 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+奇穴$)"
-    小药查询 = r"(^小药 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+小药$)"
-    配装查询 = r"(^配装 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+配装$)"
-    宏查询 = r"(^宏 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+宏$)"
-    前置查询 = r"^((前置)|(条件)) [\u4e00-\u9fa5]+$"
-    攻略查询 = r"(^攻略 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+攻略$)"
+    日常任务 = r"(^日常$)|(^日常 [\u4e00-\u9fa5]+$)"
+    开服检查 = r"(^开服$)|(^开服 [\u4e00-\u9fa5]+$)"
+    金价比例 = r"(^金价$)|(^金价 [\u4e00-\u9fa5]+$)"
+    沙盘图片 = r"(^沙盘$)|(^沙盘 [\u4e00-\u9fa5]+$)"
+    推荐小药 = r"(^小药 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+小药$)"
+    推荐装备 = r"(^配装 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+配装$)"
+    推荐奇穴 = r"(^奇穴 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+奇穴$)"
+    查宏命令 = r"(^宏 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+宏$)"
+    阵眼效果 = r"(^阵眼 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+阵眼$)"
+    物品价格 = r"^物价 [\u4e00-\u9fa5]+$"
+    随机骚话 = r"^骚话$"
+    奇遇前置 = r"^((前置)|(条件)) [\u4e00-\u9fa5]+$"
+    奇遇攻略 = r"(^攻略 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+攻略$)"
     更新公告 = r"(^更新$)|(^公告$)|(^更新公告$)"
-    物价查询 = r"^物价 [\u4e00-\u9fa5]+$"
     奇遇查询 = r"(^查询 [(\u4e00-\u9fa5)|(@)]+$)|(^查询 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)"
     奇遇统计 = r"(^奇遇 [\u4e00-\u9fa5]+$)|(^奇遇 [\u4e00-\u9fa5]+ [\u4e00-\u9fa5]+$)"
     奇遇汇总 = r"(^汇总$)|(^汇总 [\u4e00-\u9fa5]+$)"
-    骚话 = r"^骚话$"
-    战绩查询 = r"(^战绩 [(\u4e00-\u9fa5)|(@)]+$)|(^战绩 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)"
-    装备查询 = r"(^((装备)|(属性)) [(\u4e00-\u9fa5)|(@)]+$)|(^((装备)|(属性)) [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)"
+    比赛战绩 = r"(^战绩 [(\u4e00-\u9fa5)|(@)]+$)|(^战绩 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)"
+    装备属性 = r"(^((装备)|(属性)) [(\u4e00-\u9fa5)|(@)]+$)|(^((装备)|(属性)) [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)"
 
 
 # ----------------------------------------------------------------
 #   matcher列表，定义查询的mathcer
 # ----------------------------------------------------------------
-daily_query = on_regex(pattern=REGEX.日常查询.value, permission=GROUP, priority=5, block=True)
-server_query = on_regex(pattern=REGEX.开服查询.value, permission=GROUP, priority=5, block=True)
-gold_query = on_regex(pattern=REGEX.金价查询.value, permission=GROUP, priority=5, block=True)
-qixue_query = on_regex(pattern=REGEX.奇穴查询.value, permission=GROUP, priority=5, block=True)
-medicine_query = on_regex(pattern=REGEX.小药查询.value, permission=GROUP, priority=5, block=True)
-equip_group_query = on_regex(pattern=REGEX.配装查询.value, permission=GROUP, priority=5, block=True)
-macro_query = on_regex(pattern=REGEX.宏查询.value, permission=GROUP, priority=5, block=True)
-condition_query = on_regex(pattern=REGEX.前置查询.value, permission=GROUP, priority=5, block=True)
-strategy_query = on_regex(pattern=REGEX.攻略查询.value, permission=GROUP, priority=5, block=True)
+daily_query = on_regex(pattern=REGEX.日常任务.value, permission=GROUP, priority=5, block=True)
+server_query = on_regex(pattern=REGEX.开服检查.value, permission=GROUP, priority=5, block=True)
+gold_query = on_regex(pattern=REGEX.金价比例.value, permission=GROUP, priority=5, block=True)
+sand_query = on_regex(pattern=REGEX.沙盘图片.value, permission=GROUP, priority=5, block=True)
+qixue_query = on_regex(pattern=REGEX.推荐奇穴.value, permission=GROUP, priority=5, block=True)
+medicine_query = on_regex(pattern=REGEX.推荐小药.value, permission=GROUP, priority=5, block=True)
+equip_group_query = on_regex(pattern=REGEX.推荐装备.value, permission=GROUP, priority=5, block=True)
+macro_query = on_regex(pattern=REGEX.查宏命令.value, permission=GROUP, priority=5, block=True)
+zhenyan_query = on_regex(pattern=REGEX.阵眼效果.value, permission=GROUP, priority=5, block=True)
+condition_query = on_regex(pattern=REGEX.奇遇前置.value, permission=GROUP, priority=5, block=True)
+strategy_query = on_regex(pattern=REGEX.奇遇攻略.value, permission=GROUP, priority=5, block=True)
 update_query = on_regex(pattern=REGEX.更新公告.value, permission=GROUP, priority=5, block=True)
-price_query = on_regex(pattern=REGEX.物价查询.value, permission=GROUP, priority=5, block=True)
+price_query = on_regex(pattern=REGEX.物品价格.value, permission=GROUP, priority=5, block=True)
 serendipity_query = on_regex(pattern=REGEX.奇遇查询.value, permission=GROUP, priority=5, block=True)
 serendipity_list_query = on_regex(pattern=REGEX.奇遇统计.value, permission=GROUP, priority=5, block=True)
 serendipity_summary_query = on_regex(pattern=REGEX.奇遇汇总.value, permission=GROUP, priority=5, block=True)
-saohua_query = on_regex(pattern=REGEX.骚话.value, permission=GROUP, priority=5, block=True)
-match_query = on_regex(pattern=REGEX.战绩查询.value, permission=GROUP, priority=5, block=True)
-equip_query = on_regex(pattern=REGEX.装备查询.value, permission=GROUP, priority=5, block=True)
+saohua_query = on_regex(pattern=REGEX.随机骚话.value, permission=GROUP, priority=5, block=True)
+match_query = on_regex(pattern=REGEX.比赛战绩.value, permission=GROUP, priority=5, block=True)
+equip_query = on_regex(pattern=REGEX.装备属性.value, permission=GROUP, priority=5, block=True)
 help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 
 
@@ -216,6 +220,27 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
     await gold_query.finish(msg)
 
 
+@sand_query.handle()
+async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
+    '''沙盘查询'''
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 沙盘查询 | 请求：{server}"
+    )
+    params = {
+        "server": server
+    }
+    msg, data = await source.get_data_from_api(app=JX3APP.沙盘图片, group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await sand_query.finish(msg)
+
+    url = data[0]['url']
+    time: int = data[0]['time']
+    day = datetime.fromtimestamp(time).strftime("%m-%d %H:%M")
+    msg = f"【{server}】沙盘，更新时间：{day}"+MessageSegment.image(url)
+    await sand_query.finish(msg)
+
+
 @qixue_query.handle()
 async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     '''奇穴查询'''
@@ -298,6 +323,27 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     msg += f'奇穴：{data.get("qixue")}'
 
     await macro_query.finish(msg)
+
+
+@zhenyan_query.handle()
+async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+    '''阵眼查询'''
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 阵眼查询 | 请求：{name}"
+    )
+    params = {
+        "name": name
+    }
+    msg, data = await source.get_data_from_api(app=JX3APP.阵眼效果, group_id=event.group_id,  params=params)
+    if msg != "success":
+        msg = f"查询失败，{msg}"
+        await zhenyan_query.finish(msg)
+
+    msg = f"{name}：【{data.get('skillName')}】\n"
+    descs: list[dict] = data.get("descs")
+    for i in descs:
+        msg += f"{i.get('name')}：{i.get('desc')}\n"
+    await zhenyan_query.finish(msg)
 
 
 @condition_query.handle()

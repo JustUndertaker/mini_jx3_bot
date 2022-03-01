@@ -255,8 +255,9 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
         msg = f"查询失败，{msg}"
         await qixue_query.finish(msg)
 
-    img = data.get('all')
-    msg = MessageSegment.image(img)
+    msg = f'【{data.get("name")}】奇穴推荐，时间：{data.get("time")}\n'
+    msg += "龙门绝境：\n"+MessageSegment.image(data.get("longmen"))
+    msg += "战场任务：\n"+MessageSegment.image(data.get("battle"))
     await qixue_query.finish(msg)
 
 

@@ -72,12 +72,11 @@ def handle_data_price(data: List[List[dict]]) -> dict:
     '''处理物价数据'''
     req_data = {}
     for one_data in data:
-        try:
-            get_data = one_data[0]
-            zone = get_data['zone']
-            req_data[zone] = one_data
-        except IndexError:
-            pass
+        for one_item in one_data:
+            zone = one_item['zone']
+            if zone not in req_data:
+                req_data[zone] = []
+            req_data[zone].append(one_item)
     return req_data
 
 

@@ -27,51 +27,34 @@
                 <table class="table table-bordered">
                     <tr>
                         <td>
-                            <table class="table table-striped table-borderless h5" id="电信点卡">
+                            <table class="table table-striped table-borderless h5">
                                 <thead>
-                                    <p class="text-center fs-3"><strong>电信点卡</strong></p>
+                                    <p class="text-center fs-3"><strong>电信一区</strong></p>
                                 </thead>
                                 <tbody>
-                                    {% for one in data.电信点卡 %}
+                                    {% for one in data.电信一区 %}
                                     <tr>
-                                        <td class='text-center text-warning'>{{ one.time }}</td>
+                                        <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
-                                        <td class='text-center text-primary'>￥{{ one.price }}</td>
-                                        <td class='text-center'>{{ one.sales }}</td>
+                                        <td class='text-center text-primary'>￥{{ one.value }}</td>
+                                        <td class='text-center'>{{ one.sale }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </td>
                         <td>
-                            <table class="table table-striped table-borderless h5" id="电信一区">
+                            <table class="table table-striped table-borderless h5">
                                 <thead>
-                                    <p class="text-center fs-3"><strong>电信一区</strong></p>
+                                    <p class="text-center fs-3"><strong>双线一区</strong></p>
                                 </thead>
                                 <tbody>
-
-                                    {% for one in data.电信一区 %}
+                                    {% for one in data.双线一区 %}
                                     <tr>
-                                        <td class='text-center text-warning'>{{ one.time }}</td>
+                                        <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
-                                        <td class='text-center text-primary'>￥{{ one.price }}</td>
-                                        <td class='text-center'>{{ one.sales }}</td>
-                                    </tr>
-                                    {% endfor %}
-
-                                </tbody>
-                            </table>
-                            <table class="table table-striped table-borderless h5" id="双线四区">
-                                <thead>
-                                    <p class="text-center fs-3"><strong>双线四区</strong></p>
-                                </thead>
-                                <tbody>
-                                    {% for one in data.双线四区 %}
-                                    <tr>
-                                        <td class='text-center text-warning'>{{ one.time }}</td>
-                                        <td class='text-center'>{{ one.server }}</td>
-                                        <td class='text-center text-primary'>￥{{ one.price }}</td>
-                                        <td class='text-center'>{{ one.sales }}</td>
+                                        <td class='text-center text-primary'>￥{{ one.value }}</td>
+                                        <td class='text-center'>{{ one.sale }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -80,34 +63,70 @@
                     </tr>
                     <tr>
                         <td>
-                            <table class="table table-striped table-borderless h5" id="双线一区">
+                            <table class="table table-striped table-borderless h5">
                                 <thead>
-                                    <p class="text-center fs-3"><strong>双线一区</strong></p>
+                                    <p class="text-center fs-3"><strong>电信五区</strong></p>
                                 </thead>
                                 <tbody>
-                                    {% for one in data.双线一区 %}
+                                    {% for one in data.电信五区 %}
                                     <tr>
-                                        <td class='text-center text-warning'>{{ one.time }}</td>
+                                        <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
-                                        <td class='text-center text-primary'>￥{{ one.price }}</td>
-                                        <td class='text-center'>{{ one.sales }}</td>
+                                        <td class='text-center text-primary'>￥{{ one.value }}</td>
+                                        <td class='text-center'>{{ one.sale }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </td>
                         <td>
-                            <table class="table table-striped table-borderless h5" id="双线二区">
+                            <table class="table table-striped table-borderless h5">
                                 <thead>
                                     <p class="text-center fs-3"><strong>双线二区</strong></p>
                                 </thead>
                                 <tbody>
                                     {% for one in data.双线二区 %}
                                     <tr>
-                                        <td class='text-center text-warning'>{{ one.time }}</td>
+                                        <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
-                                        <td class='text-center text-primary'>￥{{ one.price }}</td>
-                                        <td class='text-center'>{{ one.sales }}</td>
+                                        <td class='text-center text-primary'>￥{{ one.value }}</td>
+                                        <td class='text-center'>{{ one.sale }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table class="table table-striped table-borderless h5">
+                                <thead>
+                                    <p class="text-center fs-3"><strong>电信八区</strong></p>
+                                </thead>
+                                <tbody>
+                                    {% for one in data.电信八区 %}
+                                    <tr>
+                                        <td class='text-center text-warning'>{{ one.date }}</td>
+                                        <td class='text-center'>{{ one.server }}</td>
+                                        <td class='text-center text-primary'>￥{{ one.value }}</td>
+                                        <td class='text-center'>{{ one.sale }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>
+                            <table class="table table-striped table-borderless h5">
+                                <thead>
+                                    <p class="text-center fs-3"><strong>双线四区</strong></p>
+                                </thead>
+                                <tbody>
+                                    {% for one in data.双线四区 %}
+                                    <tr>
+                                        <td class='text-center text-warning'>{{ one.date }}</td>
+                                        <td class='text-center'>{{ one.server }}</td>
+                                        <td class='text-center text-primary'>￥{{ one.value }}</td>
+                                        <td class='text-center'>{{ one.sale }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

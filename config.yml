@@ -7,7 +7,7 @@ jx3api:
   # ws的token授权，关联ws服务器推送消息类型
   ws_token: ~
   # 主站地址
-  jx3_url:  https://api.jx3api.com
+  jx3_url:  https://www.jx3api.com
   # 主站token，不填将不能访问带ticket的接口
   jx3_token: ~
 

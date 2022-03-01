@@ -30,8 +30,8 @@ class Chat(object):
     def __init__(self):
         self._client = AsyncClient()
         base_url = config.jx3api['jx3_url']
-        self._tencent_url = base_url+"/share/nlpchat"
-        self._voice_url = base_url+"/share/aliyun"
+        self._tencent_url = base_url+"/realize/nlpchat"
+        self._voice_url = base_url+"/realize/alitts"
         self._nlp_config = config.nlp
         self._voice_config = config.voice
 

@@ -87,7 +87,6 @@
                                 <div class="btn btn-secondary">未连接到ws服务器</div>
                             </div>
                             {% else %}
-                            {% if data.ws.open_server %}
                             {% if data.group.ws_server %}
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-primary">开服推送</div>
@@ -97,8 +96,6 @@
                                 <div class="btn btn-secondary">开服推送</div>
                             </div>
                             {% endif %}
-                            {% endif %}
-                            {% if data.ws.news %}
                             {% if data.group.ws_news %}
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-primary">新闻推送</div>
@@ -107,7 +104,6 @@
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-secondary">新闻推送</div>
                             </div>
-                            {% endif %}
                             {% endif %}
                             {% if data.ws.serendipity %}
                             {% if data.group.ws_serendipity %}

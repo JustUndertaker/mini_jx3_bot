@@ -1,8 +1,11 @@
 import asyncio
 import json
+import time
+from dataclasses import dataclass
 from typing import Dict
 
 import websockets
+from httpx import AsyncClient
 from nonebot import get_bots
 from nonebot.message import handle_event
 from src.utils.config import config
@@ -13,21 +16,86 @@ from websockets.legacy.client import WebSocketClientProtocol
 from ._jx3_event import RecvEvent, WsClosed
 
 
+@dataclass
+class WsKey(object):
+    status: bool = False
+    '''状态'''
+    time: int = 0
+    '''到期时间'''
+
+    @property
+    def check(self) -> bool:
+        '''检查是否过期'''
+        return self.status and self.time > int(time.time())
+
+
+@dataclass
+class Jx3ServerStatus(object):
+    '''ws服务器推送状态'''
+    strategy: WsKey = WsKey()
+    '''奇遇播报'''
+    horse: WsKey = WsKey()
+    '''抓马播报'''
+    fuyao: WsKey = WsKey()
+    '''扶摇播报'''
+
+
+class Jx3WsTokenManager(object):
+    '''wstoken管理器'''
+    _data: Dict[str, Jx3ServerStatus]
+    '''整体数据'''
+
+    def __init__(self):
+        self._data = {}
+
+    def _set_key(self, data: Jx3ServerStatus, level: int, status: bool, time: int):
+        if level == 1:
+            data.strategy = WsKey(status, time)
+        elif level == 2:
+            data.horse = WsKey(status, time)
+        elif level == 3:
+            data.fuyao = WsKey(status, time)
+
+    def _add_data(self, data: dict):
+        '''添加数据'''
+        status = data.get("status")
+        server: str = data.get("server")
+        level: int = data.get("level")
+        time: int = data.get("time")
+        # 判断server
+        if server not in self._data:
+            self._data[server] = Jx3ServerStatus()
+        self._set_key(self._data[server], level, status, time)
+
+    async def init(self):
+        '''初始化'''
+        url = config.jx3api['jx3_url'] + "/token/socket"
+        params = {
+            "token": config.jx3api['ws_token']
+        }
+        async with AsyncClient() as client:
+            try:
+                req = await client.get(url=url, params=params)
+                req_json = req.json()
+                if req_json['code'] == 200:
+                    data = req_json['data']
+                    for one_data in data:
+                        self._add_data(one_data)
+            except Exception:
+                pass
+
+    def get_data(self, server: str) -> Jx3ServerStatus:
+        '''获取数据'''
+        return self._data.get(server, Jx3ServerStatus())
+
+
 class Jx3WebSocket(object):
     '''jx3_api的ws链接封装'''
 
     _ws: WebSocketClientProtocol = None
     '''ws链接'''
-    _open_server: bool = False
-    '''开服监控'''
-    _news: bool = False
-    '''官方资讯'''
-    _serendipity: bool = False
-    '''奇遇播报'''
-    _horse: bool = False
-    '''抓马播报'''
-    _fuyao: bool = False
-    '''扶摇播报'''
+    _token_data: Jx3WsTokenManager = Jx3WsTokenManager()
+    '''wstoekn管理器'''
     is_connecting: bool = False
     '''是否在连接中'''
 
@@ -68,37 +136,19 @@ class Jx3WebSocket(object):
         '''处理回复数据'''
         data: dict = json.loads(message)
         # logger.success(data)
-        # 判断首次信息
-        if (msg_type := data['type']) == 10000:
-            msg_type: int
-
-            self._handle_first_recv(data['data'])
+        msg_type = data.get("type")
+        if event := RecvEvent.create_event(msg_type, data.get('data')):
+            logger.debug(event.log)
+            bots = get_bots()
+            for _, one_bot in bots.items():
+                await handle_event(one_bot, event)
         else:
-            # 分发事件
-            if event := RecvEvent.create_event(msg_type, data['data']):
-                logger.debug(event.log)
-                bots = get_bots()
-                for _, one_bot in bots.items():
-                    await handle_event(one_bot, event)
-            else:
-                logger.error(
-                    f"<r>未知的ws消息：{data}</r>")
-
-    def _handle_first_recv(self, data: Dict[str, str]):
-        '''处理首次接收事件'''
-        def _to_bool(string: str) -> bool:
-            return (string == "已开启")
-        try:
-            self._open_server = _to_bool(data['开服监控'])
-            self._news = _to_bool(data['官方资讯'])
-            self._serendipity = _to_bool(data['奇遇播报'])
-            self._horse = _to_bool(data['抓马播报'])
-            self._fuyao = _to_bool(data['扶摇播报'])
-        except Exception:
-            pass
+            logger.error(
+                f"<r>未知的ws消息：{data}</r>")
 
     async def init(self) -> bool:
         '''初始化'''
+        await self._token_data.init()
         ws_path: str = config.jx3api['ws_path']
         ws_token = config.jx3api['ws_token']
         if ws_token is None:
@@ -134,15 +184,14 @@ class Jx3WebSocket(object):
         if self._ws:
             await self._ws.close()
 
-    def get_ws_status(self) -> dict:
+    def get_ws_status(self, server: str) -> dict:
         '''获取ws状态'''
+        data = self._token_data.get_data(server)
         return {
             "closed": self.closed,
-            "open_server": self._open_server,
-            "news": self._news,
-            "serendipity": self._serendipity,
-            "horse": self._horse,
-            "fuyao": self._fuyao
+            "serendipity": data.strategy.check,
+            "horse": data.horse.check,
+            "fuyao": data.fuyao.check
         }
 
     @property

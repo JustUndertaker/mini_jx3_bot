@@ -141,8 +141,9 @@ async def bot_group_quit(group_id):
 
 async def get_meau_data(group_id: int) -> dict:
     '''获取菜单数据'''
+    server = await GroupInfo.get_server(group_id)
     req_data = {}
-    req_data['ws'] = ws_client.get_ws_status()
+    req_data['ws'] = ws_client.get_ws_status(server)
     req_data['group'] = await GroupInfo.get_meau_data(group_id)
     req_data['plugin'] = await PluginInfo.get_meau_data(group_id)
     return req_data

@@ -458,12 +458,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
         "server": server,
         "name": name
     }
-    # 判断有没有token
-    token = all_config.jx3api['jx3_token']
-    if token is None:
-        msg, data = await source.get_data_from_api(app=JX3APP.免费奇遇查询, group_id=event.group_id,  params=params)
-    else:
-        msg, data = await source.get_data_from_api(app=JX3APP.付费奇遇查询, group_id=event.group_id,  params=params, need_ticket=True)
+    msg, data = await source.get_data_from_api(app=JX3APP.奇遇查询, group_id=event.group_id,  params=params, need_ticket=True)
 
     if msg != "success":
         msg = f"查询失败，{msg}"

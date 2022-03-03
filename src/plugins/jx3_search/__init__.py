@@ -276,7 +276,6 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
         await medicine_query.finish(msg)
 
     name = data.get('name')
-    data = data.get('data')
     msg = f'[{name}]小药：\n'
     msg += f'增强食品：{data.get("heighten_food")}\n'
     msg += f'辅助食品：{data.get("auxiliary_food")}\n'

@@ -130,7 +130,7 @@ def handle_data_serendipity_summary(data: List[dict]) -> List[dict]:
             time_pass = datetime.fromtimestamp(get_time)
             time_str = time_pass.strftime("%Y-%m-%d %H:%M:%S")
             day = f"{(time_now-time_pass).days} 天前"
-        one_dict = {"time": time_str, "day": day, "name": one_data['name'], "serendipity": one_data['serendipity']}
+        one_dict = {"time": time_str, "day": day, "name": one_data['name'], "serendipity": _data['serendipity']}
         req_data.append(one_dict)
     return req_data
 

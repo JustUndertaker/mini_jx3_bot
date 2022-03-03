@@ -16,7 +16,7 @@ async def get_tiangou() -> Optional[str]:
         * `None`：转换出错
     '''
     jx3_url: str = config.jx3api['jx3_url']
-    url = f"{jx3_url}/share/random"
+    url = f"{jx3_url}/realize/random"
 
     async with AsyncClient() as client:
         try:

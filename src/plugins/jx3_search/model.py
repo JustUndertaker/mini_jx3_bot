@@ -31,7 +31,7 @@ class TicketManager(object):
             token = ""
         headers = {"token": token, "User-Agent": "Nonebot2-jx3_bot"}
         self._client = AsyncClient(headers=headers)
-        self._check_url = config.jx3api['jx3_url']+"/token/validity"
+        self._check_url = config.jx3api['jx3_url']+"/token/ticket"
 
     async def check_ticket(self, ticket: str) -> bool:
         '''检查ticket的有效性'''

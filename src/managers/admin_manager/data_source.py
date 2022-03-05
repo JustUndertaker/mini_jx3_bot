@@ -40,10 +40,8 @@ async def get_ticket_list() -> List[dict]:
 async def add_ticket(ticket: str) -> Tuple[bool, str]:
     '''添加一条ticket'''
     base_url = config.jx3api['jx3_url']
-    token = config.jx3api['jx3_token']
-    url = f"{base_url}/token/validity"
+    url = f"{base_url}/token/ticket"
     params = {
-        'token': token,
         'ticket': ticket
     }
     async with AsyncClient() as client:

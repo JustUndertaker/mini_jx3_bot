@@ -47,16 +47,6 @@ class JX3API:
         '''
         ...
 
-    async def app_sand(self, *, server: str) -> Response:
-        '''
-        说明：
-            检查当前阵营沙盘截图。
-
-        参数:
-            * `server`：服务器名
-        '''
-        ...
-
     async def app_flower(self, *, server: str, map: str = ..., flower: str = ...) -> Response:
         '''
         说明:

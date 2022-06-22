@@ -16,7 +16,7 @@ class Response(BaseModel):
 class JX3API:
     '''jx3api接口类'''
 
-    async def app_daily(self,  server: str, next: int = ...) -> Response:
+    async def app_daily(self, *, server: str, next: int = ...) -> Response:
         '''
         说明：
             今天、明天、后天等的日常任务，七点自动更新。
@@ -27,7 +27,7 @@ class JX3API:
         '''
         ...
 
-    async def app_check(self,  server: str) -> Response:
+    async def app_check(self, *, server: str) -> Response:
         '''
         说明：
             检查目标服务器的开服状态，可用于开服监控。
@@ -37,7 +37,7 @@ class JX3API:
         '''
         ...
 
-    async def app_demon(self,  server: str) -> Response:
+    async def app_demon(self, *, server: str) -> Response:
         '''
         说明：
             检查近十天的金价比例，数据仅供参考。
@@ -47,7 +47,7 @@ class JX3API:
         '''
         ...
 
-    async def app_sand(self,  server: str) -> Response:
+    async def app_sand(self, *, server: str) -> Response:
         '''
         说明：
             检查当前阵营沙盘截图。
@@ -57,7 +57,7 @@ class JX3API:
         '''
         ...
 
-    async def app_flower(self,  server: str, map: str = ..., flower: str = ...) -> Response:
+    async def app_flower(self, *, server: str, map: str = ..., flower: str = ...) -> Response:
         '''
         说明:
             检查当天鲜花最高价格收购线路。
@@ -69,7 +69,7 @@ class JX3API:
         '''
         ...
 
-    async def app_exam(self,  question: str) -> Response:
+    async def app_exam(self, *, question: str) -> Response:
         '''
         说明:
             搜索科举题目的答案，支持首字母，支持模糊搜索。
@@ -79,7 +79,7 @@ class JX3API:
         '''
         ...
 
-    async def app_furniture(self,  name: str) -> Response:
+    async def app_furniture(self, *, name: str) -> Response:
         '''
         说明:
             家园家具信息
@@ -89,7 +89,7 @@ class JX3API:
         '''
         ...
 
-    async def app_travel(self,  name: str) -> Response:
+    async def app_travel(self, *, name: str) -> Response:
         '''
         说明:
             搜索地图产出的详细家具属性。
@@ -99,7 +99,7 @@ class JX3API:
         '''
         ...
 
-    async def app_heighten(self,  name: str) -> Response:
+    async def app_heighten(self, *, name: str) -> Response:
         '''
         说明:
             推荐当前赛季所使用的小吃小药。
@@ -109,7 +109,7 @@ class JX3API:
         '''
         ...
 
-    async def app_equip(self,  name: str) -> Response:
+    async def app_equip(self, *, name: str) -> Response:
         '''
         说明:
             推荐当前赛季所使用的装备。
@@ -119,7 +119,7 @@ class JX3API:
         '''
         ...
 
-    async def app_macro(self,  name: str) -> Response:
+    async def app_macro(self, *, name: str) -> Response:
         '''
         说明:
             推荐当前赛季热门的宏命令。
@@ -129,7 +129,7 @@ class JX3API:
         '''
         ...
 
-    async def app_news(self,  limit: int = ...) -> Response:
+    async def app_news(self, *, limit: int = ...) -> Response:
         '''
         说明:
             搜索官方近期发布的最新公告，新闻等相关内容。
@@ -139,7 +139,7 @@ class JX3API:
         '''
         ...
 
-    async def app_announce(self,  limit: int = ...) -> Response:
+    async def app_announce(self, *, limit: int = ...) -> Response:
         '''
         说明:
             搜索官方近期发布的维护公告。
@@ -149,7 +149,7 @@ class JX3API:
         '''
         ...
 
-    async def app_matrix(self,  name: str) -> Response:
+    async def app_matrix(self, *, name: str) -> Response:
         '''
         说明:
             搜索心法阵眼效果
@@ -159,7 +159,7 @@ class JX3API:
         '''
         ...
 
-    async def app_price(self,  name: str) -> Response:
+    async def app_price(self, *, name: str) -> Response:
         '''
         说明:
             搜索黑市的外观物品最新价格。
@@ -169,7 +169,7 @@ class JX3API:
         '''
         ...
 
-    async def app_prices(self,  name: str) -> Response:
+    async def app_prices(self, *, name: str) -> Response:
         '''
         说明:
             搜索黑市的外观物品最新价格，数据来源于废牛助手。
@@ -179,7 +179,7 @@ class JX3API:
         '''
         ...
 
-    async def app_horse(self,  name: str) -> Response:
+    async def app_horse(self, *, name: str) -> Response:
         '''
         说明:
             搜索某个地图刷新的马驹名称和刷新位置。
@@ -189,7 +189,7 @@ class JX3API:
         '''
         ...
 
-    async def app_server(self,  name: str) -> Response:
+    async def app_server(self, *, name: str) -> Response:
         '''
         说明:
             主从大区
@@ -206,7 +206,7 @@ class JX3API:
         '''
         ...
 
-    async def app_movie(self,  name: str) -> Response:
+    async def app_movie(self, *, name: str) -> Response:
         '''
         说明:
             搜索某个物品的名称或编号。
@@ -216,7 +216,7 @@ class JX3API:
         '''
         ...
 
-    async def app_require(self,  name: str) -> Response:
+    async def app_require(self, *, name: str) -> Response:
         '''
         说明:
             搜索目标奇遇的前置要求。
@@ -226,7 +226,7 @@ class JX3API:
         '''
         ...
 
-    async def next_strategy(self,  name: str) -> Response:
+    async def next_strategy(self, *, name: str) -> Response:
         '''
         说明:
             搜索某个奇遇的任务攻略。
@@ -236,7 +236,7 @@ class JX3API:
         '''
         ...
 
-    async def next_serendipity(self,  server: str, name: str, ticket: str) -> Response:
+    async def next_serendipity(self, *, server: str, name: str, ticket: str) -> Response:
         '''
         说明:
             搜索某个角色触发的所有奇遇记录。
@@ -248,7 +248,7 @@ class JX3API:
         '''
         ...
 
-    async def next_statistical(self,  server: str, serendipity: str = ..., limit: int = ...) -> Response:
+    async def next_statistical(self, *, server: str, serendipity: str = ..., limit: int = ...) -> Response:
         '''
         说明:
             搜索某个奇遇最近触发人。
@@ -260,7 +260,7 @@ class JX3API:
         '''
         ...
 
-    async def next_collect(self,  server: str, days: int = ...) -> Response:
+    async def next_collect(self, *, server: str, days: int = ...) -> Response:
         '''
         说明:
             统计指定时间内触发次数和最后触发人。
@@ -271,7 +271,7 @@ class JX3API:
         '''
         ...
 
-    async def next_seniority(self,  server: str, ticket: str, kungfu: str = ...) -> Response:
+    async def next_seniority(self, *, server: str, ticket: str, kungfu: str = ...) -> Response:
         '''
         说明:
             搜索某个门派的资历排行榜。
@@ -283,7 +283,7 @@ class JX3API:
         '''
         ...
 
-    async def next_arena(self,  server: str, name: str, ticket: str, match: int = ...) -> Response:
+    async def next_arena(self, *, server: str, name: str, ticket: str, match: int = ...) -> Response:
         '''
         说明:
             搜索某个角色的战绩评分和近期战斗记录。
@@ -296,7 +296,7 @@ class JX3API:
         '''
         ...
 
-    async def next_awesome(self,  ticket: str, match: int = ...) -> Response:
+    async def next_awesome(self, *, ticket: str, match: int = ...) -> Response:
         '''
         说明:
             搜索某个比赛模式的战绩排名记录。
@@ -307,7 +307,7 @@ class JX3API:
         '''
         ...
 
-    async def next_schools(self,  ticket: str, match: int = ...) -> Response:
+    async def next_schools(self, *, ticket: str, match: int = ...) -> Response:
         '''
         说明:
             搜索某个比赛模式的门派排名统计。
@@ -318,7 +318,7 @@ class JX3API:
         '''
         ...
 
-    async def role_roleInfo(self,  server: str, name: str) -> Response:
+    async def role_roleInfo(self, *, server: str, name: str) -> Response:
         '''
         说明:
             搜索某个角色的信息。
@@ -329,7 +329,7 @@ class JX3API:
         '''
         ...
 
-    async def role_attribute(self,  server: str, name: str, ticket: str) -> Response:
+    async def role_attribute(self, *, server: str, name: str, ticket: str) -> Response:
         '''
         说明:
             搜索某个角色的装备和属性。
@@ -341,7 +341,7 @@ class JX3API:
         '''
         ...
 
-    async def role_firework(self,  server: str, name: str) -> Response:
+    async def role_firework(self, *, server: str, name: str) -> Response:
         '''
         说明:
             搜索某个角色的烟花赠送或接收记录。
@@ -352,7 +352,7 @@ class JX3API:
         '''
         ...
 
-    async def transmit_chat(self,   secretId: str, secretKey: str, name: str, question: str) -> Response:
+    async def transmit_chat(self, *,  secretId: str, secretKey: str, name: str, question: str) -> Response:
         '''
         说明:
             腾讯云智能闲聊（NLP），不是SDK版本。
@@ -367,7 +367,7 @@ class JX3API:
 
     async def transmit_alitts(
         self,
-
+        *,
         appkey: str,
         access: str,
         secret: str,
@@ -396,7 +396,7 @@ class JX3API:
         '''
         ...
 
-    async def transmit_idiom(self,  word: str) -> Response:
+    async def transmit_idiom(self, *, word: str) -> Response:
         '''
         说明:
             搜索下一个成语，已清除收尾同音的成语。
@@ -413,7 +413,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_demon(self,  server: str, robot: str = ...) -> Response:
+    async def cloud_demon(self, *, server: str, robot: str = ...) -> Response:
         '''
         说明:
             图片api，检查近十天的金价比例，数据仅供参考。
@@ -424,7 +424,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_flower(self,  server: str, flower: str, robot: str = ...) -> Response:
+    async def cloud_flower(self, *, server: str, flower: str, robot: str = ...) -> Response:
         '''
         说明:
             图片api，检查当天鲜花最高价格收购线路。
@@ -436,7 +436,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_content(self,  robot: str = ...) -> Response:
+    async def cloud_content(self, *, robot: str = ...) -> Response:
         '''
         说明:
             图片api，查看官方客户端更新内容。
@@ -446,7 +446,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_price(self,  name: str, robot: str = ...) -> Response:
+    async def cloud_price(self, *, name: str, robot: str = ...) -> Response:
         '''
         说明:
             图片api，搜索黑市的外观物品最新价格。
@@ -457,7 +457,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_serendipity(self,  server: str, name: str, ticket: str, robot: str = ...) -> Response:
+    async def cloud_serendipity(self, *, server: str, name: str, ticket: str, robot: str = ...) -> Response:
         '''
         说明:
             图片api，搜索某个角色触发的所有奇遇记录。
@@ -470,7 +470,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_statistical(self,  serendipity: str, robot: str = ...) -> Response:
+    async def cloud_statistical(self, *, serendipity: str, robot: str = ...) -> Response:
         '''
         说明:
             图片api，搜索某个奇遇最近触发人。
@@ -481,7 +481,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_collect(self,  server: str, robot: str = ...) -> Response:
+    async def cloud_collect(self, *, server: str, robot: str = ...) -> Response:
         '''
         说明:
             图片api，统计指定时间内触发次数和最后触发人。
@@ -492,7 +492,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_seniority(self,  server: str, ticket: str, kungfu: str = ..., robot: str = ...) -> Response:
+    async def cloud_seniority(self, *, server: str, ticket: str, kungfu: str = ..., robot: str = ...) -> Response:
         '''
         说明:
             图片api，搜索某个门派的资历排行榜。
@@ -505,7 +505,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_attribute(self,  server: str, name: str, ticket: str, robot: str = ...) -> Response:
+    async def cloud_attribute(self, *, server: str, name: str, ticket: str, robot: str = ...) -> Response:
         '''
         说明:
             图片api，搜索某个角色的装备和属性。
@@ -520,7 +520,7 @@ class JX3API:
 
     async def cloud_arena(
         self,
-
+        *,
         server: str,
         name: str,
         ticket: str,
@@ -540,7 +540,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_awesome(self,  ticket: str, match: int = ..., robot: str = ...) -> Response:
+    async def cloud_awesome(self, *, ticket: str, match: int = ..., robot: str = ...) -> Response:
         '''
         说明:
             图片api，搜索某个比赛模式的战绩排名记录。
@@ -552,7 +552,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_schools(self,  ticket: str, match: int = ..., robot: str = ...) -> Response:
+    async def cloud_schools(self, *, ticket: str, match: int = ..., robot: str = ...) -> Response:
         '''
         说明:
             图片api，搜索某个比赛模式的门派排名统计。
@@ -564,7 +564,7 @@ class JX3API:
         '''
         ...
 
-    async def cloud_movie(self,  name: str, robot: str = ...) -> Response:
+    async def cloud_movie(self, *, name: str, robot: str = ...) -> Response:
         '''
         说明:
             图片api，搜索某个物品的名称或编号。
@@ -577,7 +577,7 @@ class JX3API:
 
     async def token_calculate(
         self,
-
+        *,
         cursor: int,
         size: int,
         gameVersion: int,
@@ -595,7 +595,7 @@ class JX3API:
         '''
         ...
 
-    async def token_ticket(self,  ticket: str) -> Response:
+    async def token_ticket(self, *, ticket: str) -> Response:
         '''
         说明:
             查询ticket的可用性。
@@ -605,7 +605,7 @@ class JX3API:
         '''
         ...
 
-    async def token_socket(self,  token: str) -> Response:
+    async def token_socket(self, *, token: str) -> Response:
         '''
         说明:
             查询Ws Token的服务到期时间。

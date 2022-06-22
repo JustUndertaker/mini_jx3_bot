@@ -105,34 +105,48 @@ class RecvEvent(BaseEvent):
     @staticmethod
     def create_event(_type: int, data: dict) -> Optional["RecvEvent"]:
         '''根据推送类型创建事件'''
-        # 奇遇推送
-        if _type == 1001:
-            return SerendipityEvent(data)
-        # 马驹刷新
-        if _type == 1002:
-            return HorseRefreshEvent(data)
-        # 马驹捕获
-        if _type == 1003:
-            return HorseCatchedEvent(data)
-        # 扶摇开启
-        if _type == 1004:
-            return FuyaoRefreshEvent(data)
-        # 扶摇点名
-        if _type == 1005:
-            return FuyaoNamedEvent(data)
-        # 烟花播报
-        if _type == 1006:
-            return FireworksEvent(data)
-        # 游戏消息
-        if _type == 1008:
-            return GameSysMsgEvent(data)
-        # 开服监控
-        if _type == 2001:
-            return ServerStatusEvent(data)
-        # 新闻资讯
-        if _type == 2002:
-            return NewsRecvEvent(data)
-        return None
+        match _type:
+            case 1001:
+                # 奇遇播报
+                return SerendipityEvent(data)
+            case 1002:
+                # 马驹刷新
+                return HorseRefreshEvent(data)
+            case 1003:
+                # 马驹捕获
+                return HorseCatchedEvent(data)
+            case 1004:
+                # 扶摇开启
+                return FuyaoRefreshEvent(data)
+            case 1005:
+                # 扶摇点名
+                return FuyaoNamedEvent(data)
+            case 1006:
+                # 烟花播报
+                return FireworksEvent(data)
+            case 1010:
+                # 游戏消息
+                return GameSysMsgEvent(data)
+            case 2001:
+                # 新闻监控
+                return ServerStatusEvent(data)
+            case 2002:
+                # 新闻资讯
+                return NewsRecvEvent(data)
+            case 1506:
+                # 订阅烟花回调消息
+                return FireworkSubscribeEvent(data)
+            case 1510:
+                # 订阅游戏系统回调消息
+                return GameSysSubscribeEvent(data)
+            case 1606:
+                # 取消订阅烟花回调消息
+                return FireworkDisSubscribeEvent(data)
+            case 1610:
+                # 取消订阅系统回调消息
+                return GameSysDisSubscribeEvent(data)
+            case _:
+                return None
 
 
 class ServerStatusEvent(RecvEvent):
@@ -451,4 +465,100 @@ class GameSysMsgEvent(RecvEvent):
     def get_message(self) -> Message:
         return Message(
             f"[系统频道推送]\n时间：{self.time}\n{self.message}。"
+        )
+
+
+class FireworkSubscribeEvent(RecvEvent):
+    '''烟花订阅回执'''
+    __event__ = "WsRecv.FireworkSubscribeEvent"
+    message_type = "FireworkSubscribeEvent"
+    server_list: list[str]
+    '''已订阅服务器列表'''
+
+    def __init__(self, data: dict):
+        '''烟花订阅回执'''
+        super().__init__()
+        self.server_list = data.get('server')
+
+    @property
+    def log(self) -> str:
+        log = f"烟花订阅回执，已订阅服务器：{self.server_list}。"
+        return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[烟花订阅回执]\n已订阅服务器：{self.server_list}。"
+        )
+
+
+class FireworkDisSubscribeEvent(RecvEvent):
+    '''取消烟花订阅回执'''
+    __event__ = "WsRecv.FireworkDisSubscribeEvent"
+    message_type = "FireworkDisSubscribeEvent"
+    server_list: list[str]
+    '''已订阅服务器列表'''
+
+    def __init__(self, data: dict):
+        '''取消烟花订阅回执'''
+        super().__init__()
+        self.server_list = data.get('server')
+
+    @property
+    def log(self) -> str:
+        log = f"取消烟花订阅回执，已订阅服务器：{self.server_list}。"
+        return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[取消烟花订阅回执]\n已订阅服务器：{self.server_list}。"
+        )
+
+
+class GameSysSubscribeEvent(RecvEvent):
+    '''订阅游戏系统消息回执'''
+    __event__ = "WsRecv.GameSysSubscribeEvent"
+    message_type = "GameSysSubscribeEvent"
+    server_list: list[str]
+    '''已订阅服务器列表'''
+
+    def __init__(self, data: dict):
+        '''订阅游戏系统消息回执'''
+        super().__init__()
+        self.server_list = data.get('server')
+
+    @property
+    def log(self) -> str:
+        log = f"订阅游戏系统消息回执，已订阅服务器：{self.server_list}。"
+        return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[订阅游戏系统消息回执]\n已订阅服务器：{self.server_list}。"
+        )
+
+
+class GameSysDisSubscribeEvent(RecvEvent):
+    '''取消订阅游戏系统消息回执'''
+    __event__ = "WsRecv.GameSysDisSubscribeEvent"
+    message_type = "GameSysDisSubscribeEvent"
+    server_list: list[str]
+    '''已订阅服务器列表'''
+
+    def __init__(self, data: dict):
+        '''取消订阅游戏系统消息回执'''
+        super().__init__()
+        self.server_list = data.get('server')
+
+    @property
+    def log(self) -> str:
+        log = f"取消订阅游戏系统消息回执，已订阅服务器：{self.server_list}。"
+        return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[取消订阅游戏系统消息回执]\n已订阅服务器：{self.server_list}。"
         )

@@ -604,3 +604,24 @@ class JX3API:
             * `token`：ws token，不是api token
         '''
         ...
+
+    async def next_fall(self, *, server: str, name: str) -> Response:
+        '''
+        说明:
+            查询特殊物品掉落情况
+
+        参数:
+            * `server`：服务器名
+            * `name`：特殊物品名称，如天乙玄晶
+        '''
+        ...
+
+    async def next_sum(self, *, server: str) -> Response:
+        '''
+        说明:
+            统计服务器掉落物品
+
+        参数:
+            * `server`：服务器名
+        '''
+        ...

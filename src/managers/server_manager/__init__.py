@@ -12,11 +12,12 @@ from src.utils.utils import GroupList_Async
 from tortoise import Tortoise
 
 from . import data_source as source
-from ._email import mail_client
 from ._jx3_event import RecvEvent, WsClosed
+from ._plugin_manager import PluginManager
 from ._websocket import ws_client
 
 driver = get_driver()
+plugin_manager = PluginManager()
 
 # ----------------------------------------------------------------
 #   bot服务的各种hook
@@ -37,7 +38,7 @@ async def _(bot: Bot):
         # 注册群信息
         await source.group_init(group_id, group_name)
         # 注册插件
-        await source.load_plugins(group_id)
+        await plugin_manager.load_plugins(group_id)
         # 注册成员信息
         member_list = await bot.get_group_member_list(group_id=group_id)
         for one_member in member_list:
@@ -52,9 +53,7 @@ async def _(bot: Bot):
 @driver.on_bot_disconnect
 async def _(bot: Bot):
     '''bot链接关闭'''
-    bot_id = bot.self_id
-    logger.info("<y>检测到bot离线，发送通知邮件……</y>")
-    await mail_client.send_mail(bot_id)
+    logger.info("<y>检测到bot离线……</y>")
 
 
 @driver.on_startup

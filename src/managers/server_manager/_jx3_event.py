@@ -1,10 +1,10 @@
 import time
 from abc import abstractmethod
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from nonebot.adapters import Event as BaseEvent
-from nonebot.adapters.onebot.v11.message import Message
+from nonebot.adapters.onebot.v12.message import Message
 from nonebot.typing import overrides
 from nonebot.utils import escape_tag
 
@@ -355,7 +355,7 @@ class FuyaoNamedEvent(RecvEvent):
     '''扶摇点名事件'''
     __event__ = "WsRecv.FuyaoNamed"
     message_type = "FuyaoNamed"
-    names: Optional[List[str]]
+    names: Optional[list[str]]
     '''点名角色组'''
     time: Optional[str]
     '''点名时间'''

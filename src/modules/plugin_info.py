@@ -13,9 +13,9 @@ class PluginInfo(Model):
     '''模块名称'''
     plugin_name = fields.CharField(max_length=255)
     '''插件名称'''
-    command = fields.CharField(max_length=255)
-    '''使用命令'''
     usage = fields.CharField(max_length=255)
+    '''使用命令'''
+    description = fields.CharField(max_length=255)
     '''插件描述'''
     status = fields.BooleanField(default=False)
     '''插件状态'''
@@ -35,22 +35,16 @@ class PluginInfo(Model):
                           group_id: int,
                           module_name: str,
                           plugin_name: str,
-                          command: str,
+                          description: str,
                           usage: str,
                           status: bool
                           ) -> None:
         '''为某个群注册插件'''
-        if command is None:
-            command = ""
-        if usage is None:
-            usage = ""
-        if status is None:
-            status = False
         await PluginInfo.create(
             group_id=group_id,
             module_name=module_name,
             plugin_name=plugin_name,
-            command=command,
+            description=description,
             usage=usage,
             status=status
         )
@@ -74,7 +68,7 @@ class PluginInfo(Model):
     @classmethod
     async def get_meau_data(cls, group_id: int) -> List[dict]:
         '''获取菜单数据'''
-        return await cls.filter(group_id=group_id).order_by("plugin_name").values("plugin_name", "command", "usage", "status")
+        return await cls.filter(group_id=group_id).order_by("plugin_name").values("plugin_name", "description", "usage", "status")
 
     @classmethod
     async def delete_group(cls, group_id: int):

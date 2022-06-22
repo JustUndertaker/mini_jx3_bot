@@ -1,10 +1,10 @@
 from nonebot import on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from nonebot.exception import IgnoredException
 from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
 from nonebot.permission import SUPERUSER
+from src.params import GROUP_ADMIN
 from src.utils.log import logger
 
 from . import data_source as source
@@ -39,11 +39,11 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
 # -----------------------------------------------------------------------------
 regex = r"^(打开|关闭) [\u4e00-\u9fa5]+$"
 group_status = on_regex(pattern=regex,
-                        permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+                        permission=SUPERUSER | GROUP_ADMIN,
                         priority=2, block=False)  # 群设置
 
 plugin_status = on_regex(pattern=regex,
-                         permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+                         permission=SUPERUSER | GROUP_ADMIN,
                          priority=3, block=True)  # 插件设置
 
 

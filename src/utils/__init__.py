@@ -4,7 +4,7 @@
 
 
 from .browser import browser as browser
-from .config import config as config
+from .config import Config as Config
 from .database import database_init as database_init
 from .log import logger as logger
 from .moinkeypath import monkeypatch as monkeypatch

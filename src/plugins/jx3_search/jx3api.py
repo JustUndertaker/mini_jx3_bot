@@ -56,7 +56,7 @@ class JX3API:
 
     def __init__(self):
         base_config = BaseConfig()
-        self.config = Config(**base_config.jx3api)
+        self.config = Config.parse_obj(base_config.jx3api)
         if not self.config.jx3_url.endswith("/"):
             self.config.jx3_url += "/"
         token = self.config.jx3_token or ""
@@ -67,7 +67,7 @@ class JX3API:
         '''请求api网站数据'''
         try:
             res = await self.client.get(url=url, params=data)
-            return Response(**res.json())
+            return Response.parse_obj(res.json())
         except Exception as e:
             raise e
 

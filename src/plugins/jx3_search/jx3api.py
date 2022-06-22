@@ -36,7 +36,7 @@ class Response(BaseModel):
     '''返回消息字符串'''
     data: dict
     '''返回数据'''
-    timestap: int
+    time: int
     '''时间戳'''
 
 
@@ -66,8 +66,7 @@ class JX3API:
     async def call_api(self, url: str, **data: Any) -> Response:
         '''请求api网站数据'''
         try:
-            params = dict(data)
-            res = await self.client.get(url=url, params=params)
+            res = await self.client.get(url=url, params=data)
             return Response(**res.json())
         except Exception as e:
             raise e

@@ -2,12 +2,14 @@ import re
 from datetime import datetime
 from enum import Enum
 
-from nonebot import export, on_regex
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.adapters.onebot.v11.message import MessageSegment
-from nonebot.adapters.onebot.v11.permission import GROUP
+from nonebot import on_regex
+from nonebot.adapters.onebot.v12.event import GroupMessageEvent
+from nonebot.adapters.onebot.v12.message import MessageSegment
+from nonebot.adapters.onebot.v12.permission import GROUP
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
+from nonebot.plugin import PluginMetadata
+from src.pargrams import PluginConfig
 from src.utils.browser import browser
 from src.utils.config import config as all_config
 from src.utils.log import logger
@@ -15,11 +17,13 @@ from src.utils.log import logger
 from . import data_source as source
 from .config import DAILIY_LIST, JX3APP, JX3PROFESSION
 
-Export = export()
-Export.plugin_name = "剑三查询"
-Export.plugin_command = "参考“帮助”"
-Export.plugin_usage = "剑三游戏查询，数据源使用jx3api"
-Export.default_status = True
+__plugin_meta__ = PluginMetadata(
+    name="剑三查询",
+    description="剑三游戏查询，数据源使用jx3api",
+    usage="参考“帮助”",
+    config=PluginConfig()
+)
+
 
 # ----------------------------------------------------------------
 #   正则枚举，与jx3api.com的接口对应

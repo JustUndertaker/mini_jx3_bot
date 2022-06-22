@@ -9,7 +9,7 @@ from nonebot.adapters.onebot.v12.permission import GROUP
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
-from src.pargrams import PluginConfig
+from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.config import config as all_config
 from src.utils.log import logger

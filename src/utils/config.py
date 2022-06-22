@@ -4,7 +4,7 @@ from typing import Dict, Union
 import yaml
 
 
-class Config():
+class Config:
     '''配置文件类'''
 
     def __new__(cls, *args, **kwargs):
@@ -53,15 +53,3 @@ class Config():
         errordir = workdir / error
         if not Path.exists(errordir):
             Path.mkdir(errordir, parents=True)
-
-
-config = Config()
-"""
-配置文件模块，用于读取项目内的config.yml文件配置内容
-使用方法:
-```
-from src.utils.config import config
-
->>>config.your_config_key
-```
-"""

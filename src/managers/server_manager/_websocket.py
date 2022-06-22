@@ -1,23 +1,24 @@
 import asyncio
 import json
 import time
-from dataclasses import dataclass
 from typing import Dict
 
 import websockets
 from httpx import AsyncClient
 from nonebot import get_bots
 from nonebot.message import handle_event
-from src.utils.config import config
+from pydantic import BaseModel
+from src.utils.config import Config
 from src.utils.log import logger
 from websockets.exceptions import ConnectionClosedOK
 from websockets.legacy.client import WebSocketClientProtocol
 
 from ._jx3_event import RecvEvent, WsClosed
 
+config = Config()
 
-@dataclass
-class WsKey(object):
+
+class WsKey(BaseModel):
     status: bool = False
     '''状态'''
     time: int = 0
@@ -29,8 +30,7 @@ class WsKey(object):
         return self.status and self.time > int(time.time())
 
 
-@dataclass
-class Jx3ServerStatus(object):
+class Jx3ServerStatus(BaseModel):
     '''ws服务器推送状态'''
     strategy: WsKey = WsKey()
     '''奇遇播报'''
@@ -50,11 +50,11 @@ class Jx3WsTokenManager(object):
 
     def _set_key(self, data: Jx3ServerStatus, level: int, status: bool, time: int):
         if level == 1:
-            data.strategy = WsKey(status, time)
+            data.strategy = WsKey(status=status, time=time)
         elif level == 2:
-            data.horse = WsKey(status, time)
+            data.horse = WsKey(status=status, time=time)
         elif level == 3:
-            data.fuyao = WsKey(status, time)
+            data.fuyao = WsKey(status=status, time=time)
 
     def _add_data(self, data: dict):
         '''添加数据'''

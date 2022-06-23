@@ -12,6 +12,7 @@ from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
 from nonebot.typing import T_State
 from src.modules.search_record import SearchRecord
+from src.modules.ticket_info import TicketInfo
 from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
@@ -29,8 +30,6 @@ __plugin_meta__ = PluginMetadata(
 
 api = JX3API()
 '''jx3api接口实例'''
-ticket_manager = None  # TODO:待实现
-'''ticket管理器实例'''
 
 # ----------------------------------------------------------------
 #   正则枚举，已实现的查询功能
@@ -140,9 +139,9 @@ async def cold_down(name: str, cd_time: int) -> None:
 
     用法:
     ```
-    @matcher.handle(parameterless=[cold_down(name="app", cd_time=0)])
-    async def _():
-        pass
+        @matcher.handle(parameterless=[cold_down(name="app", cd_time=0)])
+        async def _():
+            pass
     ```
     '''
     async def dependency(matcher: Matcher, event: GroupMessageEvent):
@@ -420,7 +419,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 角色奇遇查询 | 请求：server:{server},name:{name}"
     )
 
-    ticket = ticket_manager.get_one_ticket()
+    ticket = await TicketInfo.get_ticket()
     response = await api.next_serendipity(server=server, name=name, ticket=ticket)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
@@ -486,7 +485,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 战绩查询 | 请求：server:{server},name:{name}"
     )
-    ticket = ticket_manager.get_one_ticket()
+    ticket = await TicketInfo.get_ticket()
     response = await api.next_arena(server=server, name=name, ticket=ticket)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
@@ -509,7 +508,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 装备属性查询 | 请求：server:{server},name:{name}"
     )
-    ticket = ticket_manager.get_one_ticket()
+    ticket = await TicketInfo.get_ticket()
     response = await api.role_attribute(server=server, name=name, ticket=ticket)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"

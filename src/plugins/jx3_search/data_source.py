@@ -1,16 +1,9 @@
 import time
 from datetime import datetime
 
-from src.modules.group_info import GroupInfo
-
 from .jx3api import JX3API
 
 api = JX3API()
-
-
-async def get_server(group_id: int) -> str:
-    '''获取群绑定的区服'''
-    return await GroupInfo.get_server(group_id)
 
 # -------------------------------------------------------------
 # 返回数据处理阶段，处理api返回data，方便模板使用

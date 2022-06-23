@@ -11,6 +11,7 @@ from nonebot.matcher import Matcher
 from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
 from nonebot.typing import T_State
+from src.modules.group_info import GroupInfo
 from src.modules.search_record import SearchRecord
 from src.modules.ticket_info import TicketInfo
 from src.params import PluginConfig
@@ -100,7 +101,7 @@ async def get_server(matcher: Matcher, event: GroupMessageEvent, state: T_State)
             await matcher.finish(msg)
         server: str = response.data['name']
     else:
-        server = await source.get_server(event.group_id)
+        server = await GroupInfo.get_server(event.group_id)
     return server
 
 

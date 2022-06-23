@@ -34,25 +34,24 @@ all_config = Config()
 
 class REGEX(Enum):
     '''正则枚举'''
-    日常任务 = r"(^日常$)|(^日常 [\u4e00-\u9fa5]+$)"
-    开服检查 = r"(^开服$)|(^开服 [\u4e00-\u9fa5]+$)"
-    金价比例 = r"(^金价$)|(^金价 [\u4e00-\u9fa5]+$)"
-    沙盘图片 = r"(^沙盘$)|(^沙盘 [\u4e00-\u9fa5]+$)"
-    推荐小药 = r"(^小药 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+小药$)"
-    推荐装备 = r"(^配装 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+配装$)"
-    推荐奇穴 = r"(^奇穴 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+奇穴$)"
-    查宏命令 = r"(^宏 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+宏$)"
-    阵眼效果 = r"(^阵眼 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+阵眼$)"
-    物品价格 = r"^物价 [\u4e00-\u9fa5]+$"
+    日常任务 = r"^日常$|^日常 (?P<server>[\u4e00-\u9fa5]+)$"
+    开服检查 = r"^开服$|^开服 (?P<server>[\u4e00-\u9fa5]+)$"
+    金价比例 = r"^金价$|^金价 (?P<server>[\u4e00-\u9fa5]+)$"
+    沙盘图片 = r"^沙盘$|^沙盘 (?P<server>[\u4e00-\u9fa5]+)$"
+    推荐小药 = r"^小药 (?P<value1>[\u4e00-\u9fa5]+)$|^(?P<value2>[\u4e00-\u9fa5]+)小药$"
+    推荐装备 = r"^配装 (?P<value1>[\u4e00-\u9fa5]+)$|^(?P<value2>[\u4e00-\u9fa5]+)配装$"
+    查宏命令 = r"^宏 (?P<value1>[\u4e00-\u9fa5]+)$|^(?P<value2>[\u4e00-\u9fa5]+)宏$"
+    阵眼效果 = r"^阵眼 (?P<value1>[\u4e00-\u9fa5]+)$|^(?P<value2>[\u4e00-\u9fa5]+)阵眼$"
+    物品价格 = r"^物价 (?P<value1>[\u4e00-\u9fa5]+)$"
     随机骚话 = r"^骚话$"
-    奇遇前置 = r"^((前置)|(条件)) [\u4e00-\u9fa5]+$"
-    奇遇攻略 = r"(^攻略 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+攻略$)"
-    更新公告 = r"(^更新$)|(^公告$)|(^更新公告$)"
-    奇遇查询 = r"(^查询 [(\u4e00-\u9fa5)|(@)]+$)|(^查询 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)"
-    奇遇统计 = r"(^奇遇 [\u4e00-\u9fa5]+$)|(^奇遇 [\u4e00-\u9fa5]+ [\u4e00-\u9fa5]+$)"
-    奇遇汇总 = r"(^汇总$)|(^汇总 [\u4e00-\u9fa5]+$)"
-    比赛战绩 = r"(^战绩 [(\u4e00-\u9fa5)|(@)]+$)|(^战绩 [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)"
-    装备属性 = r"(^((装备)|(属性)) [(\u4e00-\u9fa5)|(@)]+$)|(^((装备)|(属性)) [\u4e00-\u9fa5]+ [(\u4e00-\u9fa5)|(@)]+$)"
+    奇遇前置 = r"^(?:(?:前置)|(?:条件)) (?P<value1>[\u4e00-\u9fa5]+)$"
+    奇遇攻略 = r"^攻略 (?P<value1>[\u4e00-\u9fa5]+)$|^(?P<value2>[\u4e00-\u9fa5]+)攻略$"
+    更新公告 = r"^更新$|^公告$|^更新公告$"
+    奇遇查询 = r"^查询 (?P<value1>[\S]+)$|^查询 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    奇遇统计 = r"^奇遇 (?P<value1>[\S]+)$|^奇遇 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    奇遇汇总 = r"^汇总$|^汇总 (?P<server>[\u4e00-\u9fa5]+)$"
+    比赛战绩 = r"^战绩 (?P<value1>[\S]+)$|^战绩 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    装备属性 = r"^(?:(?:装备)|(?:属性)) (?P<value1>[\S]+)$|^(?:(?:装备)|(?:属性)) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
 
 
 # ----------------------------------------------------------------
@@ -62,7 +61,6 @@ daily_query = on_regex(pattern=REGEX.日常任务.value, permission=GROUP, prior
 server_query = on_regex(pattern=REGEX.开服检查.value, permission=GROUP, priority=5, block=True)
 gold_query = on_regex(pattern=REGEX.金价比例.value, permission=GROUP, priority=5, block=True)
 sand_query = on_regex(pattern=REGEX.沙盘图片.value, permission=GROUP, priority=5, block=True)
-qixue_query = on_regex(pattern=REGEX.推荐奇穴.value, permission=GROUP, priority=5, block=True)
 medicine_query = on_regex(pattern=REGEX.推荐小药.value, permission=GROUP, priority=5, block=True)
 equip_group_query = on_regex(pattern=REGEX.推荐装备.value, permission=GROUP, priority=5, block=True)
 macro_query = on_regex(pattern=REGEX.查宏命令.value, permission=GROUP, priority=5, block=True)
@@ -107,7 +105,8 @@ async def get_value(state: T_State) -> str:
         Dependence，获取匹配字符串中的value字段
     '''
     regex_dict: dict = state[REGEX_DICT]
-    return regex_dict['value']
+    value = regex_dict.get("value1")
+    return value if value else regex_dict.get("value2")
 
 
 async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> str:
@@ -220,26 +219,6 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     day = datetime.fromtimestamp(time).strftime("%m-%d %H:%M")
     msg = f"【{server}】沙盘，更新时间：{day}"+MessageSegment.image(url)
     await sand_query.finish(msg)
-
-
-@qixue_query.handle()
-async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
-    '''奇穴查询'''
-    logger.info(
-        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 奇穴查询 | 请求：{name}"
-    )
-    params = {
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.推荐奇穴, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
-        await qixue_query.finish(msg)
-
-    msg = f'【{data.get("name")}】奇穴推荐，时间：{data.get("time")}\n'
-    msg += "龙门绝境：\n"+MessageSegment.image(data.get("longmen"))
-    msg += "战场任务：\n"+MessageSegment.image(data.get("battle"))
-    await qixue_query.finish(msg)
 
 
 @medicine_query.handle()

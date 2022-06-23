@@ -4,55 +4,41 @@ from typing import Optional, Tuple
 from httpx import AsyncClient
 from src.modules.search_record import SearchRecord
 from src.modules.ticket_info import TicketInfo
-from src.utils.config import config
 from src.utils.log import logger
 
 from .config import JX3APP
+from .jx3api import JX3API, Response
 
 
-class TicketManager(object):
-    '''ticket管理器类'''
-    _client: AsyncClient
-    '''异步请求客户端'''
-    _check_url: str
-    '''检测ticket有效性接口'''
+class TicketManager:
+    '''
+    ticket管理器，用来获取和验证ticket
+    '''
 
-    def __new__(cls, *args, **kwargs):
-        '''单例'''
-        if not hasattr(cls, '_instance'):
-            orig = super(TicketManager, cls)
-            cls._instance = orig.__new__(cls, *args, **kwargs)
-        return cls._instance
+    @classmethod
+    async def check_ticket(cls, ticket: str, app: JX3API) -> bool:
+        '''
+        说明:
+            检查ticket有效性
 
-    def __init__(self):
-        # 设置header
-        token = config.jx3api['jx3_token']
-        if token is None:
-            token = ""
-        headers = {"token": token, "User-Agent": "Nonebot2-jx3_bot"}
-        self._client = AsyncClient(headers=headers)
-        self._check_url = config.jx3api['jx3_url']+"/token/ticket"
+        参数:
+            * `ticket`：ticket字符串
+            * `app`：jx3api封装
 
-    async def check_ticket(self, ticket: str) -> bool:
-        '''检查ticket的有效性'''
-        params = {"ticket": ticket}
-        try:
-            req_url = await self._client.get(url=self._check_url, params=params)
-            req = req_url.json()
-            if req['code'] == 200:
-                return True
-            return False
-        except Exception as e:
-            logger.error(
-                f"<r>查询ticket失败</r> | <g>{str(e)}</g>"
-            )
-            return False
+        返回:
+            * `bool`：ticket是否有效
+        '''
+        req = await app.token_ticket(ticket=ticket)
+        respone = Response.parse_obj(req.json())
+        return respone.code == 200
 
-    async def get_ticket(self) -> Optional[str]:
+    @classmethod
+    async def get_ticket(cls) -> Optional[str]:
         '''获取一条有效的ticket，如果没有则返回None'''
         return await TicketInfo.get_ticket()
 
-    async def append_ticket(self, ticket: str) -> bool:
+    @classmethod
+    async def append_ticket(cls, ticket: str) -> bool:
         '''添加一条ticket，重复添加会返回false'''
         return await TicketInfo.append_ticket(ticket)
 

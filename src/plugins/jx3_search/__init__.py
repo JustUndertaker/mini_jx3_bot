@@ -11,7 +11,7 @@ from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
 from src.params import PluginConfig
 from src.utils.browser import browser
-from src.utils.config import config as all_config
+from src.utils.config import Config
 from src.utils.log import logger
 
 from . import data_source as source
@@ -24,6 +24,7 @@ __plugin_meta__ = PluginMetadata(
     config=PluginConfig()
 )
 
+all_config = Config()
 
 # ----------------------------------------------------------------
 #   正则枚举，与jx3api.com的接口对应

@@ -1,4 +1,3 @@
-import re
 from datetime import datetime
 from enum import Enum
 
@@ -6,9 +5,11 @@ from nonebot import on_regex
 from nonebot.adapters.onebot.v12.event import GroupMessageEvent
 from nonebot.adapters.onebot.v12.message import MessageSegment
 from nonebot.adapters.onebot.v12.permission import GROUP
+from nonebot.consts import REGEX_DICT
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
+from nonebot.typing import T_State
 from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.config import Config
@@ -27,7 +28,7 @@ __plugin_meta__ = PluginMetadata(
 all_config = Config()
 
 # ----------------------------------------------------------------
-#   正则枚举，与jx3api.com的接口对应
+#   正则枚举，已实现的查询功能
 # ----------------------------------------------------------------
 
 
@@ -80,61 +81,36 @@ help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 
 
 # ----------------------------------------------------------------
-#   Depends函数，用来获取相关参数
+#   Dependence，用来获取相关参数
 # ----------------------------------------------------------------
 
-
-async def get_server_1(matcher: Matcher, event: GroupMessageEvent) -> str:
-    '''最多2个参数，获取server'''
-    text_list = event.get_plaintext().split(" ")
-    if len(text_list) == 1:
-        server = await source.get_server(event.group_id)
-    else:
-        get_server = text_list[1]
-        server = await source.get_main_server(get_server)
+async def get_server(matcher: Matcher, event: GroupMessageEvent, state: T_State) -> str:
+    '''
+    说明:
+        Dependence，获取匹配字符串中的server，如果没有则获取群绑定的默认server
+    '''
+    regex_dict: dict = state[REGEX_DICT]
+    _server = regex_dict.get("server")
+    if _server:
+        server = await source.get_main_server(_server)
         if not server:
-            msg = f"未找到服务器[{get_server}]，请验证后查询。"
+            msg = f"未找到服务器[{_server}]，请验证后查询。"
             await matcher.finish(msg)
+    else:
+        server = await source.get_server(event.group_id)
     return server
 
 
-async def get_server_2(matcher: Matcher, event: GroupMessageEvent) -> str:
-    '''最多3个参数，获取server'''
-    text_list = event.get_plaintext().split(" ")
-    if len(text_list) == 2:
-        server = await source.get_server(event.group_id)
-    else:
-        get_server = text_list[1]
-        server = await source.get_main_server(get_server)
-        if not server:
-            msg = f"未找到服务器[{get_server}]，请验证后查询。"
-            await matcher.finish(msg)
-    return server
+async def get_value(state: T_State) -> str:
+    '''
+    说明:
+        Dependence，获取匹配字符串中的value字段
+    '''
+    regex_dict: dict = state[REGEX_DICT]
+    return regex_dict['value']
 
 
-def get_ex_name(event: GroupMessageEvent) -> str:
-    '''从前置这些可前可后的消息中获取name'''
-    text = event.get_plaintext()
-    text_list = text.split(" ")
-    # 判断是否为宏查询
-    if re.match(pattern=r"(^宏 [\u4e00-\u9fa5]+$)|(^[\u4e00-\u9fa5]+宏$)", string=text):
-        if len(text_list) == 1:
-            return text_list[0][:-1]
-        else:
-            return text_list[-1]
-
-    if len(text_list) == 1:
-        return text_list[0][:-2]
-    else:
-        return text_list[-1]
-
-
-def get_name(event: GroupMessageEvent) -> str:
-    '''获取消息中的name字段，取最后分页'''
-    return event.get_plaintext().split(" ")[-1]
-
-
-async def get_profession(matcher: Matcher, name: str = Depends(get_ex_name)) -> str:
+async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> str:
     '''获取职业名称'''
     profession = JX3PROFESSION.get_profession(name)
     if profession:
@@ -151,7 +127,7 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_ex_name)) -> 
 
 
 @daily_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''日常查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 日常查询 | 请求：{server}"
@@ -182,7 +158,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
 
 
 @server_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''开服查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 开服查询 | 请求：{server}"
@@ -201,7 +177,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
 
 
 @gold_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''金价查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 金价查询 | 请求：{server}"
@@ -226,7 +202,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
 
 
 @sand_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''沙盘查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 沙盘查询 | 请求：{server}"
@@ -352,7 +328,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
 
 
 @condition_query.handle()
-async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     '''前置查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 前置查询 | 请求：{name}"
@@ -371,7 +347,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
 
 
 @strategy_query.handle()
-async def _(event: GroupMessageEvent, name: str = Depends(get_ex_name)):
+async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     '''攻略查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 攻略查询 | 请求：{name}"
@@ -426,7 +402,7 @@ async def _(event: GroupMessageEvent):
 
 
 @price_query.handle()
-async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     '''物价查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 物价查询 | 请求：{name}"
@@ -454,7 +430,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
 
 
 @serendipity_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: str = Depends(get_value)):
     '''角色奇遇查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 角色奇遇查询 | 请求：server:{server},name:{name}"
@@ -480,7 +456,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
 
 
 @serendipity_list_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: str = Depends(get_value)):
     '''奇遇统计查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 奇遇统计查询 | 请求：server:{server},serendipity:{name}"
@@ -505,7 +481,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
 
 
 @serendipity_summary_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''奇遇汇总查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 奇遇汇总查询 | 请求：{server}"
@@ -528,7 +504,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_1)):
 
 
 @match_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: str = Depends(get_value)):
     '''战绩查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 战绩查询 | 请求：server:{server},name:{name}"
@@ -553,7 +529,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name:
 
 
 @equip_query.handle()
-async def _(event: GroupMessageEvent, server: str = Depends(get_server_2), name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: str = Depends(get_value)):
     '''装备属性查询'''
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 装备属性查询 | 请求：server:{server},name:{name}"

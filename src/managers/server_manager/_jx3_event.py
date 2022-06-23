@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from nonebot.adapters import Event as BaseEvent
-from nonebot.adapters.onebot.v12.message import Message
+from nonebot.adapters.onebot.v11.message import Message
 from nonebot.typing import overrides
 from nonebot.utils import escape_tag
 

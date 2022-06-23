@@ -1,9 +1,11 @@
 import json
 from typing import List, Literal, Optional, Tuple
 
-from src.utils.config import config
+from src.utils.config import Config
 from tortoise import fields
 from tortoise.models import Model
+
+config = Config()
 
 
 def encode_text(text: str):
@@ -57,32 +59,64 @@ class GroupInfo(Model):
 
     @classmethod
     async def group_init(cls, group_id: int, group_name: str):
-        '''给一个群注册数据，刷新群名'''
+        '''
+        说明:
+            给一个群注册数据，刷新群名
+
+        参数:
+            * `group_id`：群号
+            * `group_name`：群名
+        '''
         record, _ = await GroupInfo.get_or_create(group_id=group_id)
         record.group_name = group_name
         await record.save(update_fields=["group_name"])
 
     @classmethod
-    async def get_bot_status(cls, group_id: int) -> Optional[bool]:
-        '''获取机器人开启情况'''
+    async def get_bot_status(cls, group_id: int) -> bool:
+        '''
+        说明:
+            获取机器人开启情况
+
+        参数:
+            * `group_id`：群号
+
+        返回:
+            * `bool`：机器人是否开启
+        '''
         record = await GroupInfo.get_or_none(group_id=group_id)
-        if record:
-            return record.robot_status
-        return None
+        return record.robot_status
 
     @classmethod
     async def group_sign_in(cls, group_id: int) -> int:
-        '''群内签到，返回已签到数量'''
+        '''
+        说明:
+            群内签到，返回已签到数量
+
+        参数:
+            * `group_id`：群号
+
+        返回:
+            * `int`：当天已签到数量
+        '''
         record, _ = await GroupInfo.get_or_create(group_id=group_id)
         record.sign_nums += 1
         await record.save(update_fields=["sign_nums"])
         return record.sign_nums
 
     @classmethod
-    async def get_server(cls, group_id: int) -> Optional[str]:
-        '''获取绑定服务器'''
+    async def get_server(cls, group_id: int) -> str:
+        '''
+        说明:
+            获取绑定服务器
+
+        参数:
+            * `group_id`：群号
+
+        返回:
+            * `str`：服务器名
+        '''
         record = await GroupInfo.get_or_none(group_id=group_id)
-        return record.server if record else None
+        return record.server
 
     @classmethod
     async def get_ws_status(cls, group_id: int,

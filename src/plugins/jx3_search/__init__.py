@@ -132,7 +132,18 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> st
 async def cold_down(name: str, cd_time: int):
     '''
     说明:
-        以Dependency，增加命令冷却
+        Dependency，增加命令冷却
+
+    参数:
+        * `name`：app名称，相同名称会使用同一组cd
+        * `cd_time`：冷却时间
+
+    用法:
+    ```
+    @matcher.handle(parameterless=[cold_down(name="app", cd_time=0)])
+    async def _():
+        pass
+    ```
     '''
     async def dependency(matcher: Matcher, event: GroupMessageEvent):
         time_last = await SearchRecord.get_search_time(event.group_id, name)

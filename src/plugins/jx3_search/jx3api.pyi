@@ -1,4 +1,19 @@
+from typing import Optional
+
+from httpx import AsyncClient
 from pydantic import BaseModel
+
+
+class Config(BaseModel):
+    '''jx3api的设置'''
+    ws_path: str
+    '''ws链接地址'''
+    ws_token: Optional[str]
+    '''wstoken，按需购买'''
+    jx3_url: str
+    '''jx3api主站地址'''
+    jx3_token: Optional[str]
+    '''jx3api主站token，按需购买'''
 
 
 class Response(BaseModel):
@@ -15,6 +30,10 @@ class Response(BaseModel):
 
 class JX3API:
     '''jx3api接口类'''
+    client: AsyncClient
+    '''浏览器客户端'''
+    config: Config
+    '''api设置'''
 
     async def app_daily(self, *, server: str, next: int = ...) -> Response:
         '''
@@ -210,6 +229,16 @@ class JX3API:
         '''
         说明:
             搜索目标奇遇的前置要求。
+
+        参数:
+            * `name`：奇遇名称
+        '''
+        ...
+
+    async def app_strategy(self, *, name: str) -> Response:
+        '''
+        说明:
+            搜索某个奇遇的任务攻略，不需要token
 
         参数:
             * `name`：奇遇名称

@@ -27,6 +27,8 @@ __plugin_meta__ = PluginMetadata(
 
 api = JX3API()
 '''jx3api接口实例'''
+ticket_manager = None  # TODO:待实现
+'''ticket管理器实例'''
 
 # ----------------------------------------------------------------
 #   正则枚举，已实现的查询功能
@@ -139,12 +141,12 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
 
     data = response.data
     msg = f'日常[{server}]\n'
-    msg += f'当前时间：{data.get("date")} 星期{data.get("week")}\n'
-    msg += f'今日大战：{data.get("war")}\n'
-    msg += f'今日战场：{data.get("battle")}\n'
-    msg += f'公共任务：{data.get("public")}\n'
-    msg += f'阵营任务：{data.get("camp")}\n'
-    msg += DAILIY_LIST.get(data.get("week"))
+    msg += f'当前时间：{data.get("date","未知")} 星期{data.get("week","未知")}\n'
+    msg += f'今日大战：{data.get("war","未知")}\n'
+    msg += f'今日战场：{data.get("battle","未知")}\n'
+    msg += f'公共任务：{data.get("relief","未知")}\n'
+    msg += f'阵营任务：{data.get("camp","未知")}\n'
+    msg += DAILIY_LIST.get(data.get("week", "未知"))
     if data.get("draw"):
         msg += f'美人画像：{data.get("draw")}\n'
     team: list = data.get("team")
@@ -160,16 +162,14 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 开服查询 | 请求：{server}"
     )
-    params = {
-        "server": server
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.开服检查, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_check(server=server)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await server_query.finish(msg)
 
+    data = response.data
     status = "已开服" if data['status'] == 1 else "维护中"
-    msg = f'{data.get("server")} 当前状态是[{status}]'
+    msg = f'{server} 当前状态是[{status}]'
     await server_query.finish(msg)
 
 
@@ -179,17 +179,14 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 金价查询 | 请求：{server}"
     )
-    params = {
-        "server": server
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.金价比例, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_demon(server=server)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await gold_query.finish(msg)
 
-    data = data[0]
+    data: dict = response.data[0]
     date_now = datetime.now().strftime("%m-%d %H:%M")
-    msg = f'金价[{data.get("server")}] {date_now}\n'
+    msg = f'金价[{server}] {date_now}\n'
     msg += f'官方平台：1元={data.get("wanbaolou")}金\n'
     msg += f'百度贴吧：1元={data.get("tieba")}金\n'
     msg += f'悠悠平台：1元={data.get("uu898")}金\n'
@@ -204,19 +201,8 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 沙盘查询 | 请求：{server}"
     )
-    params = {
-        "server": server
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.沙盘图片, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
-        await sand_query.finish(msg)
-
-    url = data[0]['url']
-    time: int = data[0]['time']
-    day = datetime.fromtimestamp(time).strftime("%m-%d %H:%M")
-    msg = f"【{server}】沙盘，更新时间：{day}"+MessageSegment.image(url)
-    await sand_query.finish(msg)
+    # TODO: 后续实现
+    await sand_query.finish()
 
 
 @medicine_query.handle()
@@ -225,14 +211,12 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 小药查询 | 请求：{name}"
     )
-    params = {
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.推荐小药, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_heighten(name=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await medicine_query.finish(msg)
 
+    data = response.data
     name = data.get('name')
     msg = f'[{name}]小药：\n'
     msg += f'增强食品：{data.get("heighten_food")}\n'
@@ -249,14 +233,12 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 配装查询 | 请求：{name}"
     )
-    params = {
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.推荐装备, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_equip(name=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await equip_group_query.finish(msg)
 
+    data = response.data
     msg = MessageSegment.text(f'{data.get("name")}配装：\nPve装备：\n')+MessageSegment.image(data.get("pve")) + \
         MessageSegment.text("Pvp装备：\n")+MessageSegment.image(data.get("pvp"))
     await equip_group_query.finish(msg)
@@ -268,14 +250,12 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 宏查询 | 请求：{name}"
     )
-    params = {
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.查宏命令, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_macro(name=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await macro_query.finish(msg)
 
+    data = response.data
     msg = f'宏 {data.get("name")} 更新时间：{data.get("time")}\n'
     msg += f'{data.get("macro")}\n'
     msg += f'奇穴：{data.get("qixue")}'
@@ -289,14 +269,12 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 阵眼查询 | 请求：{name}"
     )
-    params = {
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.阵眼效果, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_matrix(name=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await zhenyan_query.finish(msg)
 
+    data = response.data
     msg = f"{name}：【{data.get('skillName')}】\n"
     descs: list[dict] = data.get("descs")
     for i in descs:
@@ -310,14 +288,12 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 前置查询 | 请求：{name}"
     )
-    params = {
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.奇遇前置, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_require(name=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await condition_query.finish(msg)
 
+    data = response.data
     url = data.get("upload")
     msg = MessageSegment.image(url)
     await condition_query.finish(msg)
@@ -329,19 +305,16 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 攻略查询 | 请求：{name}"
     )
-    params = {
-        "name": name
-    }
-    # 判断有没有token
-    token = all_config.jx3api['jx3_token']
-    if token is None:
-        msg, data = await source.get_data_from_api(app=JX3APP.免费奇遇攻略, group_id=event.group_id,  params=params)
+    token = api.config.jx3_token
+    if token:
+        response = await api.next_strategy(name=name)
     else:
-        msg, data = await source.get_data_from_api(app=JX3APP.付费奇遇攻略, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+        response = await api.app_strategy(name=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await strategy_query.finish(msg)
 
+    data = response.data
     img = data['url']
     await strategy_query.finish(MessageSegment.image(img))
 
@@ -366,11 +339,12 @@ async def _(event: GroupMessageEvent):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 骚话 | 请求骚话"
     )
-    msg, data = await source.get_data_from_api(app=JX3APP.随机骚话, group_id=event.group_id, params=None)
-    if msg != "success":
-        msg = f"请求失败，{msg}"
+    response = await api.app_random()
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await saohua_query.finish(msg)
 
+    data = response.data
     await saohua_query.finish(data['text'])
 
 # -------------------------------------------------------------
@@ -384,14 +358,12 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 物价查询 | 请求：{name}"
     )
-    params = {
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.物品价格, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_price(name=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await price_query.finish(msg)
 
+    data = response.data
     pagename = "price.html"
     item_name = data.get("name")
     item_info = data.get("info")
@@ -412,16 +384,14 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 角色奇遇查询 | 请求：server:{server},name:{name}"
     )
-    params = {
-        "server": server,
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.奇遇查询, group_id=event.group_id,  params=params, need_ticket=True)
 
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    ticket = ticket_manager.get_one_ticket()
+    response = await api.next_serendipity(server=server, name=name, ticket=ticket)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await serendipity_query.finish(msg)
 
+    data = response.data
     pagename = "serendipity.html"
     get_data = source.handle_data_serendipity(data)
     img = await browser.template_to_image(pagename=pagename,
@@ -438,15 +408,12 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 奇遇统计查询 | 请求：server:{server},serendipity:{name}"
     )
-    params = {
-        "server": server,
-        "serendipity": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.奇遇统计, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.next_statistical(server=server, serendipity=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await serendipity_list_query.finish(msg)
 
+    data = response.data
     pagename = "serendipity_list.html"
     get_data = source.handle_data_serendipity_list(data)
     img = await browser.template_to_image(pagename=pagename,
@@ -463,14 +430,12 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 奇遇汇总查询 | 请求：{server}"
     )
-    params = {
-        "server": server
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.奇遇汇总, group_id=event.group_id,  params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.next_collect(server=server)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await serendipity_summary_query.finish(msg)
 
+    data = response.data
     pagename = "serendipity_summary.html"
     get_data = source.handle_data_serendipity_summary(data)
     img = await browser.template_to_image(pagename=pagename,
@@ -486,15 +451,13 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 战绩查询 | 请求：server:{server},name:{name}"
     )
-    params = {
-        "server": server,
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.比赛战绩, group_id=event.group_id,  params=params, need_ticket=True)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    ticket = ticket_manager.get_one_ticket()
+    response = await api.next_arena(server=server, name=name, ticket=ticket)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await match_query.finish(msg)
 
+    data = response.data
     pagename = "match.html"
     get_data = source.handle_data_match(data)
     img = await browser.template_to_image(pagename=pagename,
@@ -511,15 +474,13 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 装备属性查询 | 请求：server:{server},name:{name}"
     )
-    params = {
-        "server": server,
-        "name": name
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.装备属性, group_id=event.group_id,  params=params, need_ticket=True)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    ticket = ticket_manager.get_one_ticket()
+    response = await api.role_attribute(server=server, name=name, ticket=ticket)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await equip_query.finish(msg)
 
+    data = response.data
     pagename = "equip.html"
     get_data = source.handle_data_equip(data)
     img = await browser.template_to_image(pagename=pagename,
@@ -533,7 +494,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
 @help.handle()
 async def _(event: GroupMessageEvent):
     '''帮助'''
-    token = all_config.jx3api['jx3_token']
+    token = api.config.jx3_token
     flag = token is not None
     pagename = "search_help.html"
     img = await browser.template_to_image(pagename=pagename, flag=flag)

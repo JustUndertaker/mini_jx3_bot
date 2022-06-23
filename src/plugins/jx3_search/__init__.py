@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 from enum import Enum
 
@@ -10,12 +11,13 @@ from nonebot.matcher import Matcher
 from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
 from nonebot.typing import T_State
+from src.modules.search_record import SearchRecord
 from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
 
 from . import data_source as source
-from .config import DAILIY_LIST, JX3APP, JX3PROFESSION
+from .config import DAILIY_LIST, JX3PROFESSION
 from .jx3api import JX3API
 
 __plugin_meta__ = PluginMetadata(
@@ -82,21 +84,22 @@ help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 
 
 # ----------------------------------------------------------------
-#   Dependence，用来获取相关参数
+#   Dependency，用来获取相关参数及冷却实现
 # ----------------------------------------------------------------
 
 async def get_server(matcher: Matcher, event: GroupMessageEvent, state: T_State) -> str:
     '''
     说明:
-        Dependence，获取匹配字符串中的server，如果没有则获取群绑定的默认server
+        Dependency，获取匹配字符串中的server，如果没有则获取群绑定的默认server
     '''
     regex_dict: dict = state[REGEX_DICT]
     _server = regex_dict.get("server")
     if _server:
-        server = await source.get_main_server(_server)
-        if not server:
+        response = await api.app_server(name=_server)
+        if response.code != 200:
             msg = f"未找到服务器[{_server}]，请验证后查询。"
             await matcher.finish(msg)
+        server: str = response.data['name']
     else:
         server = await source.get_server(event.group_id)
     return server
@@ -105,7 +108,7 @@ async def get_server(matcher: Matcher, event: GroupMessageEvent, state: T_State)
 async def get_value(state: T_State) -> str:
     '''
     说明:
-        Dependence，获取匹配字符串中的value字段
+        Dependency，获取匹配字符串中的value字段
     '''
     regex_dict: dict = state[REGEX_DICT]
     value = regex_dict.get("value1")
@@ -113,7 +116,10 @@ async def get_value(state: T_State) -> str:
 
 
 async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> str:
-    '''获取职业名称'''
+    '''
+    说明:
+        Dependency，通过别名获取职业名称
+    '''
     profession = JX3PROFESSION.get_profession(name)
     if profession:
         return profession
@@ -123,12 +129,30 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> st
     await matcher.finish(msg)
 
 
+async def cold_down(name: str, cd_time: int):
+    '''
+    说明:
+        以Dependency，增加命令冷却
+    '''
+    async def dependency(matcher: Matcher, event: GroupMessageEvent):
+        time_last = await SearchRecord.get_search_time(event.group_id, name)
+        time_now = int(time.time())
+        over_time = over_time = time_now-time_last
+        if over_time > cd_time:
+            await SearchRecord.use_search(event.group_id, name)
+            return
+        else:
+            left_cd = cd_time-over_time
+            await matcher.finish(f"[{name}]冷却中 ({left_cd})")
+
+    return Depends(dependency)
+
 # ----------------------------------------------------------------
 #   handler列表，具体实现回复内容
 # ----------------------------------------------------------------
 
 
-@daily_query.handle()
+@daily_query.handle(parameterless=[cold_down(name="日常查询", cd_time=0)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''日常查询'''
     logger.info(
@@ -156,7 +180,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     await daily_query.finish(msg)
 
 
-@server_query.handle()
+@server_query.handle(parameterless=[cold_down(name="开服查询", cd_time=0)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''开服查询'''
     logger.info(
@@ -173,7 +197,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     await server_query.finish(msg)
 
 
-@gold_query.handle()
+@gold_query.handle(parameterless=[cold_down(name="金价查询", cd_time=0)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''金价查询'''
     logger.info(
@@ -195,7 +219,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     await gold_query.finish(msg)
 
 
-@sand_query.handle()
+@sand_query.handle(parameterless=[cold_down(name="沙盘查询", cd_time=0)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''沙盘查询'''
     logger.info(
@@ -205,7 +229,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     await sand_query.finish()
 
 
-@medicine_query.handle()
+@medicine_query.handle(parameterless=[cold_down(name="小药查询", cd_time=0)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     '''小药查询'''
     logger.info(
@@ -227,7 +251,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     await medicine_query.finish(msg)
 
 
-@equip_group_query.handle()
+@equip_group_query.handle(parameterless=[cold_down(name="配装查询", cd_time=0)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     '''配装查询'''
     logger.info(
@@ -244,7 +268,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     await equip_group_query.finish(msg)
 
 
-@macro_query.handle()
+@macro_query.handle(parameterless=[cold_down(name="宏查询", cd_time=0)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     '''宏查询'''
     logger.info(
@@ -263,7 +287,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     await macro_query.finish(msg)
 
 
-@zhenyan_query.handle()
+@zhenyan_query.handle(parameterless=[cold_down(name="阵眼查询", cd_time=0)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     '''阵眼查询'''
     logger.info(
@@ -282,7 +306,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
     await zhenyan_query.finish(msg)
 
 
-@condition_query.handle()
+@condition_query.handle(parameterless=[cold_down(name="前置查询", cd_time=0)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     '''前置查询'''
     logger.info(
@@ -299,7 +323,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     await condition_query.finish(msg)
 
 
-@strategy_query.handle()
+@strategy_query.handle(parameterless=[cold_down(name="攻略查询", cd_time=0)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     '''攻略查询'''
     logger.info(
@@ -319,7 +343,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     await strategy_query.finish(MessageSegment.image(img))
 
 
-@update_query.handle()
+@update_query.handle(parameterless=[cold_down(name="更新公告", cd_time=0)])
 async def _(event: GroupMessageEvent):
     '''更新公告'''
     logger.info(
@@ -333,7 +357,7 @@ async def _(event: GroupMessageEvent):
     await update_query.finish(msg)
 
 
-@saohua_query.handle()
+@saohua_query.handle(parameterless=[cold_down(name="骚话", cd_time=0)])
 async def _(event: GroupMessageEvent):
     '''骚话'''
     logger.info(
@@ -352,7 +376,7 @@ async def _(event: GroupMessageEvent):
 # -------------------------------------------------------------
 
 
-@price_query.handle()
+@price_query.handle(parameterless=[cold_down(name="物价查询", cd_time=10)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     '''物价查询'''
     logger.info(
@@ -378,7 +402,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     await price_query.finish(MessageSegment.image(img))
 
 
-@serendipity_query.handle()
+@serendipity_query.handle(parameterless=[cold_down(name="角色奇遇", cd_time=10)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: str = Depends(get_value)):
     '''角色奇遇查询'''
     logger.info(
@@ -402,7 +426,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     await serendipity_query.finish(MessageSegment.image(img))
 
 
-@serendipity_list_query.handle()
+@serendipity_list_query.handle(parameterless=[cold_down(name="奇遇统计", cd_time=10)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: str = Depends(get_value)):
     '''奇遇统计查询'''
     logger.info(
@@ -424,7 +448,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     await serendipity_list_query.finish(MessageSegment.image(img))
 
 
-@serendipity_summary_query.handle()
+@serendipity_summary_query.handle(parameterless=[cold_down(name="奇遇汇总", cd_time=10)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     '''奇遇汇总查询'''
     logger.info(
@@ -445,7 +469,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     await serendipity_summary_query.finish(MessageSegment.image(img))
 
 
-@match_query.handle()
+@match_query.handle(parameterless=[cold_down(name="战绩查询", cd_time=10)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: str = Depends(get_value)):
     '''战绩查询'''
     logger.info(
@@ -468,7 +492,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: s
     await match_query.finish(MessageSegment.image(img))
 
 
-@equip_query.handle()
+@equip_query.handle(parameterless=[cold_down(name="装备属性", cd_time=10)])
 async def _(event: GroupMessageEvent, server: str = Depends(get_server), name: str = Depends(get_value)):
     '''装备属性查询'''
     logger.info(

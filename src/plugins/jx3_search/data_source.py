@@ -1,13 +1,9 @@
 import time
 from datetime import datetime
-from typing import List, Optional, Tuple
 
 from src.modules.group_info import GroupInfo
-from src.utils.log import logger
 
-from .config import JX3APP
 from .jx3api import JX3API
-from .model import jx3_searcher, ticket_manager
 
 api = JX3API()
 
@@ -16,62 +12,12 @@ async def get_server(group_id: int) -> str:
     '''获取群绑定的区服'''
     return await GroupInfo.get_server(group_id)
 
-
-async def get_main_server(server: str) -> Optional[str]:
-    '''获取主服务器'''
-    return await jx3_searcher.get_server(server)
-
-
-async def get_data_from_api(app: JX3APP, group_id: int, params: dict, need_ticket: bool = False) -> Tuple[str, dict]:
-    '''
-    :说明
-        从jx3api获取内容
-
-    :参数
-        * app：jx3app枚举
-        * group_id：QQ群号
-        * params：参数字典
-        * need_ticket：是否需要ticket
-
-    :返回
-        * str：返回信息，为"success"时成功
-        * dict：返回数据data
-    '''
-    if need_ticket:
-        # 获取ticket
-
-        while True:
-            ticket = await ticket_manager.get_ticket()
-            params["ticket"] = ticket
-            if not ticket:
-                logger.debug(
-                    f"<y>群{group_id}</y> | {app.name} | 查询失败，未找到ticket"
-                )
-                return "未找到合适的ticket，请联系管理员", {}
-            try:
-                return await jx3_searcher.get_data_from_api(group_id, app, params)
-
-            except Exception as e:
-                logger.error(
-                    f"查询遇到了问题：{str(e)}"
-                )
-                return f"遇到了问题：{str(e)}。", {}
-
-    try:
-        return await jx3_searcher.get_data_from_api(group_id, app, params)
-
-    except Exception as e:
-        logger.error(
-            f"查询遇到了问题：{str(e)}"
-        )
-        return f"遇到了问题：{str(e)}。", {}
-
 # -------------------------------------------------------------
 # 返回数据处理阶段，处理api返回data，方便模板使用
 # -------------------------------------------------------------
 
 
-def handle_data_price(data: List[List[dict]]) -> dict:
+def handle_data_price(data: list[list[dict]]) -> dict:
     '''处理物价数据'''
     req_data = {}
     for one_data in data:
@@ -83,7 +29,7 @@ def handle_data_price(data: List[List[dict]]) -> dict:
     return req_data
 
 
-def handle_data_serendipity(data: List[dict]) -> List[dict]:
+def handle_data_serendipity(data: list[dict]) -> list[dict]:
     '''处理奇遇统计'''
     req_data = []
     for one_data in data:
@@ -101,7 +47,7 @@ def handle_data_serendipity(data: List[dict]) -> List[dict]:
     return req_data
 
 
-def handle_data_serendipity_list(data: List[dict]) -> List[dict]:
+def handle_data_serendipity_list(data: list[dict]) -> list[dict]:
     '''处理奇遇统计数据'''
     req_data = []
     for one_data in data:
@@ -119,7 +65,7 @@ def handle_data_serendipity_list(data: List[dict]) -> List[dict]:
     return req_data
 
 
-def handle_data_serendipity_summary(data: List[dict]) -> List[dict]:
+def handle_data_serendipity_summary(data: list[dict]) -> list[dict]:
     '''处理奇遇汇总数据'''
     req_data = []
     for _data in data:

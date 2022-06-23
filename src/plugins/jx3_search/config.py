@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
@@ -55,52 +54,3 @@ DAILIY_LIST = {
     "日": "攻防前置：昆仑(12:00)\n阵营攻防：恶人谷；奇袭：浩气盟(13:00，19:00)\n"
 }
 '''日常任务对应表'''
-
-
-@dataclass
-class APP(object):
-    '''jx3api的app类，关联url和cd时间'''
-    url: str
-    '''app的url'''
-    cd: int
-    '''app的cd时间'''
-
-
-class JX3APP(Enum):
-    '''jx3api的接口枚举'''
-    日常任务 = APP("/app/daily", 0)
-    开服检查 = APP("/app/check", 0)
-    金价比例 = APP("/app/demon", 0)
-    沙盘图片 = APP("/app/sand", 0)
-    家园鲜花 = APP("/app/flower", 0)
-    科举答题 = APP("/app/exam", 0)
-    家园家具 = APP("/app/furniture", 0)
-    查器物谱 = APP("/app/travel", 0)
-    推荐小药 = APP("/app/heighten", 0)
-    推荐装备 = APP("/app/equip", 0)
-    推荐奇穴 = APP("/app/qixue", 0)
-    查宏命令 = APP("/app/macro", 0)
-    官方资讯 = APP("/app/news", 0)
-    维护公告 = APP("/app/announce", 0)
-    阵眼效果 = APP("/app/matrix", 0)
-    物品价格 = APP("/app/price", 0)
-    刷新地点 = APP("/app/horse", 0)
-    主从大区 = APP("/app/server", 0)
-    随机骚话 = APP("/app/random", 0)
-    奇遇前置 = APP("/app/require", 0)
-    免费奇遇攻略 = APP("/app/strategy", 0)
-    付费奇遇攻略 = APP("/next/strategy", 0)
-    奇遇查询 = APP("/next/serendipity", 10)
-    奇遇统计 = APP("/next/statistical", 10)
-    奇遇汇总 = APP("/next/collect", 10)
-    资历排行 = APP("/next/seniority", 0)
-    比赛战绩 = APP("/next/match", 10)
-    战绩排行 = APP("/next/awesome", 10)
-    战绩统计 = APP("/next/schools", 10)
-    角色信息 = APP("/role/roleInfo", 0)
-    装备属性 = APP("/role/attribute", 10)
-    烟花记录 = APP("/role/secret", 10)
-
-    加密计算 = APP("/token/calculate", 0)
-    查有效值 = APP("/token/ticket", 0)
-    到期查询 = APP("/token/socket", 0)

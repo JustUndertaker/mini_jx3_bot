@@ -71,7 +71,12 @@ class JX3API:
             res = await self.client.get(url=url, params=data)
             return Response.parse_obj(res.json())
         except Exception as e:
-            raise e
+            return Response(
+                code=0,
+                msg=f"{str(e)}",
+                data={},
+                time=0
+            )
 
     def __getattr__(self, name: str) -> _ApiCall:
         # 拼接url

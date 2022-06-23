@@ -7,7 +7,7 @@ from src.modules.ticket_info import TicketInfo
 from src.utils.log import logger
 
 from .config import JX3APP
-from .jx3api import JX3API, Response
+from .jx3api import JX3API
 
 
 class TicketManager:
@@ -28,8 +28,7 @@ class TicketManager:
         返回:
             * `bool`：ticket是否有效
         '''
-        req = await app.token_ticket(ticket=ticket)
-        respone = Response.parse_obj(req.json())
+        respone = await app.token_ticket(ticket=ticket)
         return respone.code == 200
 
     @classmethod

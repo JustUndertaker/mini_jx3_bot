@@ -129,7 +129,7 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> st
     await matcher.finish(msg)
 
 
-async def cold_down(name: str, cd_time: int):
+async def cold_down(name: str, cd_time: int) -> None:
     '''
     说明:
         Dependency，增加命令冷却

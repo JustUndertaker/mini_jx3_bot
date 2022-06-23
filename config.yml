@@ -11,21 +11,6 @@ jx3api:
   # 主站token，不填将不能访问带ticket的接口
   jx3_token: ~
 
-# 邮件通知配置
-mail:
-  # 服务器地址
-  host: ~
-  # 端口号
-  pord: ~
-  # 用户名
-  user: ~
-  # 密码，可能是授权码
-  pass: ~
-  # 发送方
-  sender: ~
-  # 接收方
-  receiver: ~
-
 # 聊天配置
 nlp:
   # 腾讯云API的secretId，开通地址：https://console.cloud.tencent.com/cam/capi
@@ -60,8 +45,6 @@ weather:
 
 # 默认设置
 default:
-  # 插件debug日志是否显示在控制台
-  logger_debug: true
   # 每个群默认绑定服务器
   server: 幽月轮
   # 是否接收添加好友请求
@@ -92,9 +75,7 @@ path:
   # 数据文件夹
   data: data
   # 日志文件夹
-  info: log/info
-  debug: log/debug
-  error: log/error
+  logs: logs
   # html模板文件路径
   templates: ./template
   # 欢迎消息存储图片路径
@@ -103,3 +84,16 @@ path:
   someoneleft: ./data/someoneleft/
   # 晚安储存图片路径
   goodnight: ./data/goodnight/
+
+# 日志设置
+logs:
+  # 是否输出到控制台
+  is_console: true
+  # 控制台输出日志级别，INFO,DEBUG,SUCCESS,ERROR
+  console_level: INFO
+  # 是否输出info文件
+  is_file_info: true
+  # 是否输出debug文件
+  is_file_debug: true
+  # 是否输出error文件
+  is_file_error: true

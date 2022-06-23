@@ -8,3 +8,5 @@ class Config:
     '''天气插件设置'''
     path: dict
     '''路径设置'''
+    logs: dict
+    '''日志设置'''

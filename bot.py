@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import nonebot
-from nonebot.adapters.onebot.v11 import Adapter
+from nonebot.adapters.onebot.v12 import Adapter
 
 from src.utils.database import database_init
 from src.utils.moinkeypath import monkeypatch

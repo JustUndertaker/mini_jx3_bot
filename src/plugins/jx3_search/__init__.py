@@ -2,9 +2,9 @@ from datetime import datetime
 from enum import Enum
 
 from nonebot import on_regex
-from nonebot.adapters.onebot.v12.event import GroupMessageEvent
-from nonebot.adapters.onebot.v12.message import MessageSegment
-from nonebot.adapters.onebot.v12.permission import GROUP
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
+from nonebot.adapters.onebot.v11.message import MessageSegment
+from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.consts import REGEX_DICT
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
@@ -12,11 +12,11 @@ from nonebot.plugin import PluginMetadata
 from nonebot.typing import T_State
 from src.params import PluginConfig
 from src.utils.browser import browser
-from src.utils.config import Config
 from src.utils.log import logger
 
 from . import data_source as source
 from .config import DAILIY_LIST, JX3APP, JX3PROFESSION
+from .jx3api import JX3API
 
 __plugin_meta__ = PluginMetadata(
     name="剑三查询",
@@ -25,7 +25,8 @@ __plugin_meta__ = PluginMetadata(
     config=PluginConfig()
 )
 
-all_config = Config()
+api = JX3API()
+'''jx3api接口实例'''
 
 # ----------------------------------------------------------------
 #   正则枚举，已实现的查询功能
@@ -131,15 +132,12 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 日常查询 | 请求：{server}"
     )
-    params = {
-        "server": server,
-        "next": 0
-    }
-    msg, data = await source.get_data_from_api(app=JX3APP.日常任务, group_id=event.group_id, params=params)
-    if msg != "success":
-        msg = f"查询失败，{msg}"
+    response = await api.app_daily(server=server)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
         await daily_query.finish(msg)
 
+    data = response.data
     msg = f'日常[{server}]\n'
     msg += f'当前时间：{data.get("date")} 星期{data.get("week")}\n'
     msg += f'今日大战：{data.get("war")}\n'
@@ -147,7 +145,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
     msg += f'公共任务：{data.get("public")}\n'
     msg += f'阵营任务：{data.get("camp")}\n'
     msg += DAILIY_LIST.get(data.get("week"))
-    if data.get("draw") is not None:
+    if data.get("draw"):
         msg += f'美人画像：{data.get("draw")}\n'
     team: list = data.get("team")
     msg += f'\n武林通鉴·公共任务\n{team[0]}\n'

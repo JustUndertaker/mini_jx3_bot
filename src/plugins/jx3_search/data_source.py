@@ -6,7 +6,10 @@ from src.modules.group_info import GroupInfo
 from src.utils.log import logger
 
 from .config import JX3APP
+from .jx3api import JX3API
 from .model import jx3_searcher, ticket_manager
+
+api = JX3API()
 
 
 async def get_server(group_id: int) -> str:

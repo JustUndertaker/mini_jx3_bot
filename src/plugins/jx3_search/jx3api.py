@@ -41,7 +41,9 @@ class Response(BaseModel):
 
 
 class JX3API:
-    '''jx3api接口类'''
+    '''
+    jx3api接口类，负责访问网站接口，获取数据。
+    '''
     client: AsyncClient
     '''浏览器客户端'''
     config: Config

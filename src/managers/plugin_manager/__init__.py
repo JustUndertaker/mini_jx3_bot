@@ -12,7 +12,9 @@ from . import data_source as source
 
 @run_preprocessor
 async def _(matcher: Matcher, event: GroupMessageEvent):
-    '''插件管理系统，插件开关实现'''
+    '''
+    插件管理，基于hook实现插件开关
+    '''
     # 检测插件是否注册
     group_id = event.group_id
     module_name = matcher.plugin_name

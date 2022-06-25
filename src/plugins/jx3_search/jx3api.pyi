@@ -22,7 +22,7 @@ class Response(BaseModel):
     '''状态码'''
     msg: str
     '''返回消息字符串'''
-    data: dict
+    data: dict | list[dict]
     '''返回数据'''
     time: int
     '''时间戳'''

@@ -77,8 +77,8 @@ class TicketInfo(Model):
 
         返回:
             * `list[dict]`：ticket字典列表
-                * `id`：int，ticket编号
-                * `ticket`：str，ticket值
-                * `alive`：bool，是否有效
+                * `id`：`int`ticket编号
+                * `ticket`：`str`ticket值
+                * `alive`：`bool`是否有效
         '''
         return await cls.all().values("id", "ticket", "alive")

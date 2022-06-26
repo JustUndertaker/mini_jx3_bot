@@ -1,6 +1,6 @@
 import json
 
-from src.params import GroupSetting, MeauData, NoticeType, OneGroupInfo
+from src.params import GroupSetting, NoticeType
 from src.utils.config import Config
 from tortoise import fields
 from tortoise.models import Model
@@ -232,7 +232,7 @@ class GroupInfo(Model):
         await record.save(update_fields=["robot_status"])
 
     @classmethod
-    async def get_meau_data(cls, group_id: int) -> MeauData:
+    async def get_meau_data(cls, group_id: int) -> dict:
         '''
         说明:
             获取菜单数据
@@ -241,23 +241,35 @@ class GroupInfo(Model):
             * `group_id`：群号
 
         返回:
-            * `MeauData`：菜单数据模型
+            * `dict`：菜单数据字典
+                * `robot_status`：`bool`机器人开关
+                * `sign_nums`：`int`当天签到人数
+                * `server`：`str`当前绑定服务器
+                * `robot_active`：`int`机器人活跃度
+                * `welcome_status`：`bool`进群通知开关
+                * `someoneleft_status`：`bool`离群通知开关
+                * `goodnight_status`：`bool`晚安通知开关
+                * `ws_server`：`bool`ws开服推送开关
+                * `ws_news`：`bool`ws新闻推送开关
+                * `ws_serendipity`：`bool`ws奇遇推送开关
+                * `ws_horse`：`bool`ws抓马推送开关
+                * `ws_fuyao`：`bool`ws扶摇推送开关
         '''
         record, _ = await cls.get_or_create(group_id=group_id)
-        return MeauData(
-            robot_status=record.robot_status,
-            sign_nums=record.sign_nums,
-            server=record.server,
-            robot_active=record.robot_active,
-            welcome_status=record.welcome_status,
-            someoneleft_status=record.someoneleft_status,
-            goodnight_status=record.goodnight_status,
-            ws_server=record.ws_server,
-            ws_news=record.ws_news,
-            ws_serendipity=record.ws_serendipity,
-            ws_horse=record.ws_horse,
-            ws_fuyao=record.ws_fuyao
-        )
+        return {
+            "robot_status": record.robot_status,
+            "sign_nums": record.sign_nums,
+            "server": record.server,
+            "robot_active": record.robot_active,
+            "welcome_status": record.welcome_status,
+            "someoneleft_status": record.someoneleft_status,
+            "goodnight_status": record.goodnight_status,
+            "ws_server": record.ws_server,
+            "ws_news": record.ws_news,
+            "ws_serendipity": record.ws_serendipity,
+            "ws_horse": record.ws_horse,
+            "ws_fuyao": record.ws_fuyao
+        }
 
     @classmethod
     async def set_notice_msg(cls, group_id: int, notice_type: NoticeType, message: list[dict]):
@@ -316,15 +328,21 @@ class GroupInfo(Model):
         await cls.filter(group_id=group_id).delete()
 
     @classmethod
-    async def get_group_list(cls) -> list[OneGroupInfo]:
+    async def get_group_list(cls) -> list[dict]:
         '''
         说明:
             获取群列表数据
 
         返回:
-            * `list[GroupInfo]`：群信息列表
+            * `list[dict]`：群信息列表
+                * `group_id`：`int`qq群号
+                * `group_name`：`str`群名
+                * `sign_nums`：`int`当天签到数量
+                * `server`：`str`绑定服务器名
+                * `robot_status`：`bool`机器人总开关
+                * `robot_active`：`int`机器人活跃度
         '''
-        data = await cls.all().values(
+        return await cls.all().values(
             "group_id",
             "group_name",
             "sign_nums",
@@ -332,10 +350,6 @@ class GroupInfo(Model):
             "robot_status",
             "robot_active"
         )
-        return [
-            OneGroupInfo.parse_obj(i)
-            for i in data
-        ]
 
     @classmethod
     async def check_group_init(cls, group_id: int) -> bool:

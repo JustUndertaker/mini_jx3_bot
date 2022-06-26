@@ -33,7 +33,7 @@ class SearchRecord(Model):
         返回:
             * `int`：上次查询时间戳
         '''
-        record, _ = await SearchRecord.get_or_create(group_id=group_id, app_name=app_name)
+        record, _ = await cls.get_or_create(group_id=group_id, app_name=app_name)
         return record.last_time
 
     @classmethod
@@ -46,7 +46,7 @@ class SearchRecord(Model):
             * `group_id`：群号
             * `app_name`：app名称
         '''
-        record, _ = await SearchRecord.get_or_create(group_id=group_id, app_name=app_name)
+        record, _ = await cls.get_or_create(group_id=group_id, app_name=app_name)
         time_now = int(time.time())
         record.last_time = time_now
         record.count += 1

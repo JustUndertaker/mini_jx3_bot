@@ -40,7 +40,7 @@ class UserInfo(Model):
             * `group_id`：群号
             * `user_name`：用户昵称
         '''
-        record, _ = await UserInfo.get_or_create(user_id=user_id, group_id=group_id)
+        record, _ = await cls.get_or_create(user_id=user_id, group_id=group_id)
         record.user_name = user_name
         await record.save()
 
@@ -75,7 +75,7 @@ class UserInfo(Model):
                 * `all_friendly`：好友度
                 * `sign_times`：签到次数
         '''
-        record, _ = await UserInfo.get_or_create(user_id=user_id, group_id=group_id)
+        record, _ = await cls.get_or_create(user_id=user_id, group_id=group_id)
         # 设置签到日期
         today = date.today()
         record.last_sign = today
@@ -113,7 +113,7 @@ class UserInfo(Model):
         返回:
             * `date`：签到日期
         '''
-        record, _ = await UserInfo.get_or_create(user_id=user_id, group_id=group_id)
+        record, _ = await cls.get_or_create(user_id=user_id, group_id=group_id)
         return record.last_sign
 
     @classmethod

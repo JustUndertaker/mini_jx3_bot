@@ -35,7 +35,7 @@ class PluginInfo(Model):
         返回:
             * `bool`：是否注册该插件
         '''
-        record = await PluginInfo.get_or_none(group_id=group_id, module_name=module_name)
+        record = await cls.get_or_none(group_id=group_id, module_name=module_name)
         return record is not None
 
     @ classmethod
@@ -51,7 +51,7 @@ class PluginInfo(Model):
         说明:
             为一个群注册一条插件
         '''
-        await PluginInfo.create(
+        await cls.create(
             group_id=group_id,
             module_name=module_name,
             plugin_name=plugin_name,
@@ -73,7 +73,7 @@ class PluginInfo(Model):
         返回:
             * `bool | None`：插件开关，为None时未找到该插件
         '''
-        record = await PluginInfo.get_or_none(group_id=group_id, module_name=module_name)
+        record = await cls.get_or_none(group_id=group_id, module_name=module_name)
         return record.status if record else None
 
     @classmethod
@@ -90,7 +90,7 @@ class PluginInfo(Model):
         返回:
             * `bool`：设置是否成功，未找到插件则不成功
         '''
-        record = await PluginInfo.get_or_none(group_id=group_id, module_name=module_name)
+        record = await cls.get_or_none(group_id=group_id, module_name=module_name)
         if record:
             record.status = status
             await record.save()

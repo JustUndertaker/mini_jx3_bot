@@ -1,6 +1,6 @@
 import json
-from typing import List, Literal, Optional, Tuple
 
+from src.params import GroupSetting, MeauData, NoticeType, OneGroupInfo
 from src.utils.config import Config
 from tortoise import fields
 from tortoise.models import Model
@@ -119,162 +119,250 @@ class GroupInfo(Model):
         return record.server
 
     @classmethod
-    async def get_ws_status(cls, group_id: int,
-                            recv_type: Literal["server", "news", "serendipity", "horse", "fuyao"]
-                            ) -> Optional[bool]:
-        '''获取ws通知状态'''
-        record = await GroupInfo.get_or_none(group_id=group_id)
-        if record:
-            if recv_type == "server":
-                return record.ws_server
-            if recv_type == "news":
-                return record.ws_news
-            if recv_type == "serendipity":
-                return record.ws_serendipity
-            if recv_type == "horse":
-                return record.ws_horse
-            if recv_type == "fuyao":
-                return record.ws_fuyao
-        return None
-
-    @classmethod
-    async def get_config_status(cls, group_id: int,
-                                config_type: Literal["welcome_status", "goodnight_status", "someoneleft_status"]
-                                ) -> Optional[bool]:
-        '''获取群设置开关'''
-        record = await GroupInfo.get_or_none(group_id=group_id)
-        if record:
-            if config_type == "welcome_status":
-                return record.welcome_status
-            if config_type == "goodnight_status":
-                return record.goodnight_status
-            if config_type == "someoneleft_status":
-                return record.someoneleft_status
-        return None
-
-    @classmethod
-    async def set_config_status(cls, group_id: int,
-                                config_type: Literal["welcome_status", "goodnight_status", "someoneleft_status", "ws_server", "ws_news", "ws_serendipity", "ws_horse", "ws_fuyao"],
-                                status: bool
+    async def get_config_status(cls,
+                                group_id: int,
+                                setting_type: GroupSetting
                                 ) -> bool:
-        '''设置群内容开关'''
+        '''
+        说明:
+            获取群设置开关
+
+        参数:
+            * `group_id`：群号
+            * `setting_type`：群设置枚举
+
+        返回:
+            * `bool`：开关状态
+        '''
         record = await GroupInfo.get_or_none(group_id=group_id)
-        if record:
-            if config_type == "welcome_status":
+        match setting_type:
+            case GroupSetting.进群通知:
+                status = record.welcome_status
+            case GroupSetting.离群通知:
+                status = record.someoneleft_status
+            case GroupSetting.晚安通知:
+                status = record.goodnight_status
+            case GroupSetting.开服推送:
+                status = record.ws_server
+            case GroupSetting.新闻推送:
+                status = record.ws_news
+            case GroupSetting.奇遇推送:
+                status = record.ws_serendipity
+            case GroupSetting.抓马监控:
+                status = record.ws_horse
+            case GroupSetting.扶摇监控:
+                status = record.ws_fuyao
+        return status
+
+    @classmethod
+    async def set_config_status(cls,
+                                group_id: int,
+                                setting_type: GroupSetting,
+                                status: bool
+                                ):
+        '''
+        说明:
+            设置群内容开关
+
+        参数:
+            * `group_id`：群号
+            * `setting_type`：群设置枚举
+            * `status`：开关状态
+        '''
+        record, _ = await GroupInfo.get_or_create(group_id=group_id)
+        match setting_type:
+            case GroupSetting.进群通知:
                 record.welcome_status = status
-                await record.save(update_fields=["welcome_status"])
-            if config_type == "goodnight_status":
-                record.goodnight_status = status
-            if config_type == "someoneleft_status":
+            case GroupSetting.离群通知:
                 record.someoneleft_status = status
-            if config_type == "ws_server":
+            case GroupSetting.晚安通知:
+                record.goodnight_status = status
+            case GroupSetting.开服推送:
                 record.ws_server = status
-            if config_type == "ws_news":
+            case GroupSetting.新闻推送:
                 record.ws_news = status
-            if config_type == "ws_serendipity":
+            case GroupSetting.奇遇推送:
                 record.ws_serendipity = status
-            if config_type == "ws_horse":
+            case GroupSetting.抓马监控:
                 record.ws_horse = status
-            if config_type == "ws_fuyao":
+            case GroupSetting.扶摇监控:
                 record.ws_fuyao = status
-            await record.save(update_fields=[config_type])
-            return True
-        return False
+        await record.save()
 
     @classmethod
     async def reset_sign_nums(cls):
-        '''重置签到人数'''
+        '''
+        说明:
+            重置所有群签到人数
+        '''
         await GroupInfo.all().update(sign_nums=0)
 
     @classmethod
     async def bind_server(cls, group_id: int, server: str):
-        '''绑定服务器'''
+        '''
+        说明:
+            给群绑定服务器
+
+        参数:
+            * `group_id`：群号
+            * `server`：服务器名
+        '''
         record, _ = await cls.get_or_create(group_id=group_id)
         record.server = server
         await record.save(update_fields=["server"])
 
     @classmethod
     async def set_activity(cls, group_id: int, activity: int):
-        '''设置活跃值'''
+        '''
+        说明:
+            给群设置活跃值
+        '''
         record, _ = await cls.get_or_create(group_id=group_id)
         record.robot_active = activity
         await record.save(update_fields=["robot_active"])
 
     @classmethod
     async def set_status(cls, group_id: int, status: bool):
-        '''设置机器人开关'''
+        '''
+        说明:
+            设置某个群机器人总开关
+        '''
         record, _ = await cls.get_or_create(group_id=group_id)
         record.robot_status = status
         await record.save(update_fields=["robot_status"])
 
     @classmethod
-    async def get_meau_data(cls, group_id: int) -> dict:
-        '''获取菜单数据'''
+    async def get_meau_data(cls, group_id: int) -> MeauData:
+        '''
+        说明:
+            获取菜单数据
+
+        参数:
+            * `group_id`：群号
+
+        返回:
+            * `MeauData`：菜单数据模型
+        '''
         record, _ = await cls.get_or_create(group_id=group_id)
-        data = {
-            "robot_status": record.robot_status,
-            "sign_nums": record.sign_nums,
-            "server": record.server,
-            "robot_active": record.robot_active,
-            "welcome_status": record.welcome_status,
-            "someoneleft_status": record.someoneleft_status,
-            "goodnight_status": record.goodnight_status,
-            "ws_server": record.ws_server,
-            "ws_news": record.ws_news,
-            "ws_serendipity": record.ws_serendipity,
-            "ws_horse": record.ws_horse,
-            "ws_fuyao": record.ws_fuyao,
-        }
+        return MeauData(
+            robot_status=record.robot_status,
+            sign_nums=record.sign_nums,
+            server=record.server,
+            robot_active=record.robot_active,
+            welcome_status=record.welcome_status,
+            someoneleft_status=record.someoneleft_status,
+            goodnight_status=record.goodnight_status,
+            ws_server=record.ws_server,
+            ws_news=record.ws_news,
+            ws_serendipity=record.ws_serendipity,
+            ws_horse=record.ws_horse,
+            ws_fuyao=record.ws_fuyao
+        )
+
+    @classmethod
+    async def set_notice_msg(cls, group_id: int, notice_type: NoticeType, message: list[dict]):
+        '''
+        说明:
+            设置通知内容
+
+        参数:
+            * `group_id`：群号
+            * `notice_type`：通知类型
+            * `message`：通知内容
+        '''
+        _message = json.dumps(message, ensure_ascii=False)
+        record, _ = await cls.get_or_create(group_id=group_id)
+        match notice_type:
+            case NoticeType.晚安通知:
+                record.goodnight_text = _message
+            case NoticeType.离群通知:
+                record.someoneleft_text = _message
+            case NoticeType.进群通知:
+                record.welcome_text = _message
+        await record.save()
+
+    @classmethod
+    async def get_notice_msg(cls, group_id: int, notice_type: NoticeType) -> list[dict]:
+        '''
+        说明:
+            获取通知内容
+
+        参数:
+            * `group_id`：群号
+            * `notice_type`：通知类型
+
+        返回:
+            * `list[dict]`：消息数组
+        '''
+        record, _ = await cls.get_or_create(group_id=group_id)
+        match notice_type:
+            case NoticeType.晚安通知:
+                data = record.goodnight_text
+            case NoticeType.离群通知:
+                data = record.someoneleft_text
+            case NoticeType.进群通知:
+                data = record.welcome_text
         return data
 
     @classmethod
-    async def set_notice_msg(cls, group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"], message: List[dict]):
-        '''设置通知内容'''
-        _message = json.dumps(message, ensure_ascii=False)
-        record, _ = await cls.get_or_create(group_id=group_id)
-        if notice_type == "晚安通知":
-            record.goodnight_text = _message
-            await record.save(update_fields=["goodnight_text"])
-
-        if notice_type == "离群通知":
-            record.someoneleft_text = _message
-            await record.save(update_fields=["someoneleft_text"])
-
-        if notice_type == "进群通知":
-            record.welcome_text = _message
-            await record.save(update_fields=["welcome_text"])
-
-    @classmethod
-    async def get_notice_msg(cls, group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"]) -> List[dict]:
-        '''获取通知内容'''
-        record, _ = await cls.get_or_create(group_id=group_id)
-        if notice_type == "晚安通知":
-            return record.goodnight_text
-        if notice_type == "离群通知":
-            return record.someoneleft_text
-        if notice_type == "进群通知":
-            return record.welcome_text
-
-    @classmethod
     async def delete_group(cls, group_id: int):
-        '''注销群'''
+        '''
+        说明:
+            注销一个群的所有信息，退群时使用
+
+        参数:
+            * `group_id`：群号
+        '''
         await cls.filter(group_id=group_id).delete()
 
     @classmethod
-    async def get_group_list(cls) -> List[dict]:
-        '''获取群列表数据'''
-        return await cls.all().values("group_id", "group_name", "sign_nums", "server", "robot_status", "robot_active")
+    async def get_group_list(cls) -> list[OneGroupInfo]:
+        '''
+        说明:
+            获取群列表数据
+
+        返回:
+            * `list[GroupInfo]`：群信息列表
+        '''
+        data = await cls.all().values(
+            "group_id",
+            "group_name",
+            "sign_nums",
+            "server",
+            "robot_status",
+            "robot_active"
+        )
+        return [
+            OneGroupInfo.parse_obj(i)
+            for i in data
+        ]
 
     @classmethod
-    async def check_group_init(cls, group_id: int) -> Tuple[bool, str]:
-        '''检测是否注册'''
+    async def check_group_init(cls, group_id: int) -> bool:
+        '''
+        说明:
+            检测群是否注册
+
+        参数:
+            * `group_id`：群号
+
+        返回:
+            * `bool`：是否注册
+        '''
         record = await cls.get_or_none(group_id=group_id)
-        if record:
-            return True, record.group_name
-        return False, ""
+        return record is not None
 
     @classmethod
     async def get_bot_active(cls, group_id: int) -> int:
-        '''获取活跃值'''
+        '''
+        说明:
+            获取群机器人活跃值
+
+        参数:
+            * `group_id`：群号
+
+        返回:
+            * `int`：活跃值，1-99
+        '''
         record, _ = await cls.get_or_create(group_id=group_id)
         return record.robot_active

@@ -52,7 +52,7 @@ class Filter:
             if metadata:
                 record['name'] = metadata.name
             else:
-                module_name = getattr(module, "__module_name__", module_name)
+                # module_name = getattr(module, "__module_name__", module_name)
                 record["name"] = module_name.split(".")[-1]
         levelno = logger.level(self.level).no if isinstance(self.level,
                                                             str) else self.level

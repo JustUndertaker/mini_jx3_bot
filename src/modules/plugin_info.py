@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from tortoise import fields
 from tortoise.models import Model
 
@@ -38,8 +36,11 @@ class PluginInfo(Model):
                           description: str,
                           usage: str,
                           status: bool
-                          ) -> None:
-        '''为某个群注册插件'''
+                          ):
+        '''
+        说明:
+            为一个群注册一条插件
+        '''
         await PluginInfo.create(
             group_id=group_id,
             module_name=module_name,
@@ -50,27 +51,72 @@ class PluginInfo(Model):
         )
 
     @classmethod
-    async def get_plugin_status(cls, group_id: int, module_name: str) -> Optional[bool]:
-        '''获取插件状态'''
+    async def get_plugin_status(cls, group_id: int, module_name: str) -> bool | None:
+        '''
+        说明:
+            获取一个插件开关状态
+
+        参数:
+            * `group_id`：群号
+            * `module_name`：插件模块名
+
+        返回:
+            * `bool | None`：插件开关，为None时未找到该插件
+        '''
         record = await PluginInfo.get_or_none(group_id=group_id, module_name=module_name)
         return record.status if record else None
 
     @classmethod
     async def set_plugin_status(cls, group_id: int, module_name: str, status: bool) -> bool:
-        '''设置插件状态'''
+        '''
+        说明:
+            设置一个插件的开关状态
+
+        参数:
+            * `group_id`：群号
+            * `module_name`：插件模块名
+            * `status`：开关
+
+        返回:
+            * `bool`：设置是否成功，未找到插件则不成功
+        '''
         record = await PluginInfo.get_or_none(group_id=group_id, module_name=module_name)
         if record:
             record.status = status
-            await record.save(update_fields=["status"])
+            await record.save()
             return True
         return False
 
     @classmethod
-    async def get_meau_data(cls, group_id: int) -> List[dict]:
-        '''获取菜单数据'''
-        return await cls.filter(group_id=group_id).order_by("plugin_name").values("plugin_name", "description", "usage", "status")
+    async def get_meau_data(cls, group_id: int) -> list[dict]:
+        '''
+        说明:
+            获取插件菜单数据
+
+        参数:
+            * `group_id`：群号
+
+        返回:
+            * `list[dict]`：插件菜单数据，以plugin_name排序
+                * `plugin_name`：str，插件名
+                * `description`：str，插件描述
+                * `usage`：str，插件用法
+                * `status`：bool，插件开关
+        '''
+        return await cls.filter(group_id=group_id).order_by("plugin_name").values(
+            "plugin_name",
+            "description",
+            "usage",
+            "status"
+        )
 
     @classmethod
     async def delete_group(cls, group_id: int):
-        '''删除群'''
+        '''
+        说明:
+            注销一个群的所有插件
+
+        参数:
+            * `group_id`：群号
+        '''
         await cls.filter(group_id=group_id).delete()

@@ -242,18 +242,18 @@ class GroupInfo(Model):
 
         返回:
             * `dict`：菜单数据字典
-                * `robot_status`：`bool`机器人开关
-                * `sign_nums`：`int`当天签到人数
-                * `server`：`str`当前绑定服务器
-                * `robot_active`：`int`机器人活跃度
-                * `welcome_status`：`bool`进群通知开关
-                * `someoneleft_status`：`bool`离群通知开关
-                * `goodnight_status`：`bool`晚安通知开关
-                * `ws_server`：`bool`ws开服推送开关
-                * `ws_news`：`bool`ws新闻推送开关
-                * `ws_serendipity`：`bool`ws奇遇推送开关
-                * `ws_horse`：`bool`ws抓马推送开关
-                * `ws_fuyao`：`bool`ws扶摇推送开关
+                * `robot_status` `bool`：机器人开关
+                * `sign_nums` `int`：当天签到人数
+                * `server` `str：`当前绑定服务器
+                * `robot_active` `int`：机器人活跃度
+                * `welcome_status` `bool`：进群通知开关
+                * `someoneleft_status` `bool`：离群通知开关
+                * `goodnight_status` `bool`：晚安通知开关
+                * `ws_server` `bool`：ws开服推送开关
+                * `ws_news` `bool`：ws新闻推送开关
+                * `ws_serendipity` `bool`：ws奇遇推送开关
+                * `ws_horse` `bool`：ws抓马推送开关
+                * `ws_fuyao` `bool`：ws扶摇推送开关
         '''
         record, _ = await cls.get_or_create(group_id=group_id)
         return {
@@ -335,12 +335,12 @@ class GroupInfo(Model):
 
         返回:
             * `list[dict]`：群信息列表
-                * `group_id`：`int`qq群号
-                * `group_name`：`str`群名
-                * `sign_nums`：`int`当天签到数量
-                * `server`：`str`绑定服务器名
-                * `robot_status`：`bool`机器人总开关
-                * `robot_active`：`int`机器人活跃度
+                * `group_id` `int`：qq群号
+                * `group_name` `str`：群名
+                * `sign_nums` `int`：当天签到数量
+                * `server` `str`：绑定服务器名
+                * `robot_status` `bool`：机器人总开关
+                * `robot_active` `int`：机器人活跃度
         '''
         return await cls.all().values(
             "group_id",

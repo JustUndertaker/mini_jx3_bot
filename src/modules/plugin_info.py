@@ -108,10 +108,10 @@ class PluginInfo(Model):
 
         返回:
             * `list[dict]`：插件菜单数据，以plugin_name排序
-                * `plugin_name`：`str`插件名
-                * `description`：`str`插件描述
-                * `usage`：`str`插件用法
-                * `status`：`bool`插件开关
+                * `plugin_name` `str`：插件名
+                * `description` `str`：插件描述
+                * `usage` `str`：插件用法
+                * `status` `bool`：插件开关
         '''
         return await cls.filter(group_id=group_id).order_by("plugin_name").values(
             "plugin_name",

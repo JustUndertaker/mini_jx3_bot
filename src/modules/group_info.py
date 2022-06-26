@@ -67,7 +67,7 @@ class GroupInfo(Model):
             * `group_id`：群号
             * `group_name`：群名
         '''
-        record, _ = await GroupInfo.get_or_create(group_id=group_id)
+        record, _ = await cls.get_or_create(group_id=group_id)
         record.group_name = group_name
         await record.save(update_fields=["group_name"])
 
@@ -83,7 +83,7 @@ class GroupInfo(Model):
         返回:
             * `bool`：机器人是否开启
         '''
-        record = await GroupInfo.get_or_none(group_id=group_id)
+        record = await cls.get_or_none(group_id=group_id)
         return record.robot_status
 
     @classmethod
@@ -98,7 +98,7 @@ class GroupInfo(Model):
         返回:
             * `int`：当天已签到数量
         '''
-        record, _ = await GroupInfo.get_or_create(group_id=group_id)
+        record, _ = await cls.get_or_create(group_id=group_id)
         record.sign_nums += 1
         await record.save(update_fields=["sign_nums"])
         return record.sign_nums
@@ -115,7 +115,7 @@ class GroupInfo(Model):
         返回:
             * `str`：服务器名
         '''
-        record = await GroupInfo.get_or_none(group_id=group_id)
+        record = await cls.get_or_none(group_id=group_id)
         return record.server
 
     @classmethod
@@ -134,7 +134,7 @@ class GroupInfo(Model):
         返回:
             * `bool`：开关状态
         '''
-        record = await GroupInfo.get_or_none(group_id=group_id)
+        record = await cls.get_or_none(group_id=group_id)
         match setting_type:
             case GroupSetting.进群通知:
                 status = record.welcome_status
@@ -169,7 +169,7 @@ class GroupInfo(Model):
             * `setting_type`：群设置枚举
             * `status`：开关状态
         '''
-        record, _ = await GroupInfo.get_or_create(group_id=group_id)
+        record, _ = await cls.get_or_create(group_id=group_id)
         match setting_type:
             case GroupSetting.进群通知:
                 record.welcome_status = status
@@ -195,7 +195,7 @@ class GroupInfo(Model):
         说明:
             重置所有群签到人数
         '''
-        await GroupInfo.all().update(sign_nums=0)
+        await cls.all().update(sign_nums=0)
 
     @classmethod
     async def bind_server(cls, group_id: int, server: str):

@@ -3,9 +3,15 @@
 """
 from enum import Enum, auto
 
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
+from nonebot.adapters.onebot.v11.message import MessageSegment
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
+from nonebot.matcher import Matcher
+from nonebot.params import Depends
 # from nonebot.permission import Permission
 from pydantic import BaseModel
+
+from src.modules.user_info import UserInfo
 
 
 class PluginConfig(BaseModel):
@@ -14,6 +20,34 @@ class PluginConfig(BaseModel):
     '''是否受插件管理器管理'''
     default_status: bool = True
     '''默认开关'''
+    cost_gold: int = 0
+    '''
+    使用花费，这里只是显示在菜单中，真正起效在params的cost_gold()
+    '''
+
+
+async def cost_gold(gold: int):
+    '''
+    说明:
+        Dependency，每次调用需要消耗金币数，用于插件使用金币
+
+    参数:
+        * `gold`：每次所需金币数
+
+    用法:
+    ```
+        @matcher.handle(parameterless=[cost_gold(gold=0)])
+        async def _():
+            pass
+    ```
+    '''
+    async def dependency(matcher: Matcher, event: GroupMessageEvent):
+        flag = await UserInfo.cost_gold(event.user_id, event.group_id)
+        if not flag:
+            msg = MessageSegment.at(event.user_id)+"你的金币不够了，不能操作哟！"
+            await matcher.finish(msg)
+
+    return Depends(dependency)
 
 
 # async def _group_admin() -> bool:

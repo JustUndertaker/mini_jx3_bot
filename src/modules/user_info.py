@@ -140,3 +140,24 @@ class UserInfo(Model):
         record = await cls.get_or_none(user_id=user_id, group_id=group_id)
         if record:
             await record.delete()
+
+    @classmethod
+    async def cost_gold(cls, user_id: int, group_id: int, gold: int) -> bool:
+        '''
+        说明:
+            使用一次金币，如果使用成功则返回True
+
+        参数:
+            * `user_id`：用户名
+            * `group_id`：群号
+            * `gold`：金币数量
+
+        返回:
+            * `bool`：是否使用成功
+        '''
+        record, _ = await cls.get_or_create(user_id=user_id, group_id=group_id)
+        if record.gold >= gold:
+            record.gold -= gold
+            await record.save()
+            return True
+        return False

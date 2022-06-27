@@ -16,6 +16,7 @@ async def _():
 
 
 def start_scheduler():
+    global scheduler
     if not scheduler.running:
         scheduler.start()
         logger.info("<g>定时器模块已开启。</g>")

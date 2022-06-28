@@ -7,10 +7,13 @@ from src.modules.group_info import GroupInfo
 from src.modules.plugin_info import PluginInfo
 from src.modules.search_record import SearchRecord
 from src.modules.user_info import UserInfo
-from src.utils.config import config
+from src.params import NoticeType
+from src.utils.config import Config
 
 from ..server_manager._websocket import ws_client
 from .model import ImageHandler
+
+config = Config()
 
 
 async def get_main_server(server: str) -> Optional[str]:
@@ -87,7 +90,7 @@ async def _message_encoder(message: Message, path: Path) -> List[dict]:
     return req_data
 
 
-async def message_decoder(group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"]) -> Message:
+async def message_decoder(group_id: int, notice_type: NoticeType) -> Message:
     '''获取通知消息，并转换成Message'''
     msg = await GroupInfo.get_notice_msg(group_id, notice_type)
     message = Message()
@@ -106,11 +109,11 @@ async def message_decoder(group_id: int, notice_type: Literal["晚安通知", "�
     return message
 
 
-async def handle_data_notice(group_id: int, notice_type: Literal["晚安通知", "离群通知", "进群通知"], message: Message):
+async def handle_data_notice(group_id: int, notice_type: NoticeType, message: Message):
     '''处理通知内容'''
     _path: str = config.path['data']
     # 创建文件夹
-    path = Path(_path)/notice_type/str(group_id)
+    path = Path(_path)/notice_type.name/str(group_id)
     if not path.exists():
         path.mkdir(parents=True)
     else:

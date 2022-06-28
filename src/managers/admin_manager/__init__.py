@@ -103,7 +103,7 @@ def get_value(state: T_State) -> int:
     return regex_dict['value']
 
 
-def get_command(state: T_State) -> bool:
+def get_status(state: T_State) -> bool:
     '''
     说明:
         Dependcey，获取命令中的开关状态
@@ -272,7 +272,7 @@ async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
 
 
 @handle_robot.handle()
-async def _(bot: Bot, group_id: int = Depends(get_value), status: bool = Depends(get_command)):
+async def _(bot: Bot, group_id: int = Depends(get_value), status: bool = Depends(get_status)):
     '''打开关闭机器人'''
     logger.info(
         f"<g>超级用户管理</g> | 打开关闭机器人 | {group_id} | {status}"

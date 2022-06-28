@@ -1,7 +1,6 @@
 import asyncio
 import random
 import time
-from typing import Literal
 
 from nonebot import get_bots, on_notice, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
@@ -11,10 +10,12 @@ from nonebot.adapters.onebot.v11.event import (FriendAddNoticeEvent,
                                                GroupMessageEvent)
 from nonebot.adapters.onebot.v11.permission import (GROUP, GROUP_ADMIN,
                                                     GROUP_OWNER)
+from nonebot.consts import REGEX_DICT
 from nonebot.params import Depends
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
-from src.params import PluginConfig
+from nonebot.typing import T_State
+from src.params import NoticeType, PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
@@ -39,45 +40,79 @@ __plugin_meta__ = PluginMetadata(
     config=PluginConfig(enable_managed=False)
 )
 
-bind_server = on_regex(pattern=r"^绑定 [\u4e00-\u9fa5]+$", permission=SUPERUSER |
-                       GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)   # 绑定服务器
+# 绑定服务器
+bind_server = on_regex(pattern=r"^绑定 (?p<value>[\u4e00-\u9fa5]+)$", permission=SUPERUSER |
+                       GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)
 
-set_activity = on_regex(pattern=r"^活跃值 (\d){1,2}$", permission=SUPERUSER |
-                        GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)  # 设置活跃值[0-99]
+# 设置活跃值[0-99]
+set_activity = on_regex(pattern=r"^活跃值 (?p<value>(\d){1,2})$", permission=SUPERUSER |
+                        GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)
 
-robot_status = on_regex(pattern=r"^机器人 [开关]$", permission=SUPERUSER |
-                        GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)  # 设置机器人开关
+# 设置机器人开关
+robot_status = on_regex(pattern=r"^机器人 (?<command>[开关])$", permission=SUPERUSER |
+                        GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)
 
+# 晚安通知，离群通知，进群通知
 notice = on_regex(pattern=r"^((晚安)|(离群)|(进群))通知 ", permission=SUPERUSER |
-                  GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)    # 晚安通知，离群通知，进群通知
+                  GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)
 
-meau = on_regex(pattern=r"^((菜单)|(状态))$", permission=GROUP,  priority=3, block=True)  # 菜单
+# 菜单
+meau = on_regex(pattern=r"^((菜单)|(状态))$", permission=GROUP,  priority=3, block=True)
 
-admin_help = on_regex(pattern=r"^管理员帮助$", permission=GROUP, priority=3, block=True)  # 管理员帮助
+# 管理员帮助
+admin_help = on_regex(pattern=r"^管理员帮助$", permission=GROUP, priority=3, block=True)
 
-didi = on_regex(pattern=r"^滴滴 ", permission=GROUP_ADMIN | GROUP_OWNER, priority=3, block=True)  # 滴滴
+# 滴滴
+didi = on_regex(pattern=r"^滴滴 ", permission=GROUP_ADMIN | GROUP_OWNER, priority=3, block=True)
 
-get_notice = on_notice(priority=3, block=True)  # 通知事件
+# 通知事件
+get_notice = on_notice(priority=3, block=True)
 
 # -------------------------------------------------------------
 #   Depends依赖
 # -------------------------------------------------------------
 
 
-def get_name(event: GroupMessageEvent) -> str:
-    '''获取后置文本内容'''
-    return event.get_plaintext().split(" ")[-1]
+def get_value(state: T_State) -> str:
+    '''
+    说明:
+        Dependcey，获取value值
+
+    返回:
+        * `value`：value值
+    '''
+    regex_dict: dict = state[REGEX_DICT]
+    return regex_dict['value']
 
 
-def get_status(event: GroupMessageEvent) -> bool:
-    '''获取机器人开关'''
-    status = event.get_plaintext().split(" ")[-1]
-    return status == "开"
+def get_status(state: T_State) -> bool:
+    '''
+    说明:
+        Dependcey，获取命令中的开关
+
+    返回:
+        * `bool`：命令开关
+    '''
+    regex_dict: dict = state[REGEX_DICT]
+    return regex_dict['command'] == "开"
 
 
-def get_notice_type(event: GroupMessageEvent) -> Literal["晚安通知", "离群通知", "进群通知"]:
-    '''返回通知类型'''
-    return event.get_plaintext()[:4]
+def get_notice_type(event: GroupMessageEvent) -> NoticeType:
+    '''
+    说明:
+        Dependcey，返回通知类型
+
+    返回:
+        * `NoticeType`：通知类型枚举
+    '''
+    msg = event.get_plaintext()[:4]
+    match msg:
+        case "晚安通知":
+            return NoticeType.晚安通知
+        case "离群通知":
+            return NoticeType.离群通知
+        case "进群通知":
+            return NoticeType.进群通知
 
 
 async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
@@ -96,7 +131,7 @@ async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
 
 
 @bind_server.handle()
-async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     '''绑定服务器'''
     logger.info(
         f"<y>群管理</y> | <g>群{event.group_id}</g> | 请求绑定服务器 | {name}"
@@ -110,7 +145,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
 
 
 @set_activity.handle()
-async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
+async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     '''设置活跃值'''
     logger.info(
         f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置活跃值 | {name}"
@@ -132,14 +167,14 @@ async def _(event: GroupMessageEvent, status: bool = Depends(get_status)):
 
 
 @notice.handle()
-async def _(event: GroupMessageEvent, notice_type: Literal["晚安通知", "离群通知", "进群通知"] = Depends(get_notice_type)):
+async def _(event: GroupMessageEvent, notice_type: NoticeType = Depends(get_notice_type)):
     '''设置通知内容'''
     logger.info(
         f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置通知内容 | {notice_type} | {event.get_message()}"
     )
     await source.handle_data_notice(event.group_id, notice_type, event.get_message())
     await notice.finish(
-        f"设置{notice_type}成功！"
+        f"设置{notice_type.name}成功！"
     )
 
 

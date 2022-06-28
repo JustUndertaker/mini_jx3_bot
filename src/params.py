@@ -47,7 +47,7 @@ async def cost_gold(gold: int):
     ```
     '''
     async def dependency(matcher: Matcher, event: GroupMessageEvent):
-        flag = await UserInfo.cost_gold(event.user_id, event.group_id)
+        flag = await UserInfo.cost_gold(event.user_id, event.group_id, gold)
         if not flag:
             msg = MessageSegment.at(event.user_id)+"你的金币不够了，不能操作哟！"
             await matcher.finish(msg)

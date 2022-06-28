@@ -1,11 +1,11 @@
 import asyncio
 import random
 
-from nonebot import get_driver
+from nonebot import get_driver, on, on_regex
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
 from nonebot.permission import SUPERUSER
-from nonebot.plugin import on, on_regex
+from nonebot.plugin import PluginMetadata
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
@@ -15,6 +15,13 @@ from . import data_source as source
 from ._jx3_event import RecvEvent, WsClosed
 from ._plugin_manager import PluginManager
 from ._websocket import ws_client
+
+__plugin_meta__ = PluginMetadata(
+    name="服务管理插件",
+    description="管理bot的启动连接服务，以及jx3api的ws管理",
+    usage="本插件不受插件管理器限制"
+)
+
 
 driver = get_driver()
 plugin_manager = PluginManager()

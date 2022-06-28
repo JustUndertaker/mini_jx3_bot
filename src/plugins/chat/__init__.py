@@ -1,17 +1,20 @@
-from nonebot import export, on_message
+from nonebot import on_message
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
+from nonebot.plugin import PluginMetadata
 from nonebot.rule import to_me
+from src.params import PluginConfig
 from src.utils.log import logger
 
 from .model import chat
 
-Export = export()
-Export.plugin_name = "智能闲聊"
-Export.plugin_command = "@机器人 +你要说的话"
-Export.plugin_usage = "闲聊功能，有一句没一句"
-Export.default_status = True
+__plugin_meta__ = PluginMetadata(
+    name="智能闲聊",
+    description="闲聊功能，有一句没一句",
+    usage="@机器人 +你要说的话",
+    config=PluginConfig()
+)
 
 
 chat_query = on_message(rule=to_me(), permission=GROUP, priority=9, block=True)

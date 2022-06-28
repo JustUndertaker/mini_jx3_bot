@@ -1,22 +1,25 @@
-from nonebot import export, on_regex
+from nonebot import on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
+from nonebot.plugin import PluginMetadata
+from src.params import PluginConfig, cost_gold
 from src.utils.log import logger
 
 from .data_source import get_tiangou
 
-Export = export()
-Export.plugin_name = "舔狗日记"
-Export.plugin_command = "舔狗|日记|舔狗日记"
-Export.plugin_usage = "发送一条舔狗日记"
-Export.default_status = True
+__plugin_meta__ = PluginMetadata(
+    name="舔狗日记",
+    description="发送一条舔狗日记。",
+    usage="舔狗 | 日记 | 舔狗日记",
+    config=PluginConfig(cost_gold=10)
+)
 
 
 tiangou_regex = r"(^舔狗$)|(^日记$)|(^舔狗日记$)"
 tiangou = on_regex(pattern=tiangou_regex, permission=GROUP, priority=5, block=True)
 
 
-@tiangou.handle()
+@tiangou.handle(parameterless=[cost_gold(gold=10)])
 async def _(event: GroupMessageEvent):
     '''舔狗日记'''
     logger.info(

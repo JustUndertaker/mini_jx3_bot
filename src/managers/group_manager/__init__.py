@@ -13,6 +13,7 @@ from nonebot.adapters.onebot.v11.permission import (GROUP, GROUP_ADMIN,
                                                     GROUP_OWNER)
 from nonebot.params import Depends
 from nonebot.permission import SUPERUSER
+from nonebot.plugin import PluginMetadata
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
@@ -21,16 +22,21 @@ from src.utils.utils import GroupList_Async
 from ..server_manager import data_source as server_source
 from . import data_source as source
 
-'''
-群管理插件，实现功能有：
-* 绑定服务器
-* 设置活跃值
-* 机器人开关
-* 晚安通知，进群通知，离群通知
-* 菜单
-* 管理员帮助
-* 滴滴
-'''
+__plugin_meta__ = PluginMetadata(
+    name="群管理插件",
+    description='''
+        群管理插件，实现功能有：
+        * 绑定服务器
+        * 设置活跃值
+        * 机器人开关
+        * 晚安通知，进群通知，离群通知
+        * 菜单
+        * 管理员帮助
+        * 滴滴
+        ''',
+    usage="参考“管理员帮助”指令"
+)
+
 bind_server = on_regex(pattern=r"^绑定 [\u4e00-\u9fa5]+$", permission=SUPERUSER |
                        GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)   # 绑定服务器
 

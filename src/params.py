@@ -15,7 +15,9 @@ from src.modules.user_info import UserInfo
 
 
 class PluginConfig(BaseModel):
-    '''插件使用的基本设置'''
+    '''
+    插件管理器需要的配置，没有则无法启用
+    '''
     enable_managed: bool = True
     '''是否受插件管理器管理'''
     default_status: bool = True

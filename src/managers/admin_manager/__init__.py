@@ -10,6 +10,7 @@ from nonebot.adapters.onebot.v11.event import (FriendRequestEvent,
                                                PrivateMessageEvent)
 from nonebot.params import Depends
 from nonebot.permission import SUPERUSER
+from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
 from src.utils.browser import browser
 from src.utils.config import config
@@ -18,14 +19,12 @@ from src.utils.utils import GroupList_Async
 
 from . import data_source as source
 
-'''
-超级用户插件，实现：
-* ticket管理
-* 好友管理
-* 群管理
-* 超级用户帮助
-* 管理员广播
-'''
+__plugin_meta__ = PluginMetadata(
+    name="超级用户管理",
+    description="用于各种superusers的指令",
+    usage="超级用户私聊：帮助"
+)
+
 # ----------------------------------------------------------------------------
 #   rule检查，检测到私聊消息才会触发
 # ----------------------------------------------------------------------------

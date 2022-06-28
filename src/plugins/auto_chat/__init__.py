@@ -1,21 +1,24 @@
 import random
 from typing import Optional
 
-from nonebot import export, on_message
+from nonebot import on_message
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
+from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
+from src.params import PluginConfig
 
 from . import data_source as source
 
-Export = export()
-Export.plugin_name = "自动插话"
-Export.plugin_command = "~"
-Export.plugin_usage = "可以自动插话，频率与活跃度相关。"
-Export.default_status = True
+__plugin_meta__ = PluginMetadata(
+    name="自动插话",
+    description="可以自动插话，频率与活跃度相关。",
+    usage="~",
+    config=PluginConfig(default_status=False)
+)
 
 # ----------------------------------------------------------------------------
 #   rule检查，随机到后才会执行

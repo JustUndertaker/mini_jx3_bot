@@ -12,6 +12,7 @@ from nonebot.params import Depends
 from pydantic import BaseModel
 
 from src.modules.user_info import UserInfo
+from src.plugins.jx3_search.jx3api import JX3API
 
 
 class PluginConfig(BaseModel):
@@ -63,6 +64,11 @@ async def cost_gold(gold: int):
 GROUP_ADMIN = GROUP_ADMIN | GROUP_OWNER
 """匹配群管理员权限"""
 
+jx3api = JX3API()
+'''
+jx3api接口封装实例，供其他插件调用
+'''
+
 
 class GroupSetting(Enum):
     '''
@@ -79,6 +85,9 @@ class GroupSetting(Enum):
 
 
 class NoticeType(Enum):
+    '''
+    群通知枚举
+    '''
     晚安通知 = auto()
     离群通知 = auto()
     进群通知 = auto()

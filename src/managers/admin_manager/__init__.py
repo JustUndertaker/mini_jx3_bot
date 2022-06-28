@@ -14,13 +14,13 @@ from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
 from nonebot.typing import T_State
-from src.params import PluginConfig
+from src.modules.group_info import GroupInfo
+from src.modules.ticket_info import TicketInfo
+from src.params import PluginConfig, jx3api
 from src.utils.browser import browser
 from src.utils.config import Config
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
-
-from . import data_source as source
 
 __plugin_meta__ = PluginMetadata(
     name="超级用户管理",
@@ -91,7 +91,7 @@ ticket_clean = on_regex(pattern=r"^清理$", rule=check_event(), permission=SUPE
 # ----------------------------------------------------------------------------
 
 
-def get_value(state: T_State) -> int:
+def get_value(state: T_State) -> str:
     '''
     说明:
         Dependcey，获取命令中的value值
@@ -211,10 +211,9 @@ async def _(bot: Bot, event: PrivateMessageEvent):
     logger.info(
         f"<g>超级用户管理</g> | {event.user_id} | 请求群列表"
     )
-    _group = await source.get_group_list()
-    num = len(_group)
+    group_list = await GroupInfo.get_group_list()
     pagename = "group_list.html"
-    img = await browser.template_to_image(pagename=pagename, num=num, group_list=_group)
+    img = await browser.template_to_image(pagename=pagename, num=len(group_list), group_list=group_list)
     await group_list.finish(MessageSegment.image(img))
 
 
@@ -224,8 +223,8 @@ async def _(bot: Bot, group_id: int = Depends(get_value)):
     logger.info(
         f"<g>超级用户管理</g> | 请求退群：{group_id}"
     )
-    flag, group_name = await source.get_group(group_id)
-    if flag:
+    group_name = await GroupInfo.get_group_name(group_id)
+    if group_name:
         await bot.set_group_leave(group_id=group_id, is_dismiss=True)
         msg = f"退出群【{group_name}】({group_id})。"
     else:
@@ -255,9 +254,8 @@ async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
     )
     success = 0
     failed = 0
-    group_list = await bot.get_group_list()
+    group_list = await GroupInfo.get_group_list()
     start = time.time()
-    num = len(group_list)
     async for group_id in GroupList_Async(group_list):
         try:
             await bot.send_group_msg(group_id=group_id, message=message)
@@ -267,19 +265,19 @@ async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
         await asyncio.sleep(random.uniform(0.3, 0.5))
     end = time.time()
     use = round(end-start, 2)
-    msg = f"广播发送完毕，共发送{num}个群\n成功 {success}个\n失败 {success}个\n共用时 {use}秒。"
+    msg = f"广播发送完毕，共发送{len(group_list)}个群\n成功 {success}个\n失败 {success}个\n共用时 {use}秒。"
     await borodcast_all.finish(msg)
 
 
 @handle_robot.handle()
-async def _(bot: Bot, group_id: int = Depends(get_value), status: bool = Depends(get_status)):
+async def _(group_id: int = Depends(get_value), status: bool = Depends(get_status)):
     '''打开关闭机器人'''
     logger.info(
         f"<g>超级用户管理</g> | 打开关闭机器人 | {group_id} | {status}"
     )
-    flag, _ = await source.get_group(group_id)
+    flag = await GroupInfo.get_group_name(group_id)
     if flag:
-        await source.set_bot_status(group_id, status)
+        await GroupInfo.set_status(group_id, status)
         msg = "设置成功！"
     else:
         msg = f"设置失败，未找到群：{group_id}"
@@ -295,40 +293,43 @@ async def _(event: PrivateMessageEvent):
 
 
 @ticket.handle()
-async def _():
+async def _(event: PrivateMessageEvent):
     '''ticket管理器'''
     # 获取ticket列表
     logger.info(
         "<g>超级用户管理</g> | 请求ticket表"
     )
-    ticket_list = await source.get_ticket_list()
+    ticket_list = await TicketInfo.get_all()
     pagename = "ticket.html"
     img = await browser.template_to_image(pagename=pagename, ticket_list=ticket_list)
     await ticket.send(MessageSegment.image(img))
 
 
 @ticket_add.handle()
-async def _(ticket: str = Depends(get_value)):
+async def _(event: PrivateMessageEvent, ticket: str = Depends(get_value)):
     '''添加ticket'''
     logger.info(
         f"<g>超级用户管理</g> | 请求添加ticket | {ticket}"
     )
-    flag, _msg = await source.add_ticket(ticket)
-    if flag:
+
+    response = await jx3api.token_ticket(ticket=ticket)
+    if response.code == 200:
+        await TicketInfo.append_ticket(ticket)
         msg = "添加ticket成功！"
     else:
-        msg = f"添加ticket失败，{_msg}"
+        msg = f"添加ticket失败，{response.msg}"
+
     await ticket_add.finish(msg)
 
 
 @ticket_del.handle()
-async def _(index: str = Depends(get_value)):
+async def _(event: PrivateMessageEvent, index: str = Depends(get_value)):
     '''删除ticket'''
     logger.info(
         f"<g>超级用户管理</g> | 请求删除ticket | index:{index}"
     )
     id = int(index)
-    flag = await source.delete_ticket(id)
+    flag = await TicketInfo.del_ticket(id)
     if flag:
         msg = "删除ticket成功！"
     else:
@@ -337,10 +338,10 @@ async def _(index: str = Depends(get_value)):
 
 
 @ticket_clean.handle()
-async def _():
+async def _(event: PrivateMessageEvent):
     '''清理ticket'''
     logger.info(
         "<g>超级用户管理</g> | 清理ticket"
     )
-    await source.clean_ticket()
+    await TicketInfo.clean_ticket()
     await ticket_clean.finish("ticket清理完毕。")

@@ -352,19 +352,21 @@ class GroupInfo(Model):
         )
 
     @classmethod
-    async def check_group_init(cls, group_id: int) -> bool:
+    async def get_group_name(cls, group_id: int) -> str | None:
         '''
         说明:
-            检测群是否注册
+            获取群名接口
 
         参数:
             * `group_id`：群号
 
         返回:
-            * `bool`：是否注册
+            * `Optional[str]`：群名
         '''
         record = await cls.get_or_none(group_id=group_id)
-        return record is not None
+        if record:
+            return record.group_name
+        return None
 
     @classmethod
     async def get_bot_active(cls, group_id: int) -> int:

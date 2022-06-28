@@ -16,10 +16,12 @@ from src.modules.user_info import UserInfo
 
 class PluginConfig(BaseModel):
     '''
-    插件管理器需要的配置，没有则无法启用
+    插件管理器需要的配置，如果没有此配置，插件管理器将不会管理
     '''
     enable_managed: bool = True
-    '''是否受插件管理器管理'''
+    '''
+    是否受插件管理器管理，若设置成False，插件管理器将不会管理
+    '''
     default_status: bool = True
     '''默认开关'''
     cost_gold: int = 0

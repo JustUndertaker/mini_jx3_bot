@@ -14,6 +14,7 @@ from nonebot.adapters.onebot.v11.permission import (GROUP, GROUP_ADMIN,
 from nonebot.params import Depends
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
+from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
@@ -34,7 +35,8 @@ __plugin_meta__ = PluginMetadata(
         * 管理员帮助
         * 滴滴
         ''',
-    usage="参考“管理员帮助”指令"
+    usage="参考“管理员帮助”指令",
+    config=PluginConfig(enable_managed=False)
 )
 
 bind_server = on_regex(pattern=r"^绑定 [\u4e00-\u9fa5]+$", permission=SUPERUSER |

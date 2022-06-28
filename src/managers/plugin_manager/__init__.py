@@ -5,7 +5,7 @@ from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
-from src.params import GROUP_ADMIN
+from src.params import GROUP_ADMIN, PluginConfig
 from src.utils.log import logger
 
 from . import data_source as source
@@ -13,7 +13,8 @@ from . import data_source as source
 __plugin_meta__ = PluginMetadata(
     name="插件管理插件",
     description="用来控制插件的开关",
-    usage="群管理输入[打开 | 关闭] 插件名称"
+    usage="群管理输入[打开 | 关闭] 插件名称",
+    config=PluginConfig(enable_managed=False)
 )
 
 

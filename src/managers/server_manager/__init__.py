@@ -6,6 +6,7 @@ from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
+from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
@@ -19,7 +20,8 @@ from ._websocket import ws_client
 __plugin_meta__ = PluginMetadata(
     name="服务管理插件",
     description="管理bot的启动连接服务，以及jx3api的ws管理",
-    usage="本插件不受插件管理器限制"
+    usage="本插件不受插件管理器限制",
+    config=PluginConfig(enable_managed=False)
 )
 
 

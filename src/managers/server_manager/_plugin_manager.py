@@ -30,6 +30,11 @@ class PluginManager:
             if metadata is None:
                 continue
             config: PluginConfig = metadata.config
+            # 判断config是否为None
+            if not config:
+                continue
+
+            # 判断是否受管理
             if not config.enable_managed:
                 continue
 

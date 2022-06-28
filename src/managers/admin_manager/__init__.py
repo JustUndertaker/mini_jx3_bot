@@ -12,6 +12,7 @@ from nonebot.params import Depends
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
+from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.config import config
 from src.utils.log import logger
@@ -22,7 +23,8 @@ from . import data_source as source
 __plugin_meta__ = PluginMetadata(
     name="超级用户管理",
     description="用于各种superusers的指令",
-    usage="超级用户私聊：帮助"
+    usage="超级用户私聊：帮助",
+    config=PluginConfig(enable_managed=False)
 )
 
 # ----------------------------------------------------------------------------

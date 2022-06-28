@@ -8,13 +8,15 @@ from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
 from nonebot.adapters.onebot.v11.event import (FriendRequestEvent,
                                                GroupRequestEvent,
                                                PrivateMessageEvent)
+from nonebot.consts import REGEX_DICT
 from nonebot.params import Depends
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
+from nonebot.typing import T_State
 from src.params import PluginConfig
 from src.utils.browser import browser
-from src.utils.config import config
+from src.utils.config import Config
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
 
@@ -26,6 +28,8 @@ __plugin_meta__ = PluginMetadata(
     usage="超级用户私聊：帮助",
     config=PluginConfig(enable_managed=False)
 )
+
+config = Config()
 
 # ----------------------------------------------------------------------------
 #   rule检查，检测到私聊消息才会触发
@@ -55,25 +59,60 @@ def check_event() -> Rule:
 get_request = on_request(priority=3, block=True)  # 请求事件
 # ticket管理器
 ticket = on_regex(pattern=r"^ticket$", rule=check_event(), permission=SUPERUSER, priority=2, block=True)
-friend_list = on_regex(pattern=r"^好友列表$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 好友列表
+# 好友列表
+friend_list = on_regex(pattern=r"^好友列表$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
 # 删除好友
-friend_delete = on_regex(pattern=r"^删除好友 [\d]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
-group_list = on_regex(pattern=r"^群列表$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 群列表
-group_delete = on_regex(pattern=r"^退群 [\d]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 退群
-borodcast = on_regex(pattern=r"^广播 [\d]+ ", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 广播
-borodcast_all = on_regex(pattern=r"^全体广播 ", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 全体广播
+friend_delete = on_regex(pattern=r"^删除好友 (?p<value>[\d]+)$",
+                         rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+# 群列表
+group_list = on_regex(pattern=r"^群列表$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+# 退群
+group_delete = on_regex(pattern=r"^退群 (?p<value>[\d]+)$",
+                        rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+# 广播
+borodcast = on_regex(pattern=r"^广播 (?p<value>[\d]+) ", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+# 全体广播
+borodcast_all = on_regex(pattern=r"^全体广播 ", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
 # 打开关闭机器人
-handle_robot = on_regex(pattern=r"^(打开|关闭) [0-9]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
-help = on_regex(pattern=r"^帮助$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)  # 帮助
+handle_robot = on_regex(
+    pattern=r"^(?p<command>打开|关闭) (?p<value>[0-9]+)$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+# 帮助
+help = on_regex(pattern=r"^帮助$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
 # 添加ticket
-ticket_add = on_regex(pattern=r"^添加 [^\s]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+ticket_add = on_regex(pattern=r"^添加 (?p<value>[^\s]+)$", rule=check_event(),
+                      permission=SUPERUSER, priority=3, block=True)
 # 删除ticket
-ticket_del = on_regex(pattern=r"^删除 [\d]+$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
+ticket_del = on_regex(pattern=r"^删除 (?p<value>[\d]+)$", rule=check_event(),
+                      permission=SUPERUSER, priority=3, block=True)
 # 清理ticket
 ticket_clean = on_regex(pattern=r"^清理$", rule=check_event(), permission=SUPERUSER, priority=3, block=True)
 # ----------------------------------------------------------------------------
 #  Depends依赖
 # ----------------------------------------------------------------------------
+
+
+def get_value(state: T_State) -> int:
+    '''
+    说明:
+        Dependcey，获取命令中的value值
+
+    返回:
+        * `value` ：value值
+    '''
+    regex_dict: dict = state[REGEX_DICT]
+    return regex_dict['value']
+
+
+def get_command(state: T_State) -> bool:
+    '''
+    说明:
+        Dependcey，获取命令中的开关状态
+
+    返回:
+        * `bool`：开关状态
+    '''
+    regex_dict: dict = state[REGEX_DICT]
+    return regex_dict['command'] == "打开"
 
 
 def get_borod_group(event: PrivateMessageEvent) -> int:
@@ -96,21 +135,6 @@ def get_borod_msg_all(event: PrivateMessageEvent) -> Message:
     msg[0] = MessageSegment.text(msg0)
     return msg
 
-
-def get_name(event: PrivateMessageEvent) -> int:
-    '''获取后置name'''
-    return int(event.get_plaintext().split(" ")[-1])
-
-
-def get_ticket(event: PrivateMessageEvent) -> str:
-    '''获取ticket'''
-    return event.get_plaintext().split(" ")[-1]
-
-
-def get_status(event: PrivateMessageEvent) -> bool:
-    '''解析开关'''
-    _status = event.get_plaintext()[:2]
-    return (_status == "打开")
 
 # ----------------------------------------------------------------------------
 #  Macher实现
@@ -160,7 +184,7 @@ async def _(bot: Bot, event: PrivateMessageEvent):
 
 
 @friend_delete.handle()
-async def _(bot: Bot, user_id: int = Depends(get_name)):
+async def _(bot: Bot, user_id: int = Depends(get_value)):
     '''删除好友'''
     logger.info(
         f"<g>超级用户管理</g> | 请求删除好友：{user_id}"
@@ -195,7 +219,7 @@ async def _(bot: Bot, event: PrivateMessageEvent):
 
 
 @group_delete.handle()
-async def _(bot: Bot, group_id: int = Depends(get_name)):
+async def _(bot: Bot, group_id: int = Depends(get_value)):
     '''退群'''
     logger.info(
         f"<g>超级用户管理</g> | 请求退群：{group_id}"
@@ -248,7 +272,7 @@ async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
 
 
 @handle_robot.handle()
-async def _(bot: Bot, group_id: int = Depends(get_name), status: bool = Depends(get_status)):
+async def _(bot: Bot, group_id: int = Depends(get_value), status: bool = Depends(get_command)):
     '''打开关闭机器人'''
     logger.info(
         f"<g>超级用户管理</g> | 打开关闭机器人 | {group_id} | {status}"
@@ -284,7 +308,7 @@ async def _():
 
 
 @ticket_add.handle()
-async def _(ticket: str = Depends(get_ticket)):
+async def _(ticket: str = Depends(get_value)):
     '''添加ticket'''
     logger.info(
         f"<g>超级用户管理</g> | 请求添加ticket | {ticket}"
@@ -298,7 +322,7 @@ async def _(ticket: str = Depends(get_ticket)):
 
 
 @ticket_del.handle()
-async def _(index: str = Depends(get_ticket)):
+async def _(index: str = Depends(get_value)):
     '''删除ticket'''
     logger.info(
         f"<g>超级用户管理</g> | 请求删除ticket | index:{index}"

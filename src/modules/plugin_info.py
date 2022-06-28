@@ -38,7 +38,7 @@ class PluginInfo(Model):
         record = await cls.get_or_none(group_id=group_id, module_name=module_name)
         return record is not None
 
-    @ classmethod
+    @classmethod
     async def init_plugin(cls,
                           group_id: int,
                           module_name: str,

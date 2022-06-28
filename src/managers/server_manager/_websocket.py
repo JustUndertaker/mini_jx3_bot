@@ -1,7 +1,6 @@
 import asyncio
 import json
 import time
-from typing import Dict
 
 import websockets
 from httpx import AsyncClient
@@ -18,84 +17,13 @@ from ._jx3_event import RecvEvent, WsClosed
 config = Config()
 
 
-class WsKey(BaseModel):
-    status: bool = False
-    '''状态'''
-    time: int = 0
-    '''到期时间'''
-
-    @property
-    def check(self) -> bool:
-        '''检查是否过期'''
-        return self.status and self.time > int(time.time())
-
-
-class Jx3ServerStatus(BaseModel):
-    '''ws服务器推送状态'''
-    strategy: WsKey = WsKey()
-    '''奇遇播报'''
-    horse: WsKey = WsKey()
-    '''抓马播报'''
-    fuyao: WsKey = WsKey()
-    '''扶摇播报'''
-
-
-class Jx3WsTokenManager(object):
-    '''wstoken管理器'''
-    _data: Dict[str, Jx3ServerStatus]
-    '''整体数据'''
-
-    def __init__(self):
-        self._data = {}
-
-    def _set_key(self, data: Jx3ServerStatus, level: int, status: bool, time: int):
-        if level == 1:
-            data.strategy = WsKey(status=status, time=time)
-        elif level == 2:
-            data.horse = WsKey(status=status, time=time)
-        elif level == 3:
-            data.fuyao = WsKey(status=status, time=time)
-
-    def _add_data(self, data: dict):
-        '''添加数据'''
-        status = data.get("status")
-        server: str = data.get("server")
-        level: int = data.get("level")
-        time: int = data.get("time")
-        # 判断server
-        if server not in self._data:
-            self._data[server] = Jx3ServerStatus()
-        self._set_key(self._data[server], level, status, time)
-
-    async def init(self):
-        '''初始化'''
-        url = config.jx3api['jx3_url'] + "/token/socket"
-        params = {
-            "token": config.jx3api['ws_token']
-        }
-        async with AsyncClient() as client:
-            try:
-                req = await client.get(url=url, params=params)
-                req_json = req.json()
-                if req_json['code'] == 200:
-                    data = req_json['data']
-                    for one_data in data:
-                        self._add_data(one_data)
-            except Exception:
-                pass
-
-    def get_data(self, server: str) -> Jx3ServerStatus:
-        '''获取数据'''
-        return self._data.get(server, Jx3ServerStatus())
-
-
 class Jx3WebSocket(object):
-    '''jx3_api的ws链接封装'''
+    '''
+    jx3_api的ws链接封装
+    '''
 
     _ws: WebSocketClientProtocol = None
     '''ws链接'''
-    _token_data: Jx3WsTokenManager = Jx3WsTokenManager()
-    '''wstoekn管理器'''
     is_connecting: bool = False
     '''是否在连接中'''
 

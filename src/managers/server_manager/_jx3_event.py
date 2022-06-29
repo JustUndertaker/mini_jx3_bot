@@ -7,16 +7,29 @@ from nonebot.adapters import Event as BaseEvent
 from nonebot.adapters.onebot.v11.message import Message
 from nonebot.typing import overrides
 from nonebot.utils import escape_tag
+from pydantic import BaseModel
+
+
+class WsData(BaseModel):
+    '''
+    ws数据模型
+    '''
+    action: int
+    '''ws消息类型'''
+    data: dict
+    '''消息数据'''
 
 
 class EventRegister:
     """
-    ws_event注册器，方便获取实例
+    ws_event注册器类，方便获取实例
     """
-    data: dict = {}
+    data: dict
 
-    @classmethod
-    def register(cls, action: int):
+    def __init__(self):
+        self.data = {}
+
+    def register(self, action: int):
         '''
         说明:
             注册一个ws事件class，并记录在Register内
@@ -25,11 +38,10 @@ class EventRegister:
             * `action`：事件类型id
         '''
         def register_cls(get_cls: "RecvEvent"):
-            cls.data[action] = get_cls
+            self.data[action] = get_cls
         return register_cls
 
-    @classmethod
-    def get_event(cls, data: int) -> "RecvEvent" | None:
+    def get_event(self, data: WsData) -> "RecvEvent" | None:
         '''
         说明:
             根据data内容获取event实例
@@ -40,11 +52,17 @@ class EventRegister:
         返回:
             * `RecvEvent`：ws事件实例，未注册字段会返回None
         '''
-        action = data.get('action')
-        event = cls.data.get(action)
+        action = data.action
+        event = self.data.get(action)
         if event:
             return event(data.get('data'))
         return None
+
+
+event_register = EventRegister()
+'''
+ws_event注册器，方便获取实例
+'''
 
 
 class WsClosed(BaseEvent):
@@ -141,7 +159,7 @@ class RecvEvent(BaseEvent):
         return False
 
 
-@EventRegister.register(action=2001)
+@event_register.register(action=2001)
 class ServerStatusEvent(RecvEvent):
     '''服务器状态推送事件'''
     __event__ = "WsRecv.ServerStatus"
@@ -180,7 +198,7 @@ class ServerStatusEvent(RecvEvent):
             )
 
 
-@EventRegister.register(action=2002)
+@event_register.register(action=2002)
 class NewsRecvEvent(RecvEvent):
     '''新闻推送事件'''
     __event__ = "WsRecv.News"
@@ -216,7 +234,7 @@ class NewsRecvEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=1001)
+@event_register.register(action=1001)
 class SerendipityEvent(RecvEvent):
     '''奇遇播报事件'''
     __event__ = "WsRecv.Serendipity"
@@ -255,7 +273,7 @@ class SerendipityEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=1002)
+@event_register.register(action=1002)
 class HorseRefreshEvent(RecvEvent):
     '''马驹刷新事件'''
     __event__ = "WsRecv.HorseRefresh"
@@ -294,7 +312,7 @@ class HorseRefreshEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=1003)
+@event_register.register(action=1003)
 class HorseCatchedEvent(RecvEvent):
     '''马驹捕获事件'''
     __event__ = "WsRecv.HorseCatched"
@@ -333,7 +351,7 @@ class HorseCatchedEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=1004)
+@event_register.register(action=1004)
 class FuyaoRefreshEvent(RecvEvent):
     '''扶摇开启事件'''
     __event__ = "WsRecv.FuyaoRefresh"
@@ -363,7 +381,7 @@ class FuyaoRefreshEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=1005)
+@event_register.register(action=1005)
 class FuyaoNamedEvent(RecvEvent):
     '''扶摇点名事件'''
     __event__ = "WsRecv.FuyaoNamed"
@@ -398,7 +416,7 @@ class FuyaoNamedEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=1006)
+@event_register.register(action=1006)
 class FireworksEvent(RecvEvent):
     '''烟花播报事件'''
     __event__ = "WsRecv.Fireworks"
@@ -440,7 +458,7 @@ class FireworksEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=1007)
+@event_register.register(action=1007)
 class XuanJingEvent(RecvEvent):
     '''玄晶获取事件'''
     __event__ = "WsRecv.XuanJing"
@@ -478,7 +496,7 @@ class XuanJingEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=1008)
+@event_register.register(action=1008)
 class GameSysMsgEvent(RecvEvent):
     '''游戏系统频道消息推送'''
 
@@ -509,7 +527,7 @@ class GameSysMsgEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=10001)
+@event_register.register(action=10001)
 class SubscribeEvent(RecvEvent):
     '''订阅回执'''
     __event__ = "WsRecv.Subscribe"
@@ -544,7 +562,7 @@ class SubscribeEvent(RecvEvent):
         )
 
 
-@EventRegister.register(action=10002)
+@event_register.register(action=10002)
 class DisSubscribeEvent(RecvEvent):
     '''取消订阅回执'''
     __event__ = "WsRecv.DisSubscribe"

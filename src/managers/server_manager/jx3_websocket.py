@@ -10,7 +10,7 @@ from src.utils.log import logger
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 from websockets.legacy.client import WebSocketClientProtocol
 
-from ._jx3_event import EventRegister, WsClosed
+from ._jx3_event import WsClosed, WsData, event_register
 
 
 class Jx3WebSocket(object):
@@ -67,8 +67,8 @@ class Jx3WebSocket(object):
         说明:
             处理收到的ws数据，分发给机器人
         '''
-        data: dict = json.loads(message)
-        event = EventRegister.get_event(data)
+        data = WsData.parse_obj(json.loads(message))
+        event = event_register.get_event(data)
         if event:
             logger.debug(event.log)
             bots = get_bots()

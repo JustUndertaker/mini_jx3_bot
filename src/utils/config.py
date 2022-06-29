@@ -1,55 +1,151 @@
 from pathlib import Path
-from typing import Dict, Union
 
-import yaml
+from nonebot import get_driver
+from pydantic import BaseModel, Extra, Field
 
 
-class Config:
-    '''配置文件类'''
+class Jx3ApiConfig(BaseModel, extra=Extra.ignore):
+    '''
+    jx3api的配置
+    '''
+    ws_path: str = Field("", alias="jx3api_ws_path")
+    '''ws连接地址'''
+    ws_token: str = Field("", alias="jx3api_ws_token")
+    '''ws的token'''
+    api_url: str = Field("", alias="jx3api_url")
+    '''主站的url'''
+    api_token: str = Field("", alias="jx3api_token")
+    '''主站的token'''
 
-    def __new__(cls, *args, **kwargs):
-        '''单例'''
-        if not hasattr(cls, '_instance'):
-            orig = super(Config, cls)
-            cls._instance = orig.__new__(cls, *args, **kwargs)
-        return cls._instance
 
-    def __getattr__(self, item) -> Dict[str, Union[str, int, bool]]:
-        '''获取配置'''
-        value = self._config.get(item)
-        if value:
-            return value
-        raise AttributeError("未找到该配置字段，请检查config.yml文件！")
+class NlpConfig(BaseModel, extra=Extra.ignore):
+    '''
+    nlp配置
+    '''
+    secretId: str = Field("", alias="nlp_secretId")
+    secretKey: str = Field("", alias="nlp_secretKey")
 
-    def __init__(self):
-        '''初始化'''
-        workdir = Path.cwd()
-        config_file = workdir / "config.yml"
-        with open(config_file, 'r', encoding='utf-8') as f:
-            cfg = f.read()
-            self._config: dict = yaml.load(cfg, Loader=yaml.FullLoader)
 
-        # 创建目录
-        path: dict = self._config.get('path')
+class VoiceConfig(BaseModel, extra=Extra.ignore):
+    '''
+    阿里云语音配置
+    '''
+    appkey: str = Field("", alias="voice_appkey")
+    access: str = Field("", alias="voice_access")
+    secret: str = Field("", alias="voice_secret")
+    voice: str = Field("Aitong", alias="voice_voice")
+    '''发言人'''
+    format: str = Field("mp3", alias="voice_format")
+    '''编码格式'''
+    sample_rate: int = Field(16000, alias="voice_sample_rate")
+    '''采样率'''
+    volume: int = Field(50, alias="voice_volume")
+    '''音量'''
+    speech_rate: int = Field(0, alias="voice_speech_rate")
+    '''语速'''
+    pitch_rate: int = Field(0, alias="voice_pitch_rate")
+    '''音调'''
 
-        # data文件夹
-        data: str = path.get('data')
-        datadir = workdir / data
-        if not Path.exists(datadir):
-            Path.mkdir(datadir, parents=True)
 
-        # log文件夹
-        info: str = path.get('info')
-        infodir = workdir / info
-        if not Path.exists(infodir):
-            Path.mkdir(infodir, parents=True)
+class WeatherConfig(BaseModel, extra=Extra.ignore):
+    '''
+    天气插件配置
+    '''
+    api_key: str = Field("", alias="weather_api_key")
+    api_type: int = Field(0, alias="weather_api_type")
 
-        debug: str = path.get('debug')
-        debugdir = workdir / debug
-        if not Path.exists(debugdir):
-            Path.mkdir(debugdir, parents=True)
 
-        error: str = path.get('error')
-        errordir = workdir / error
-        if not Path.exists(errordir):
-            Path.mkdir(errordir, parents=True)
+class DefaultConfig(BaseModel, extra=Extra.ignore):
+    '''
+    默认设置
+    '''
+    server: str = Field("幽月轮", alias="default_server")
+    '''默认绑定区服'''
+    access_firend: bool = Field(True, alias="default_access_firend")
+    '''是否接受好友请求'''
+    access_group: bool = Field(True, alias="default_access_group")
+    '''是否接受群请求'''
+    robot_status: bool = Field(True, alias="default_robot_status")
+    '''机器人开关'''
+    robot_active: int = Field(10, alias="default_robot_active")
+    '''机器人活跃'''
+    robot_welcome: bool = Field(True, alias="defualt_robot_welcome")
+    '''进群欢迎开关'''
+    robot_welcome_status: str = Field("", alias="default_robot_welcome_status")
+    '''欢迎语'''
+    robot_someone_left_status: bool = Field(False, alias="defualt_robot_someone_left_status")
+    '''群友离开说话开关'''
+    robot_someone_left: str = Field("", alias="defualt_robot_someone_left")
+    '''群友离开内容'''
+    robot_goodnight_status: bool = Field(True, alias="defulat_robot_goodnight_status")
+    '''晚安通知开关'''
+    robot_goodnight: str = Field("", alias="defulat_robot_goodnight")
+    '''晚安通知内容'''
+
+
+class PathConfig(BaseModel, extra=Extra.ignore):
+    '''
+    路径设置
+    '''
+    data: str = Field("", alias="path_data")
+    '''数据文件'''
+    logs: str = Field("", alias="path_logs")
+    '''日志文件'''
+    templates: str = Field("", alias="path_templates")
+    '''html模板文件'''
+    welcome: str = Field("", alias="path_welcome")
+    '''欢迎消息图片'''
+    someoneleft: str = Field("", alias="path_someoneleft")
+    '''离群消息图片'''
+    goodnight: str = Field("", alias="path_goodnight")
+    '''晚安消息图片'''
+
+
+class LogsConfig(BaseModel, extra=Extra.ignore):
+    '''
+    日志设置
+    '''
+    is_console: bool = Field(True, alias="logs_is_console")
+    '''是否输出到控制台'''
+    console_level: str = Field("INFO", alias="logs_console_level")
+    '''控制台输出等级'''
+    is_file_info: bool = Field(True, alias="logs_is_file_info")
+    '''是否输出info文件'''
+    is_file_debug: bool = Field(True, alias="logs_is_file_debug")
+    '''是否输出debug文件'''
+    is_file_error: bool = Field(True, alias="logs_is_file_error")
+    '''是否输出error文件'''
+
+
+# 创建配置实例
+config = get_driver().config
+jx3api_config = Jx3ApiConfig.parse_obj(config)
+'''jx3api的配置'''
+nlp_config = NlpConfig.parse_obj(config)
+'''nlp配置'''
+voice_config = VoiceConfig.parse_obj(config)
+'''阿里云语音配置'''
+weather_config = WeatherConfig.parse_obj(config)
+'''天气插件配置'''
+default_config = DefaultConfig.parse_obj(config)
+'''默认设置'''
+path_config = PathConfig.parse_obj(config)
+'''路径设置'''
+logs_config = LogsConfig.parse_obj(config)
+'''日志设置'''
+
+# 创建文件夹
+_workdir = Path.cwd()
+
+# data文件夹
+_datadir = _workdir / path_config.data
+_datadir.mkdir(parents=True, exist_ok=True)
+
+# logs文件夹
+_logdir = _workdir / path_config.logs
+_info = _logdir / "info"
+_info.mkdir(parents=True, exist_ok=True)
+_debug = _logdir/"debug"
+_debug.mkdir(parents=True, exist_ok=True)
+_error = _logdir/"error"
+_error.mkdir(parents=True, exist_ok=True)

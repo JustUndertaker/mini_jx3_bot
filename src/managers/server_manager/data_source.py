@@ -1,37 +1,22 @@
 from src.modules.group_info import GroupInfo
-from src.modules.user_info import UserInfo
+from src.params import GroupSetting
 
 from . import _jx3_event as Event
-
-
-async def group_init(group_id: int, group_name: str):
-    '''注册群数据'''
-    await GroupInfo.group_init(group_id, group_name)
-
-
-async def user_init(user_id: int, group_id: int, user_name: str):
-    '''用户注册'''
-    await UserInfo.user_init(user_id, group_id, user_name)
-
-
-async def get_server(group_id: int) -> str:
-    '''获取绑定服务器'''
-    return await GroupInfo.get_server(group_id)
 
 
 async def get_ws_status(group_id: int,
                         event: Event.RecvEvent
                         ) -> bool:
     '''
-    :说明
+    说明:
         获取ws通知开关，robot为关闭时返回False
 
-    :参数
-        * group_id：QQ群号
-        * event：接收事件
+    参数:
+        * `group_id`：QQ群号
+        * `event`：接收事件类型
 
-    :返回
-        * bool：ws通知开关
+    返回:
+        * `bool`：ws通知开关
     '''
 
     bot_status = await GroupInfo.get_bot_status(group_id)
@@ -39,14 +24,14 @@ async def get_ws_status(group_id: int,
         return False
 
     if isinstance(event, Event.ServerStatusEvent):
-        recv_type = "server"
+        recv_type = GroupSetting.开服推送
     if isinstance(event, Event.NewsRecvEvent):
-        recv_type = "news"
+        recv_type = GroupSetting.新闻推送
     if isinstance(event, Event.SerendipityEvent):
-        recv_type = "serendipity"
+        recv_type = GroupSetting.奇遇推送
     if isinstance(event, Event.HorseRefreshEvent) or isinstance(event, Event.HorseCatchedEvent):
-        recv_type = "horse"
+        recv_type = GroupSetting.抓马监控
     if isinstance(event, Event.FuyaoRefreshEvent) or isinstance(event, Event.FuyaoNamedEvent):
-        recv_type = "fuyao"
+        recv_type = GroupSetting.扶摇监控
 
-    return await GroupInfo.get_ws_status(group_id, recv_type)
+    return await GroupInfo.get_config_status(group_id, recv_type)

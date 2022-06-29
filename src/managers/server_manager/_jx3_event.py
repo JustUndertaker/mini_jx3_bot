@@ -546,7 +546,7 @@ class SubscribeEvent(RecvEvent):
 
 @EventRegister.register(action=10002)
 class DisSubscribeEvent(RecvEvent):
-    '''取消订阅游戏系统消息回执'''
+    '''取消订阅回执'''
     __event__ = "WsRecv.DisSubscribe"
     message_type = "DisSubscribe"
     action: Literal["烟花报时", "玄晶报时", "游戏消息"]

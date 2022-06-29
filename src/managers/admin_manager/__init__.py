@@ -18,7 +18,7 @@ from src.modules.group_info import GroupInfo
 from src.modules.ticket_info import TicketInfo
 from src.params import PluginConfig, jx3api
 from src.utils.browser import browser
-from src.utils.config import Config
+from src.utils.config import default_config
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
 
@@ -29,7 +29,6 @@ __plugin_meta__ = PluginMetadata(
     config=PluginConfig(enable_managed=False)
 )
 
-config = Config()
 
 # ----------------------------------------------------------------------------
 #   rule检查，检测到私聊消息才会触发
@@ -147,8 +146,7 @@ async def _(bot: Bot, event: FriendRequestEvent):
     logger.info(
         f"<g>超级用户管理</g> | 收到好友请求：{event.user_id}"
     )
-    flag: bool = config.default['access_firend']
-    if flag:
+    if default_config.access_firend:
         # 接受请求
         await event.approve(bot)
     else:
@@ -162,8 +160,7 @@ async def _(bot: Bot, event: GroupRequestEvent):
     logger.info(
         f"<g>超级用户管理</g> | 收到群邀请：{event.group_id}"
     )
-    flag: bool = config.default['access_group']
-    if flag:
+    if default_config.access_group:
         await event.approve(bot)
     else:
         await event.reject(bot)

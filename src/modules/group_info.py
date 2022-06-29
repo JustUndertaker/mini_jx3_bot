@@ -1,11 +1,9 @@
 import json
 
 from src.params import GroupSetting, NoticeType
-from src.utils.config import Config
+from src.utils.config import default_config
 from tortoise import fields
 from tortoise.models import Model
-
-config = Config()
 
 
 def encode_text(text: str):
@@ -24,23 +22,23 @@ class GroupInfo(Model):
     '''群名'''
     sign_nums = fields.IntField(default=0)
     '''签到次数'''
-    server = fields.CharField(max_length=255, default=config.default['server'])
+    server = fields.CharField(max_length=255, default=default_config.server)
     '''绑定服务器'''
-    robot_status = fields.BooleanField(default=config.default['robot_status'])
+    robot_status = fields.BooleanField(default=default_config.robot_status)
     '''机器人状态'''
-    robot_active = fields.IntField(default=config.default['robot_active'])
+    robot_active = fields.IntField(default=default_config.robot_active)
     '''活跃值'''
-    welcome_status = fields.BooleanField(default=config.default['robot_welcome_status'])
+    welcome_status = fields.BooleanField(default=default_config.robot_welcome_status)
     '''进群通知开关'''
-    welcome_text = fields.JSONField(default=encode_text(config.default['robot_welcome']))
+    welcome_text = fields.JSONField(default=encode_text(default_config.robot_welcome))
     '''进群通知内容'''
-    someoneleft_status = fields.BooleanField(default=config.default['robot_someone_left_status'])
+    someoneleft_status = fields.BooleanField(default=default_config.robot_someone_left_status)
     '''离群通知开关'''
-    someoneleft_text = fields.JSONField(default=encode_text(config.default['robot_someone_left']))
+    someoneleft_text = fields.JSONField(default=encode_text(default_config.robot_someone_left))
     '''离群通知内容'''
-    goodnight_status = fields.BooleanField(default=config.default['robot_goodnight_status'])
+    goodnight_status = fields.BooleanField(default=default_config.robot_goodnight_status)
     '''晚安通知开关'''
-    goodnight_text = fields.JSONField(default=encode_text(config.default['robot_goodnight']))
+    goodnight_text = fields.JSONField(default=encode_text(default_config.robot_goodnight))
     '''晚安通知内容'''
     ws_server = fields.BooleanField(default=True)
     '''ws-开服推送开关'''

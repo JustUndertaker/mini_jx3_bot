@@ -69,10 +69,10 @@ class DefaultConfig(BaseModel, extra=Extra.ignore):
     '''机器人开关'''
     robot_active: int = Field(10, alias="default_robot_active")
     '''机器人活跃'''
-    robot_welcome: bool = Field(True, alias="defualt_robot_welcome")
+    robot_welcome_status: bool = Field("", alias="default_robot_welcome_status")
     '''进群欢迎开关'''
-    robot_welcome_status: str = Field("", alias="default_robot_welcome_status")
-    '''欢迎语'''
+    robot_welcome: str = Field(True, alias="defualt_robot_welcome")
+    '''进群欢迎语'''
     robot_someone_left_status: bool = Field(False, alias="defualt_robot_someone_left_status")
     '''群友离开说话开关'''
     robot_someone_left: str = Field("", alias="defualt_robot_someone_left")

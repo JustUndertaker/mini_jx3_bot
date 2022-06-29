@@ -3,29 +3,17 @@ jx3api接口的实现，用于连接api网站的数据处理
 """
 
 from functools import partial
-from typing import Any, Optional
+from typing import Any
 
 from httpx import AsyncClient
 from pydantic import BaseModel
-from src.utils.config import Config as BaseConfig
+from src.utils.config import Jx3ApiConfig, jx3api_config
 from typing_extensions import Protocol
 
 
 class _ApiCall(Protocol):
     async def __call__(self, **kwargs: Any) -> Any:
         ...
-
-
-class Config(BaseModel):
-    '''jx3api的设置'''
-    ws_path: str
-    '''ws链接地址'''
-    ws_token: Optional[str]
-    '''wstoken，按需购买'''
-    jx3_url: str
-    '''jx3api主站地址'''
-    jx3_token: Optional[str]
-    '''jx3api主站token，按需购买'''
 
 
 class Response(BaseModel):
@@ -46,7 +34,7 @@ class JX3API:
     '''
     client: AsyncClient
     '''浏览器客户端'''
-    config: Config
+    config: Jx3ApiConfig
     '''api设置'''
 
     def __new__(cls, *args, **kwargs):
@@ -57,11 +45,10 @@ class JX3API:
         return cls._instance
 
     def __init__(self):
-        base_config = BaseConfig()
-        self.config = Config.parse_obj(base_config.jx3api)
-        if not self.config.jx3_url.endswith("/"):
-            self.config.jx3_url += "/"
-        token = self.config.jx3_token or ""
+        self.config = jx3api_config
+        if not self.config.api_url.endswith("/"):
+            self.config.api_url += "/"
+        token = self.config.api_token or ""
         headers = {"token": token, "User-Agent": "Nonebot2-jx3_bot"}
         self.client = AsyncClient(headers=headers)
 
@@ -80,5 +67,5 @@ class JX3API:
 
     def __getattr__(self, name: str) -> _ApiCall:
         # 拼接url
-        url = self.config.jx3_url + name.replace("_", "/")
+        url = self.config.api_url + name.replace("_", "/")
         return partial(self.call_api, url)

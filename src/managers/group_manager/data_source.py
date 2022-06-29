@@ -8,12 +8,10 @@ from src.modules.plugin_info import PluginInfo
 from src.modules.search_record import SearchRecord
 from src.modules.user_info import UserInfo
 from src.params import NoticeType
-from src.utils.config import Config
+from src.utils.config import path_config
 
 from ..server_manager._websocket import ws_client
 from .model import ImageHandler
-
-config = Config()
 
 
 async def get_main_server(server: str) -> Optional[str]:
@@ -111,7 +109,7 @@ async def message_decoder(group_id: int, notice_type: NoticeType) -> Message:
 
 async def handle_data_notice(group_id: int, notice_type: NoticeType, message: Message):
     '''处理通知内容'''
-    _path: str = config.path['data']
+    _path = path_config.data
     # 创建文件夹
     path = Path(_path)/notice_type.name/str(group_id)
     if not path.exists():

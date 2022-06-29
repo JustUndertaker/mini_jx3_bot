@@ -4,9 +4,7 @@ from typing import Union
 from loguru._logger import Core, Logger
 from nonebot.plugin import PluginMetadata
 
-from .config import Config
-
-config = Config()
+from .config import logs_config, path_config
 
 logger = Logger(
     core=Core(),
@@ -63,8 +61,8 @@ class Filter:
 default_filter = Filter()
 
 # 是否显示到控制台
-if config.logs.get("is_console"):
-    console_level = config.logs.get("console_level", "INFO")
+if logs_config.is_console:
+    console_level = logs_config.console_level
     console_format = (
         "<g>{time:MM-DD HH:mm:ss}</g> "
         "[<lvl>{level}</lvl>] "
@@ -93,10 +91,10 @@ error_format = (
     "<c>{function}:{line}</c>| "
     "{message}")
 
-path_cfg = config.path.get("logs", "logs")
+path_cfg = path_config.logs
 
 # info文件
-if config.logs.get("is_file_info"):
+if logs_config.is_file_info:
     info_path = f"./{path_cfg}/info/"
     logger.add(
         info_path+"{time:YYYY-MM-DD}.log",
@@ -109,7 +107,7 @@ if config.logs.get("is_file_info"):
     )
 
 # debug文件
-if config.logs.get("is_file_debug"):
+if logs_config.is_file_debug:
     debug_path = f"./{path_cfg}/debug/"
     logger.add(
         debug_path+"{time:YYYY-MM-DD}.log",
@@ -122,7 +120,7 @@ if config.logs.get("is_file_debug"):
     )
 
 # error文件
-if config.logs.get("is_file_error"):
+if logs_config.is_file_error:
     error_path = f"./{path_cfg}/error/"
     logger.add(
         error_path+"{time:YYYY-MM-DD}.log",

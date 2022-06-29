@@ -1,6 +1,6 @@
 from tortoise import Tortoise
 
-from .config import Config
+from .config import path_config
 from .log import logger
 
 
@@ -9,8 +9,7 @@ async def database_init():
     初始化建表
     '''
     logger.debug('正在注册数据库')
-    config = Config()
-    path = config.path["data"]
+    path = path_config.data
     database_path = f"./{path}/data.db"
     db_url = f'sqlite://{database_path}'
     # 这里填要加载的表

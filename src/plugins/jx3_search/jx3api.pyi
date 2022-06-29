@@ -1,19 +1,7 @@
-from typing import Optional
+from src.utils.config import Jx3ApiConfig
 
 from httpx import AsyncClient
 from pydantic import BaseModel
-
-
-class Config(BaseModel):
-    '''jx3api的设置'''
-    ws_path: str
-    '''ws链接地址'''
-    ws_token: Optional[str]
-    '''wstoken，按需购买'''
-    jx3_url: str
-    '''jx3api主站地址'''
-    jx3_token: Optional[str]
-    '''jx3api主站token，按需购买'''
 
 
 class Response(BaseModel):
@@ -32,7 +20,7 @@ class JX3API:
     '''jx3api接口类'''
     client: AsyncClient
     '''浏览器客户端'''
-    config: Config
+    config: Jx3ApiConfig
     '''api设置'''
 
     async def app_daily(self, *, server: str, next: int = ...) -> Response:

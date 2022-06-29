@@ -7,14 +7,12 @@ from httpx import AsyncClient
 from nonebot import get_bots
 from nonebot.message import handle_event
 from pydantic import BaseModel
-from src.utils.config import Config
+from src.utils.config import jx3api_config
 from src.utils.log import logger
 from websockets.exceptions import ConnectionClosedOK
 from websockets.legacy.client import WebSocketClientProtocol
 
 from ._jx3_event import RecvEvent, WsClosed
-
-config = Config()
 
 
 class Jx3WebSocket(object):
@@ -77,8 +75,8 @@ class Jx3WebSocket(object):
     async def init(self) -> bool:
         '''初始化'''
         await self._token_data.init()
-        ws_path: str = config.jx3api['ws_path']
-        ws_token = config.jx3api['ws_token']
+        ws_path = jx3api_config.ws_path
+        ws_token = jx3api_config.ws_token
         if ws_token is None:
             ws_token = ""
         headers = {"token": ws_token}

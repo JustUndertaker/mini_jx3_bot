@@ -5,7 +5,7 @@ from typing import AsyncIterator, Optional
 import jinja2
 from playwright.async_api import Browser, Error, Page, async_playwright
 
-from .config import Config
+from .config import path_config
 from .log import logger
 
 
@@ -112,8 +112,7 @@ class MyBrowser():
         说明:
             初始化playwright，需要在启动时使用
         '''
-        config = Config()
-        template_path = config.path['templates']
+        template_path = path_config.templates
         path = Path(template_path).absolute()
         self._base_url = f"file://{path}/"
         self._playwright = await async_playwright().start()

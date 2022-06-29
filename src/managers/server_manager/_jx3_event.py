@@ -1,7 +1,7 @@
 import time
 from abc import abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from nonebot.adapters import Event as BaseEvent
 from nonebot.adapters.onebot.v11.message import Message
@@ -9,11 +9,49 @@ from nonebot.typing import overrides
 from nonebot.utils import escape_tag
 
 
+class EventRegister:
+    """
+    ws_event注册器，方便获取实例
+    """
+    data: dict = {}
+
+    @classmethod
+    def register(cls, action: int):
+        '''
+        说明:
+            注册一个ws事件class，并记录在Register内
+
+        参数:
+            * `action`：事件类型id
+        '''
+        def register_cls(get_cls: "RecvEvent"):
+            cls.data[action] = get_cls
+        return register_cls
+
+    @classmethod
+    def get_event(cls, data: int) -> "RecvEvent" | None:
+        '''
+        说明:
+            根据data内容获取event实例
+
+        参数:
+            * `data`：ws消息内容
+
+        返回:
+            * `RecvEvent`：ws事件实例，未注册字段会返回None
+        '''
+        action = data.get('action')
+        event = cls.data.get(action)
+        if event:
+            return event(data.get('data'))
+        return None
+
+
 class WsClosed(BaseEvent):
     '''ws被关闭事件'''
     __event__ = "WsClosed"
     post_type: str = "WsClosed"
-    reason: Optional[str]
+    reason: str
     '''关闭原因'''
 
     def __init__(self, reason: str):
@@ -57,7 +95,7 @@ class RecvEvent(BaseEvent):
     '''ws推送事件'''
     __event__ = "WsRecv"
     post_type: str = "WsRecv"
-    message_type: Optional[str]
+    message_type: str
     server: Optional[str] = None
     '''影响服务器'''
 
@@ -102,58 +140,13 @@ class RecvEvent(BaseEvent):
     def is_tome(self) -> bool:
         return False
 
-    @staticmethod
-    def create_event(_type: int, data: dict) -> Optional["RecvEvent"]:
-        '''根据推送类型创建事件'''
-        match _type:
-            case 1001:
-                # 奇遇播报
-                return SerendipityEvent(data)
-            case 1002:
-                # 马驹刷新
-                return HorseRefreshEvent(data)
-            case 1003:
-                # 马驹捕获
-                return HorseCatchedEvent(data)
-            case 1004:
-                # 扶摇开启
-                return FuyaoRefreshEvent(data)
-            case 1005:
-                # 扶摇点名
-                return FuyaoNamedEvent(data)
-            case 1006:
-                # 烟花播报
-                return FireworksEvent(data)
-            case 1010:
-                # 游戏消息
-                return GameSysMsgEvent(data)
-            case 2001:
-                # 新闻监控
-                return ServerStatusEvent(data)
-            case 2002:
-                # 新闻资讯
-                return NewsRecvEvent(data)
-            case 1506:
-                # 订阅烟花回调消息
-                return FireworkSubscribeEvent(data)
-            case 1510:
-                # 订阅游戏系统回调消息
-                return GameSysSubscribeEvent(data)
-            case 1606:
-                # 取消订阅烟花回调消息
-                return FireworkDisSubscribeEvent(data)
-            case 1610:
-                # 取消订阅系统回调消息
-                return GameSysDisSubscribeEvent(data)
-            case _:
-                return None
 
-
+@EventRegister.register(action=2001)
 class ServerStatusEvent(RecvEvent):
     '''服务器状态推送事件'''
     __event__ = "WsRecv.ServerStatus"
     message_type = "ServerStatus"
-    status: Optional[bool]
+    status: bool
     '''服务器状态'''
 
     def __init__(self, data: dict):
@@ -187,17 +180,18 @@ class ServerStatusEvent(RecvEvent):
             )
 
 
+@EventRegister.register(action=2002)
 class NewsRecvEvent(RecvEvent):
     '''新闻推送事件'''
     __event__ = "WsRecv.News"
     message_type = "News"
-    news_type: Optional[str]
+    news_type: str
     '''新闻类型'''
-    news_tittle: Optional[str]
+    news_tittle: str
     '''新闻标题'''
-    news_url: Optional[str]
+    news_url: str
     '''新闻url链接'''
-    news_date: Optional[str]
+    news_date: str
     '''新闻日期'''
 
     def __init__(self, data: dict):
@@ -222,17 +216,18 @@ class NewsRecvEvent(RecvEvent):
         )
 
 
+@EventRegister.register(action=1001)
 class SerendipityEvent(RecvEvent):
     '''奇遇播报事件'''
     __event__ = "WsRecv.Serendipity"
     message_type = "Serendipity"
-    name: Optional[str]
+    name: str
     '''触发角色'''
-    serendipity: Optional[str]
+    serendipity: str
     '''奇遇名'''
-    level: Optional[int]
+    level: int
     '''奇遇等级'''
-    time: Optional[str]
+    time: str
     '''触发时间'''
 
     def __init__(self, data: dict):
@@ -260,17 +255,18 @@ class SerendipityEvent(RecvEvent):
         )
 
 
+@EventRegister.register(action=1002)
 class HorseRefreshEvent(RecvEvent):
     '''马驹刷新事件'''
     __event__ = "WsRecv.HorseRefresh"
     message_type = "HorseRefresh"
-    map: Optional[str]
+    map: str
     '''刷新地图'''
-    min: Optional[int]
+    min: int
     '''时间范围min'''
-    max: Optional[int]
+    max: int
     '''时间范围max'''
-    time: Optional[str]
+    time: str
     '''推送时间'''
 
     def __init__(self, data: dict):
@@ -298,17 +294,18 @@ class HorseRefreshEvent(RecvEvent):
         )
 
 
+@EventRegister.register(action=1003)
 class HorseCatchedEvent(RecvEvent):
     '''马驹捕获事件'''
     __event__ = "WsRecv.HorseCatched"
     message_type = "HorseCatched"
-    name: Optional[str]
+    name: str
     '''触发角色名'''
-    map: Optional[str]
+    map: str
     '''地图'''
-    horse: Optional[str]
+    horse: str
     '''马驹名'''
-    time: Optional[str]
+    time: str
     '''事件时间'''
 
     def __init__(self, data: dict):
@@ -336,11 +333,12 @@ class HorseCatchedEvent(RecvEvent):
         )
 
 
+@EventRegister.register(action=1004)
 class FuyaoRefreshEvent(RecvEvent):
     '''扶摇开启事件'''
     __event__ = "WsRecv.FuyaoRefresh"
     message_type = "FuyaoRefresh"
-    time: Optional[str]
+    time: str
     '''事件时间'''
 
     def __init__(self, data: dict):
@@ -365,13 +363,14 @@ class FuyaoRefreshEvent(RecvEvent):
         )
 
 
+@EventRegister.register(action=1005)
 class FuyaoNamedEvent(RecvEvent):
     '''扶摇点名事件'''
     __event__ = "WsRecv.FuyaoNamed"
     message_type = "FuyaoNamed"
-    names: Optional[list[str]]
+    names: list[str]
     '''点名角色组'''
-    time: Optional[str]
+    time: str
     '''点名时间'''
 
     def __init__(self, data: dict):
@@ -399,23 +398,26 @@ class FuyaoNamedEvent(RecvEvent):
         )
 
 
+@EventRegister.register(action=1006)
 class FireworksEvent(RecvEvent):
-    '''烟花播报时间'''
+    '''烟花播报事件'''
     __event__ = "WsRecv.Fireworks"
     message_type = "Fireworks"
-    map: Optional[str]
+    role: str
     '''烟花地图'''
-    name: Optional[str]
+    name: str
     '''接受烟花的角色'''
-    sender: Optional[str]
+    sender: str
     '''使用烟花的角色'''
-    recipient: Optional[str]
+    recipient: str
     '''烟花名字'''
-    time: Optional[str]
+    time: str
     '''烟花使用时间'''
 
     def __init__(self, data: dict):
-        '''烟花播报时间'''
+        '''
+        烟花播报事件
+        '''
         super().__init__()
         self.server = data.get('server')
         self.map = data.get('map')
@@ -438,6 +440,45 @@ class FireworksEvent(RecvEvent):
         )
 
 
+@EventRegister.register(action=1007)
+class XuanJingEvent(RecvEvent):
+    '''玄晶获取事件'''
+    __event__ = "WsRecv.XuanJing"
+    message_type = "XuanJing"
+    role: str
+    '''角色名'''
+    map: str
+    '''地图名'''
+    name: str
+    '''玄晶名'''
+    time: str
+    '''获取时间'''
+
+    def __init__(self, data: dict):
+        '''
+        玄晶获取事件
+        '''
+        super().__init__()
+        self.server = data.get('server')
+        self.map = data.get('map')
+        self.name = data.get('name')
+        get_time = int(data.get('time'))
+        start_trans = time.localtime(get_time)
+        self.time = time.strftime('%H:%M:%S', start_trans)
+
+    @property
+    def log(self) -> str:
+        log = f"玄晶事件：[{self.time}] 侠士 {self.role} 在 {self.map} 获取了 {self.name}。"
+        return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> Message:
+        return Message(
+            f"[玄晶监控] 时间：{self.time}\n侠士 {self.role} 在 {self.map} 获取了 {self.name}！"
+        )
+
+
+@EventRegister.register(action=1008)
 class GameSysMsgEvent(RecvEvent):
     '''游戏系统频道消息推送'''
 
@@ -468,97 +509,71 @@ class GameSysMsgEvent(RecvEvent):
         )
 
 
-class FireworkSubscribeEvent(RecvEvent):
-    '''烟花订阅回执'''
-    __event__ = "WsRecv.FireworkSubscribeEvent"
-    message_type = "FireworkSubscribeEvent"
-    server_list: list[str]
-    '''已订阅服务器列表'''
+@EventRegister.register(action=10001)
+class SubscribeEvent(RecvEvent):
+    '''订阅回执'''
+    __event__ = "WsRecv.Subscribe"
+    message_type = "Subscribe"
+    action: Literal["烟花报时", "玄晶报时", "游戏消息"]
+    '''订阅内容'''
+    server_dict: dict[str, int]
+    '''已订阅服务器'''
 
     def __init__(self, data: dict):
-        '''烟花订阅回执'''
+        '''订阅回执'''
         super().__init__()
-        self.server_list = data.get('server')
+        action = data.get('action')
+        match action:
+            case 1006:
+                self.action = "烟花报时"
+            case 1007:
+                self.action = "玄晶报时"
+            case 1010:
+                self.action = "游戏消息"
+        self.server_dict = data.get('server')
 
     @property
     def log(self) -> str:
-        log = f"烟花订阅回执，已订阅服务器：{self.server_list}。"
+        log = f"订阅回执，类型：{self.action}。"
         return log
 
     @overrides(RecvEvent)
     def get_message(self) -> Message:
         return Message(
-            f"[烟花订阅回执]\n已订阅服务器：{self.server_list}。"
+            f"[订阅回执]\n类型：{self.action}。"
         )
 
 
-class FireworkDisSubscribeEvent(RecvEvent):
-    '''取消烟花订阅回执'''
-    __event__ = "WsRecv.FireworkDisSubscribeEvent"
-    message_type = "FireworkDisSubscribeEvent"
-    server_list: list[str]
-    '''已订阅服务器列表'''
-
-    def __init__(self, data: dict):
-        '''取消烟花订阅回执'''
-        super().__init__()
-        self.server_list = data.get('server')
-
-    @property
-    def log(self) -> str:
-        log = f"取消烟花订阅回执，已订阅服务器：{self.server_list}。"
-        return log
-
-    @overrides(RecvEvent)
-    def get_message(self) -> Message:
-        return Message(
-            f"[取消烟花订阅回执]\n已订阅服务器：{self.server_list}。"
-        )
-
-
-class GameSysSubscribeEvent(RecvEvent):
-    '''订阅游戏系统消息回执'''
-    __event__ = "WsRecv.GameSysSubscribeEvent"
-    message_type = "GameSysSubscribeEvent"
-    server_list: list[str]
-    '''已订阅服务器列表'''
-
-    def __init__(self, data: dict):
-        '''订阅游戏系统消息回执'''
-        super().__init__()
-        self.server_list = data.get('server')
-
-    @property
-    def log(self) -> str:
-        log = f"订阅游戏系统消息回执，已订阅服务器：{self.server_list}。"
-        return log
-
-    @overrides(RecvEvent)
-    def get_message(self) -> Message:
-        return Message(
-            f"[订阅游戏系统消息回执]\n已订阅服务器：{self.server_list}。"
-        )
-
-
-class GameSysDisSubscribeEvent(RecvEvent):
+@EventRegister.register(action=10002)
+class DisSubscribeEvent(RecvEvent):
     '''取消订阅游戏系统消息回执'''
-    __event__ = "WsRecv.GameSysDisSubscribeEvent"
-    message_type = "GameSysDisSubscribeEvent"
-    server_list: list[str]
-    '''已订阅服务器列表'''
+    __event__ = "WsRecv.DisSubscribe"
+    message_type = "DisSubscribe"
+    action: Literal["烟花报时", "玄晶报时", "游戏消息"]
+    '''订阅内容'''
+    server_dict: dict[str, int]
+    '''已订阅服务器'''
 
     def __init__(self, data: dict):
-        '''取消订阅游戏系统消息回执'''
+        '''取消订阅回执'''
         super().__init__()
-        self.server_list = data.get('server')
+        action = data.get('action')
+        match action:
+            case 1006:
+                self.action = "烟花报时"
+            case 1007:
+                self.action = "玄晶报时"
+            case 1010:
+                self.action = "游戏消息"
+        self.server_dict = data.get('server')
 
     @property
     def log(self) -> str:
-        log = f"取消订阅游戏系统消息回执，已订阅服务器：{self.server_list}。"
+        log = f"取消订阅回执，类型：{self.action}。"
         return log
 
     @overrides(RecvEvent)
     def get_message(self) -> Message:
         return Message(
-            f"[取消订阅游戏系统消息回执]\n已订阅服务器：{self.server_list}。"
+            f"[取消订阅回执]\n类型：{self.action}。"
         )

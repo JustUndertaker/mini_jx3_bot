@@ -1,18 +1,15 @@
 import asyncio
 import json
-import time
 
 import websockets
-from httpx import AsyncClient
 from nonebot import get_bots
 from nonebot.message import handle_event
-from pydantic import BaseModel
 from src.utils.config import jx3api_config
 from src.utils.log import logger
 from websockets.exceptions import ConnectionClosedOK
 from websockets.legacy.client import WebSocketClientProtocol
 
-from ._jx3_event import RecvEvent, WsClosed
+from ._jx3_event import EventRegister, WsClosed
 
 
 class Jx3WebSocket(object):
@@ -62,8 +59,8 @@ class Jx3WebSocket(object):
         '''处理回复数据'''
         data: dict = json.loads(message)
         # logger.success(data)
-        msg_type = data.get("type")
-        if event := RecvEvent.create_event(msg_type, data.get('data')):
+        event = EventRegister.get_event(data)
+        if event:
             logger.debug(event.log)
             bots = get_bots()
             for _, one_bot in bots.items():
@@ -74,7 +71,6 @@ class Jx3WebSocket(object):
 
     async def init(self) -> bool:
         '''初始化'''
-        await self._token_data.init()
         ws_path = jx3api_config.ws_path
         ws_token = jx3api_config.ws_token
         if ws_token is None:
@@ -109,16 +105,6 @@ class Jx3WebSocket(object):
         '''关闭ws链接'''
         if self._ws:
             await self._ws.close()
-
-    def get_ws_status(self, server: str) -> dict:
-        '''获取ws状态'''
-        data = self._token_data.get_data(server)
-        return {
-            "closed": self.closed,
-            "serendipity": data.strategy.check,
-            "horse": data.horse.check,
-            "fuyao": data.fuyao.check
-        }
 
     @property
     def closed(self) -> bool:

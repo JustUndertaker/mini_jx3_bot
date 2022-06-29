@@ -5,11 +5,8 @@ import nonebot
 from nonebot.adapters.onebot.v11 import Adapter
 
 from src.utils.database import database_init
-from src.utils.moinkeypath import monkeypatch
 from src.utils.scheduler import start_scheduler
 
-# 猴子补丁，针对windows平台，更换事件循环
-monkeypatch()
 nonebot.init()
 app = nonebot.get_asgi()
 

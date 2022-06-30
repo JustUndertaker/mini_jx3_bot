@@ -17,9 +17,10 @@ from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
 from nonebot.typing import T_State
 
+from src.jx3api import JX3API
 from src.modules.group_info import GroupInfo
 from src.modules.ticket_info import TicketInfo
-from src.params import PluginConfig, jx3api
+from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.config import default_config
 from src.utils.log import logger
@@ -32,6 +33,8 @@ __plugin_meta__ = PluginMetadata(
     config=PluginConfig(enable_managed=False),
 )
 
+api = JX3API()
+"""jx3api接口实例"""
 
 # ----------------------------------------------------------------------------
 #   rule检查，检测到私聊消息才会触发
@@ -345,7 +348,7 @@ async def _(event: PrivateMessageEvent, ticket: str = Depends(get_value)):
     """添加ticket"""
     logger.info(f"<g>超级用户管理</g> | 请求添加ticket | {ticket}")
 
-    response = await jx3api.token_ticket(ticket=ticket)
+    response = await api.token_ticket(ticket=ticket)
     if response.code == 200:
         await TicketInfo.append_ticket(ticket)
         msg = "添加ticket成功！"

@@ -12,6 +12,7 @@ from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
 from nonebot.typing import T_State
 
+from src.jx3api import JX3API
 from src.modules.group_info import GroupInfo
 from src.modules.search_record import SearchRecord
 from src.modules.ticket_info import TicketInfo
@@ -21,7 +22,6 @@ from src.utils.log import logger
 
 from . import data_source as source
 from .config import DAILIY_LIST, JX3PROFESSION
-from .jx3api import JX3API
 
 __plugin_meta__ = PluginMetadata(
     name="剑三查询", description="剑三游戏查询，数据源使用jx3api", usage="参考“帮助”", config=PluginConfig()
@@ -165,7 +165,7 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> st
     await matcher.finish(msg)
 
 
-async def cold_down(name: str, cd_time: int) -> None:
+def cold_down(name: str, cd_time: int) -> None:
     """
     说明:
         Dependency，增加命令冷却

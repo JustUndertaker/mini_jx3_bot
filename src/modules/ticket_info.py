@@ -1,3 +1,5 @@
+from typing import Optional
+
 from tortoise import fields
 from tortoise.models import Model
 
@@ -16,13 +18,13 @@ class TicketInfo(Model):
         table_description = "存储推栏的ticket用"
 
     @classmethod
-    async def get_ticket(cls) -> str | None:
+    async def get_ticket(cls) -> Optional[str]:
         """
         说明:
             获取一条有效的ticket，如果没有则返回None
 
         返回:
-            * `str | None`：ticket值，None则没有
+            * `Optional[str]`：ticket值，None则没有
         """
         record = await cls.get_or_none(alive=True)
         if record:

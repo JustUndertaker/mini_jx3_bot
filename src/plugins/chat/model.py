@@ -2,25 +2,24 @@ from typing import Optional
 
 from httpx import AsyncClient
 
-from src.utils.config import config
+from src.jx3api import JX3API
+from src.utils.config import nlp_config, voice_config
 from src.utils.log import logger
 
 
-class Chat(object):
+class Chat:
     """聊天封装"""
 
     _client = None
     """异步客户端"""
-    _tencent_url: str
-    """腾讯云接口"""
-    _voice_url: str
-    """语音请求接口"""
     _qingyunke_url = "http://api.qingyunke.com/api.php"
     """青云客接口"""
-    _nlp_config: dict
+    _nlp_config = nlp_config
     """nlp配置"""
-    _voice_config: dict
+    _voice_config = voice_config
     """voice配置"""
+    _api = JX3API()
+    """jx3api封装"""
 
     def __new__(cls, *args, **kwargs):
         """单例"""
@@ -31,32 +30,24 @@ class Chat(object):
 
     def __init__(self):
         self._client = AsyncClient()
-        base_url = config.jx3api["jx3_url"]
-        self._tencent_url = base_url + "/realize/nlpchat"
-        self._voice_url = base_url + "/realize/alitts"
-        self._nlp_config = config.nlp
-        self._voice_config = config.voice
 
     def _check_nlp_config(self) -> bool:
         """检查nlp配置"""
-        return (self._nlp_config.get("secretId") is not None) and (
-            self._nlp_config.get("secretKey") is not None
-        )
+        return self._nlp_config.secretId != "" and self._nlp_config.secretKey != ""
 
     async def _chat_with_tencent(self, nickname: str, text: str) -> Optional[str]:
         """使用腾讯云接口"""
-        params = self._nlp_config.copy()
-        params["name"] = nickname
-        params["question"] = text
+
         try:
-            req = await self._client.get(url=self._tencent_url, params=params)
-            req_json = req.json()
-            if req_json["code"] == 200:
-                data = req_json["data"]
+            req = await self._api.transmit_chat(
+                name=nickname, question=text, **self._nlp_config.dict()
+            )
+            if req.code == 200:
+                data = req.data
                 logger.debug(f"腾讯云请求成功，返回：{data['answer']}")
                 return data["answer"]
             else:
-                logger.debug(f"腾讯云请求失败，返回：{req_json['msg']}")
+                logger.debug(f"腾讯云请求失败，返回：{req.msg}")
                 return None
         except Exception as e:
             logger.debug(f"腾讯云请求错误，返回：{str(e)}")
@@ -97,9 +88,9 @@ class Chat(object):
     def check_voice_config(self) -> bool:
         """检查voice的配置是否齐全"""
         return (
-            (self._voice_config.get("appkey") is not None)
-            and (self._voice_config.get("access") is not None)
-            and (self._voice_config.get("secret") is not None)
+            self._voice_config.appkey != ""
+            and self._voice_config.access != ""
+            and self._voice_config.secret != ""
         )
 
     async def get_voice(self, text: str) -> Optional[str]:
@@ -108,15 +99,16 @@ class Chat(object):
         params = self._voice_config.copy()
         params["text"] = text
         try:
-            req = await self._client.get(url=self._voice_url, params=params)
-            req_json = req.json()
-            if req_json["code"] == 200:
+            req = await self._api.transmit_alitts(
+                text=text, **self._voice_config.dict()
+            )
+            if req.code == 200:
                 logger.debug("请求语音成功！")
-                data = req_json["data"]
+                data = req.data
                 voice_url = data["url"]
                 return voice_url
             else:
-                logger.debug(f"请求语音失败，返回：{req_json['msg']}")
+                logger.debug(f"请求语音失败，返回：{req.msg}")
                 return None
 
         except Exception as e:

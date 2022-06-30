@@ -1,6 +1,5 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
-from .log import logger
+from nonebot.log import logger
 
 scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
 """

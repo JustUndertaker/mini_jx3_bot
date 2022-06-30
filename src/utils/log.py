@@ -46,7 +46,7 @@ class Filter:
         module = sys.modules.get(module_name)
         if module:
             # 判断是否为插件模块
-            metadata: PluginMetadata = getattr(module, "__plugin_meta__")
+            metadata: PluginMetadata = getattr(module, "__plugin_meta__", None)
             if metadata:
                 record["name"] = metadata.name
             else:

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from tortoise import fields
 from tortoise.models import Model
 
@@ -63,7 +65,7 @@ class PluginInfo(Model):
         )
 
     @classmethod
-    async def get_plugin_status(cls, group_id: int, module_name: str) -> bool | None:
+    async def get_plugin_status(cls, group_id: int, module_name: str) -> Optional[bool]:
         """
         说明:
             获取一个插件开关状态
@@ -73,7 +75,7 @@ class PluginInfo(Model):
             * `module_name`：插件模块名
 
         返回:
-            * `bool | None`：插件开关，为None时未找到该插件
+            * `Optional[bool]`：插件开关，为None时未找到该插件
         """
         record = await cls.get_or_none(group_id=group_id, module_name=module_name)
         return record.status if record else None

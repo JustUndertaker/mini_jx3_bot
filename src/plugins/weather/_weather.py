@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple
 
 from httpx import AsyncClient
 
-from src.utils.config import config
+from src.utils.config import weather_config
 from src.utils.log import logger
 
 
@@ -31,8 +31,8 @@ class Weather(object):
         return cls._instance
 
     def __init__(self):
-        self._api_key = config.weather["api_key"]
-        api_type = config.weather["api_type"]
+        self._api_key = weather_config.api_key
+        api_type = weather_config.api_type
         if api_type == 0:
             # 普通版apikey
             self._weather_api = "https://devapi.qweather.com/v7/weather/"

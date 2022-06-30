@@ -57,7 +57,7 @@ class Jx3WebSocket(object):
         参数:
             * `reason`：关闭原因
         """
-        event = WsClosed(reason)
+        event = WsClosed(reason=reason)
         bots = get_bots()
         for _, one_bot in bots.items():
             await handle_event(one_bot, event)
@@ -67,15 +67,19 @@ class Jx3WebSocket(object):
         说明:
             处理收到的ws数据，分发给机器人
         """
-        data = WsData.parse_obj(json.loads(message))
-        event = event_register.get_event(data)
-        if event:
-            logger.debug(event.log)
-            bots = get_bots()
-            for _, one_bot in bots.items():
-                await handle_event(one_bot, event)
-        else:
-            logger.error(f"<r>未知的ws消息类型：{data}</r>")
+        try:
+            ws_obj = json.loads(message)
+            data = WsData.parse_obj(ws_obj)
+            event = event_register.get_event(data)
+            if event:
+                logger.debug(event.log)
+                bots = get_bots()
+                for _, one_bot in bots.items():
+                    await handle_event(one_bot, event)
+            else:
+                logger.error(f"<r>未知的ws消息类型：{data}</r>")
+        except Exception:
+            logger.success(f"<g>{ws_obj}</g>")
 
     async def init(self) -> bool:
         """
@@ -103,6 +107,7 @@ class Jx3WebSocket(object):
                 )
                 asyncio.create_task(self._task())
                 logger.debug("<g>ws_server</g> | ws连接成功！")
+                break
             except Exception as e:
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
                 asyncio.sleep(1)

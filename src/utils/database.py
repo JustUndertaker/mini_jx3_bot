@@ -1,7 +1,5 @@
+from nonebot.log import logger
 from tortoise import Tortoise
-
-from .config import path_config
-from .log import logger
 
 
 async def database_init():
@@ -9,8 +7,7 @@ async def database_init():
     初始化建表
     """
     logger.debug("正在注册数据库")
-    path = path_config.data
-    database_path = f"./{path}/data.db"
+    database_path = "./data/data.db"
     db_url = f"sqlite://{database_path}"
     # 这里填要加载的表
     models = [

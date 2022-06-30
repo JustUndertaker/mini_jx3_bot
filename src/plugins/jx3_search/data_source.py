@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 
-from .jx3api import JX3API
+from src.jx3api import JX3API
 
 api = JX3API()
 

@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from tortoise import fields
 from tortoise.models import Model
@@ -354,7 +355,7 @@ class GroupInfo(Model):
         )
 
     @classmethod
-    async def get_group_name(cls, group_id: int) -> str | None:
+    async def get_group_name(cls, group_id: int) -> Optional[str]:
         """
         说明:
             获取群名接口

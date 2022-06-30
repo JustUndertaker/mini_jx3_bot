@@ -45,7 +45,7 @@ class EventRegister:
 
         return register_cls
 
-    def get_event(self, data: WsData) -> "RecvEvent" | None:
+    def get_event(self, data: WsData) -> Optional["RecvEvent"]:
         """
         说明:
             根据data内容获取event实例
@@ -74,7 +74,7 @@ class WsClosed(BaseEvent):
 
     __event__ = "WsClosed"
     post_type: str = "WsClosed"
-    reason: str
+    reason: str = ""
     """关闭原因"""
 
     def __init__(self, reason: str):

@@ -40,7 +40,7 @@ plugin_manager = PluginManager()
 async def _(bot: Bot):
     """机器人连接处理"""
     # 获取群
-    logger.info(f"<y>Bot {bot.self_id}</y> 已连接，正在注册……")
+    logger.info(f"<y>Bot {bot.self_id}</y> 已连接，正在注册...")
     group_list = await bot.get_group_list()
     for group in group_list:
         group_id: int = group["group_id"]
@@ -65,16 +65,16 @@ async def _(bot: Bot):
 @driver.on_bot_disconnect
 async def _(bot: Bot):
     """bot链接关闭"""
-    logger.info("<y>检测到bot离线……</y>")
+    logger.info("<y>检测到bot离线...</y>")
 
 
 @driver.on_startup
 async def _():
     """等定时插件和数据加载完毕后"""
-    logger.info("<g>正在初始化浏览器……</g>")
+    logger.info("<g>正在初始化浏览器...</g>")
     await browser.init()
     logger.info("<y>浏览器初始化完毕。</y>")
-    logger.info("<g>正在链接jx3api的ws服务器……</g>")
+    logger.info("<g>正在链接jx3api的ws服务器...</g>")
     await ws_client.init()
     logger.info("<y>jx3api的ws服务器已链接。</y>")
 
@@ -82,16 +82,16 @@ async def _():
 @driver.on_shutdown
 async def _():
     """结束进程"""
-    logger.info("检测到进程关闭，正在清理……")
-    logger.info("<y>正在关闭浏览器……</y>")
+    logger.info("检测到进程关闭，正在清理...")
+    logger.info("<y>正在关闭浏览器...</y>")
     await browser.shutdown()
     logger.info("<g>浏览器关闭成功。</g>")
 
-    logger.info("<y>正在关闭数据库……</y>")
+    logger.info("<y>正在关闭数据库...</y>")
     await Tortoise.close_connections()
     logger.info("<g>数据库关闭成功。</g>")
 
-    logger.info("<y>关闭ws链接……</y>")
+    logger.info("<y>关闭ws链接...</y>")
     await ws_client.close()
     logger.info("<g>ws链接关闭成功。</g>")
 

@@ -355,7 +355,7 @@ async def _():
                     await asyncio.sleep(random.uniform(0.3, 0.5))
                     count_success += 1
                 except Exception:
-                    log = f"群({group_id}) | 被禁言了，无法发送晚安……"
+                    log = f"群({group_id}) | 被禁言了，无法发送晚安..."
                     logger.warning(log)
                     count_failed += 1
             else:

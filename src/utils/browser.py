@@ -60,7 +60,7 @@ class MyBrowser:
         说明:
             安装浏览器，如果启动失败则需要安装chromium
         """
-        logger.info("未检测到浏览器，正在安装 chromium……")
+        logger.info("未检测到浏览器，正在安装 chromium...")
         import sys
 
         from playwright.__main__ import main

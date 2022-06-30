@@ -20,4 +20,4 @@ async def database_init():
     modules = {"models": models}
     await Tortoise.init(db_url=db_url, modules=modules)
     await Tortoise.generate_schemas()
-    logger.info("<g>数据库初始化成功。</g>")
+    logger.opt(colors=True).info("<g>数据库初始化成功。</g>")

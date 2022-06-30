@@ -36,7 +36,7 @@ from src.utils.log import logger
 
 
 class Filter:
-    '''过滤器类'''
+    """过滤器类"""
 
     def __init__(self) -> None:
         self.level: Union[int, str] = "DEBUG"
@@ -48,12 +48,13 @@ class Filter:
             # 判断是否为插件模块
             metadata: PluginMetadata = getattr(module, "__plugin_meta__")
             if metadata:
-                record['name'] = metadata.name
+                record["name"] = metadata.name
             else:
                 # module_name = getattr(module, "__module_name__", module_name)
                 record["name"] = module_name.split(".")[-1]
-        levelno = logger.level(self.level).no if isinstance(self.level,
-                                                            str) else self.level
+        levelno = (
+            logger.level(self.level).no if isinstance(self.level, str) else self.level
+        )
         return record["level"].no >= levelno
 
 
@@ -67,13 +68,12 @@ if logs_config.is_console:
         "<g>{time:MM-DD HH:mm:ss}</g> "
         "[<lvl>{level}</lvl>] "
         "<c><u>{name}</u></c> | "
-        "{message}")
+        "{message}"
+    )
     # 添加到控制台
-    logger.add(sys.stdout,
-               filter=default_filter,
-               format=console_format,
-               level=console_level
-               )
+    logger.add(
+        sys.stdout, filter=default_filter, format=console_format, level=console_level
+    )
 
 # ===========================添加到日志文件======================================
 # 日志文件记录格式
@@ -81,7 +81,8 @@ file_format = (
     "<g>{time:MM-DD HH:mm:ss}</g> "
     "[<lvl>{level}</lvl>] "
     "<c><u>{name}</u></c> | "
-    "{message}")
+    "{message}"
+)
 
 # 错误日志文件记录格式
 error_format = (
@@ -89,7 +90,8 @@ error_format = (
     "[<lvl>{level}</lvl>] "
     "[<c><u>{name}</u></c>] | "
     "<c>{function}:{line}</c>| "
-    "{message}")
+    "{message}"
+)
 
 path_cfg = path_config.logs
 
@@ -97,37 +99,37 @@ path_cfg = path_config.logs
 if logs_config.is_file_info:
     info_path = f"./{path_cfg}/info/"
     logger.add(
-        info_path+"{time:YYYY-MM-DD}.log",
+        info_path + "{time:YYYY-MM-DD}.log",
         rotation="00:00",
         retention="10 days",
         level="INFO",
         format=file_format,
         filter=default_filter,
-        encoding="utf-8"
+        encoding="utf-8",
     )
 
 # debug文件
 if logs_config.is_file_debug:
     debug_path = f"./{path_cfg}/debug/"
     logger.add(
-        debug_path+"{time:YYYY-MM-DD}.log",
+        debug_path + "{time:YYYY-MM-DD}.log",
         rotation="00:00",
         retention="10 days",
         level="DEBUG",
         format=file_format,
         filter=default_filter,
-        encoding="utf-8"
+        encoding="utf-8",
     )
 
 # error文件
 if logs_config.is_file_error:
     error_path = f"./{path_cfg}/error/"
     logger.add(
-        error_path+"{time:YYYY-MM-DD}.log",
+        error_path + "{time:YYYY-MM-DD}.log",
         rotation="00:00",
         retention="10 days",
         level="ERROR",
         format=error_format,
         filter=default_filter,
-        encoding="utf-8"
+        encoding="utf-8",
     )

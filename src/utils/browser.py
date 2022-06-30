@@ -9,44 +9,45 @@ from .config import path_config
 from .log import logger
 
 
-class MyBrowser():
-    '''自定义浏览类'''
+class MyBrowser:
+    """自定义浏览类"""
+
     _browser: Optional[Browser] = None
-    '''Browser实例'''
+    """Browser实例"""
     _playwright = None
-    '''playwright实例'''
+    """playwright实例"""
     _template_env: jinja2.Environment
-    '''jinja模板环境'''
+    """jinja模板环境"""
     _base_url: str = None
-    '''模板基础路径'''
+    """模板基础路径"""
 
     def __new__(cls, *args, **kwargs):
-        '''单例'''
-        if not hasattr(cls, '_instance'):
+        """单例"""
+        if not hasattr(cls, "_instance"):
             orig = super(MyBrowser, cls)
             cls._instance = orig.__new__(cls, *args, **kwargs)
         return cls._instance
 
     async def _launch_browser(self, **kwargs) -> Browser:
-        '''
+        """
         说明:
             初始化浏览器
-        '''
+        """
         return await self._playwright.chromium.launch(**kwargs)
 
     async def _get_browser(self, **kwargs) -> Browser:
-        '''
+        """
         说明:
             获取浏览器
-        '''
+        """
         return self._browser or await self.init(**kwargs)
 
     @asynccontextmanager
     async def _get_new_page(self, **kwargs) -> AsyncIterator[Page]:
-        '''
+        """
         说明:
             获取新页面，使用上下文管理器
-        '''
+        """
         browser = await self._get_browser()
         page = await browser.new_page(**kwargs)
         try:
@@ -55,15 +56,16 @@ class MyBrowser():
             await page.close()
 
     async def _install_browser(self):
-        '''
+        """
         说明:
             安装浏览器，如果启动失败则需要安装chromium
-        '''
+        """
         logger.info("未检测到浏览器，正在安装 chromium……")
         import sys
 
         from playwright.__main__ import main
-        sys.argv = ['', 'install', 'chromium']
+
+        sys.argv = ["", "install", "chromium"]
         try:
             main()
         except SystemExit:
@@ -90,7 +92,11 @@ class MyBrowser():
             img_raw = await element_handle.screenshot(type="jpeg", quality=100)
         return img_raw
 
-    async def _template_to_html(self, template_name: str, **kwargs,) -> str:
+    async def _template_to_html(
+        self,
+        template_name: str,
+        **kwargs,
+    ) -> str:
         """
         说明:
             使用jinja2模板引擎通过html生成图片
@@ -108,10 +114,10 @@ class MyBrowser():
         return await template.render_async(**kwargs)
 
     async def init(self) -> Browser:
-        '''
+        """
         说明:
             初始化playwright，需要在启动时使用
-        '''
+        """
         template_path = path_config.templates
         path = Path(template_path).absolute()
         self._base_url = f"file://{path}/"
@@ -128,15 +134,15 @@ class MyBrowser():
         return self._browser
 
     async def shutdown(self):
-        '''
+        """
         说明:
             关闭浏览器，在shutdown时使用
-        '''
+        """
         await self._browser.close()
         await self._playwright.stop()
 
     async def template_to_image(self, pagename: str, **kwargs) -> bytes:
-        '''
+        """
         说明:
             将模板页面转化成图片
 
@@ -146,24 +152,22 @@ class MyBrowser():
 
         返回:
             * `bytes`：图片数据
-        '''
+        """
 
         html = await self._template_to_html(template_name=pagename, **kwargs)
         return await self._html_to_pic(pagename, html)
 
     async def get_image_from_url(self, url: str, width: int) -> bytes:
-        '''
+        """
         说明:
             从url获取截图，目前在截取更新公告时使用
 
         参数:
             * `url`：url地址
             * `width`：网页宽度
-        '''
+        """
         async with self._get_new_page() as page:
-            viewport_size = {
-                "width": width, "height": 480
-            }
+            viewport_size = {"width": width, "height": 480}
             await page.set_viewport_size(viewport_size)
             await page.goto(url)
             await page.wait_for_load_state("networkidle")

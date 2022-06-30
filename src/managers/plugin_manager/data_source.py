@@ -1,27 +1,30 @@
 from typing import Literal, Optional
 
 from nonebot.plugin import get_loaded_plugins
+
 from src.modules.group_info import GroupInfo
 from src.modules.plugin_info import PluginInfo
 
 
 async def get_plugin_status(group_id: int, module_name: str) -> Optional[bool]:
-    '''获取插件状态'''
+    """获取插件状态"""
     return await PluginInfo.get_plugin_status(group_id, module_name)
 
 
 async def get_bot_status(group_id: int) -> Optional[bool]:
-    '''获取机器人开启情况'''
+    """获取机器人开启情况"""
     return await GroupInfo.get_bot_status(group_id)
 
 
 def _chinese_to_bool(string: Literal["打开", "关闭"]) -> bool:
-    '''将开关解析为bool'''
-    return (string == "打开")
+    """将开关解析为bool"""
+    return string == "打开"
 
 
-async def change_group_config(group_id: int, config_type: str, status: Literal["打开", "关闭"]) -> bool:
-    '''
+async def change_group_config(
+    group_id: int, config_type: str, status: Literal["打开", "关闭"]
+) -> bool:
+    """
     :说明
         改变群设置
 
@@ -32,7 +35,7 @@ async def change_group_config(group_id: int, config_type: str, status: Literal["
 
     :返回
         * bool：如果有设置，则成功，没有改设置会返回False
-    '''
+    """
 
     _config_type = None
     if config_type == "进群通知":
@@ -58,8 +61,10 @@ async def change_group_config(group_id: int, config_type: str, status: Literal["
     return False
 
 
-async def change_plugin_status(group_id: int, plugin_name: str, status: Literal["打开", "关闭"]) -> bool:
-    '''
+async def change_plugin_status(
+    group_id: int, plugin_name: str, status: Literal["打开", "关闭"]
+) -> bool:
+    """
     :说明
         改变插件开关
 
@@ -70,7 +75,7 @@ async def change_plugin_status(group_id: int, plugin_name: str, status: Literal[
 
     :返回
         * bool：如果有设置，则成功，没有改设置会返回False
-    '''
+    """
     flag = False
     module_name = ""
     plugins = list(get_loaded_plugins())

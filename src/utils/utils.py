@@ -1,7 +1,7 @@
 from typing import Union
 
 
-class GroupList_Async():
+class GroupList_Async:
     """
     异步计数器，用于异步发送多个消息，支持dict,list使用方法：
     ```
@@ -21,7 +21,7 @@ class GroupList_Async():
             self._it = iter(obj)
             return
         if isinstance(obj[0], dict):
-            group_id_list = [one['group_id'] for one in obj]
+            group_id_list = [one["group_id"] for one in obj]
             self._it = iter(group_id_list)
 
     def __aiter__(self):

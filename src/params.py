@@ -8,6 +8,7 @@ from nonebot.adapters.onebot.v11.message import MessageSegment
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
+
 # from nonebot.permission import Permission
 from pydantic import BaseModel
 
@@ -16,23 +17,24 @@ from src.plugins.jx3_search.jx3api import JX3API
 
 
 class PluginConfig(BaseModel):
-    '''
+    """
     插件管理器需要的配置，如果没有此配置，插件管理器将不会管理
-    '''
+    """
+
     enable_managed: bool = True
-    '''
+    """
     是否受插件管理器管理，若设置成False，插件管理器将不会管理
-    '''
+    """
     default_status: bool = True
-    '''默认开关'''
+    """默认开关"""
     cost_gold: int = 0
-    '''
+    """
     使用花费，这里只是显示在菜单中，真正起效在params的cost_gold()
-    '''
+    """
 
 
 async def cost_gold(gold: int):
-    '''
+    """
     说明:
         Dependency，每次调用需要消耗金币数，用于插件使用金币
 
@@ -45,11 +47,12 @@ async def cost_gold(gold: int):
         async def _():
             pass
     ```
-    '''
+    """
+
     async def dependency(matcher: Matcher, event: GroupMessageEvent):
         flag = await UserInfo.cost_gold(event.user_id, event.group_id, gold)
         if not flag:
-            msg = MessageSegment.at(event.user_id)+"你的金币不够了，不能操作哟！"
+            msg = MessageSegment.at(event.user_id) + "你的金币不够了，不能操作哟！"
             await matcher.finish(msg)
 
     return Depends(dependency)
@@ -65,15 +68,16 @@ GROUP_ADMIN = GROUP_ADMIN | GROUP_OWNER
 """匹配群管理员权限"""
 
 jx3api = JX3API()
-'''
+"""
 jx3api接口封装实例，供其他插件调用
-'''
+"""
 
 
 class GroupSetting(Enum):
-    '''
+    """
     群设置枚举
-    '''
+    """
+
     进群通知 = auto()
     离群通知 = auto()
     晚安通知 = auto()
@@ -85,9 +89,10 @@ class GroupSetting(Enum):
 
 
 class NoticeType(Enum):
-    '''
+    """
     群通知枚举
-    '''
+    """
+
     晚安通知 = auto()
     离群通知 = auto()
     进群通知 = auto()

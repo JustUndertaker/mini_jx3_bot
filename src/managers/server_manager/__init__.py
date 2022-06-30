@@ -6,13 +6,14 @@ from nonebot.adapters.onebot.v11 import Bot
 from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
+from tortoise import Tortoise
+
 from src.modules.group_info import GroupInfo
 from src.modules.user_info import UserInfo
 from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
-from tortoise import Tortoise
 
 from ._jx3_event import RecvEvent, WsClosed
 from ._plugin_manager import PluginManager
@@ -23,7 +24,7 @@ __plugin_meta__ = PluginMetadata(
     name="服务管理插件",
     description="管理bot的启动连接服务，以及jx3api的ws管理",
     usage="本插件不受插件管理器限制",
-    config=PluginConfig(enable_managed=False)
+    config=PluginConfig(enable_managed=False),
 )
 
 
@@ -37,15 +38,13 @@ plugin_manager = PluginManager()
 
 @driver.on_bot_connect
 async def _(bot: Bot):
-    '''机器人连接处理'''
+    """机器人连接处理"""
     # 获取群
-    logger.info(
-        f"<y>Bot {bot.self_id}</y> 已连接，正在注册……"
-    )
+    logger.info(f"<y>Bot {bot.self_id}</y> 已连接，正在注册……")
     group_list = await bot.get_group_list()
     for group in group_list:
-        group_id: int = group['group_id']
-        group_name: str = group['group_name']
+        group_id: int = group["group_id"]
+        group_name: str = group["group_name"]
         # 注册群信息
         await GroupInfo.group_init(group_id, group_name)
         # 注册插件
@@ -53,23 +52,25 @@ async def _(bot: Bot):
         # 注册成员信息
         member_list = await bot.get_group_member_list(group_id=group_id)
         for one_member in member_list:
-            user_id = one_member['user_id']
-            user_name = one_member['nickname'] if one_member['card'] == "" else one_member['card']
+            user_id = one_member["user_id"]
+            user_name = (
+                one_member["nickname"]
+                if one_member["card"] == ""
+                else one_member["card"]
+            )
             await UserInfo.user_init(user_id, group_id, user_name)
-    logger.info(
-        f"<y>Bot {bot.self_id}</y> 注册完毕。"
-    )
+    logger.info(f"<y>Bot {bot.self_id}</y> 注册完毕。")
 
 
 @driver.on_bot_disconnect
 async def _(bot: Bot):
-    '''bot链接关闭'''
+    """bot链接关闭"""
     logger.info("<y>检测到bot离线……</y>")
 
 
 @driver.on_startup
 async def _():
-    '''等定时插件和数据加载完毕后'''
+    """等定时插件和数据加载完毕后"""
     logger.info("<g>正在初始化浏览器……</g>")
     await browser.init()
     logger.info("<y>浏览器初始化完毕。</y>")
@@ -80,7 +81,7 @@ async def _():
 
 @driver.on_shutdown
 async def _():
-    '''结束进程'''
+    """结束进程"""
     logger.info("检测到进程关闭，正在清理……")
     logger.info("<y>正在关闭浏览器……</y>")
     await browser.shutdown()
@@ -94,6 +95,7 @@ async def _():
     await ws_client.close()
     logger.info("<g>ws链接关闭成功。</g>")
 
+
 # ----------------------------------------------------------------
 #  server操作的几个mathcer
 # ----------------------------------------------------------------
@@ -104,7 +106,7 @@ close_ws = on_regex(pattern=r"^关闭连接$", permission=SUPERUSER, priority=5,
 
 @check_ws.handle()
 async def _(event: PrivateMessageEvent):
-    '''查看连接'''
+    """查看连接"""
     if ws_client.closed:
         msg = "jx3api > ws连接已关闭！"
     else:
@@ -114,7 +116,7 @@ async def _(event: PrivateMessageEvent):
 
 @connect_ws.handle()
 async def _(event: PrivateMessageEvent):
-    '''连接服务器'''
+    """连接服务器"""
     if ws_client.closed:
         await ws_client.init()
         msg = "正在连接服务器……"
@@ -125,10 +127,11 @@ async def _(event: PrivateMessageEvent):
 
 @close_ws.handle()
 async def _(event: PrivateMessageEvent):
-    '''关闭连接'''
+    """关闭连接"""
     if not ws_client.closed:
         await ws_client.close()
     await close_ws.finish("ws连接已关闭！")
+
 
 # ----------------------------------------------------------------
 #       ws消息事件处理
@@ -140,7 +143,7 @@ ws_closed = on(type="WsClosed", priority=4, block=True)
 
 @ws_recev.handle()
 async def _(bot: Bot, event: RecvEvent):
-    '''ws推送事件'''
+    """ws推送事件"""
     group_list = await bot.get_group_list()
     async for group_id in GroupList_Async(group_list):
         # 是否需要验证服务器
@@ -162,7 +165,7 @@ async def _(bot: Bot, event: RecvEvent):
 
 @ws_closed.handle()
 async def _(bot: Bot, event: WsClosed):
-    '''ws关闭事件'''
+    """ws关闭事件"""
     superusers = list(bot.config.superusers)
     msg = event.reason
     async for user_id in GroupList_Async(superusers):

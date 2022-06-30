@@ -5,23 +5,23 @@ from nonebot.utils import run_sync
 
 
 class ImageHandler:
-    '''
+    """
     图片处理类，将同步储存更换为异步执行
-    '''
+    """
 
     @classmethod
     @run_sync
     def _save_image(cls, file_name: Path, data: bytes):
-        '''
+        """
         说明:
             将数据保存到本地
-        '''
-        with open(file_name, mode='wb') as f:
+        """
+        with open(file_name, mode="wb") as f:
             f.write(data)
 
     @classmethod
     async def save_image(cls, file_name: Path, url: str) -> bool:
-        '''
+        """
         说明:
             从url获取图片并保存到本地
 
@@ -31,7 +31,7 @@ class ImageHandler:
 
         返回:
             * `bool`：保存是否成功
-        '''
+        """
         async with AsyncClient() as client:
             try:
                 req = await client.get(url=url)
@@ -43,7 +43,7 @@ class ImageHandler:
     @classmethod
     @run_sync
     def load_image(cls, file_name: Path) -> bytes:
-        '''
+        """
         说明:
             从本地读取图片数据
 
@@ -52,7 +52,7 @@ class ImageHandler:
 
         返回:
             * `bytes`：图片数据
-        '''
-        with open(file_name, 'rb') as f:
+        """
+        with open(file_name, "rb") as f:
             data = f.read()
         return data

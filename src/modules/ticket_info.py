@@ -3,12 +3,13 @@ from tortoise.models import Model
 
 
 class TicketInfo(Model):
-    '''存储ticket表'''
+    """存储ticket表"""
+
     id = fields.IntField(pk=True, generated=True)
     ticket = fields.CharField(max_length=255)
-    '''ticket值'''
+    """ticket值"""
     alive = fields.BooleanField(null=True, default=True)
-    '''存活'''
+    """存活"""
 
     class Meta:
         table = "ticket_info"
@@ -16,13 +17,13 @@ class TicketInfo(Model):
 
     @classmethod
     async def get_ticket(cls) -> str | None:
-        '''
+        """
         说明:
             获取一条有效的ticket，如果没有则返回None
 
         返回:
             * `str | None`：ticket值，None则没有
-        '''
+        """
         record = await cls.get_or_none(alive=True)
         if record:
             return record.ticket
@@ -30,7 +31,7 @@ class TicketInfo(Model):
 
     @classmethod
     async def del_ticket(cls, id: int) -> bool:
-        '''
+        """
         说明:
             删除一条ticket
 
@@ -39,7 +40,7 @@ class TicketInfo(Model):
 
         返回:
             * `bool`：是否删除成功
-        '''
+        """
         record = await cls.get_or_none(id=id)
         if record:
             await record.delete()
@@ -48,15 +49,15 @@ class TicketInfo(Model):
 
     @classmethod
     async def clean_ticket(cls):
-        '''
+        """
         说明:
             清理所有无效ticket
-        '''
+        """
         await cls.filter(alive=False).delete()
 
     @classmethod
     async def append_ticket(cls, ticket: str) -> bool:
-        '''
+        """
         说明:
             添加一条ticket，不可以添加重复的ticket
 
@@ -65,13 +66,13 @@ class TicketInfo(Model):
 
         返回:
             * `bool`：是否添加成功
-        '''
+        """
         _, flag = await cls.get_or_create(ticket=ticket)
         return not flag
 
     @classmethod
     async def get_all(cls) -> list[dict]:
-        '''
+        """
         说明:
             获取所有ticket
 
@@ -80,5 +81,5 @@ class TicketInfo(Model):
                 * `id` `int`：ticket编号
                 * `ticket` `str`：ticket值
                 * `alive` `bool`：是否有效
-        '''
+        """
         return await cls.all().values("id", "ticket", "alive")

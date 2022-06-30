@@ -4,6 +4,7 @@ from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import to_me
+
 from src.params import PluginConfig
 from src.utils.log import logger
 
@@ -13,7 +14,7 @@ __plugin_meta__ = PluginMetadata(
     name="智能闲聊",
     description="闲聊功能，有一句没一句",
     usage="@机器人 +你要说的话",
-    config=PluginConfig()
+    config=PluginConfig(),
 )
 
 
@@ -22,7 +23,7 @@ chat_query = on_message(rule=to_me(), permission=GROUP, priority=9, block=True)
 
 @chat_query.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
-    '''智能闲聊'''
+    """智能闲聊"""
     nickname = list(bot.config.nickname)[0]
     message = event.get_plaintext()
     logger.info(

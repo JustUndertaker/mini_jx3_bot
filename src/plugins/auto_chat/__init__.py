@@ -9,6 +9,7 @@ from nonebot.matcher import Matcher
 from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
+
 from src.params import PluginConfig
 
 from . import data_source as source
@@ -17,7 +18,7 @@ __plugin_meta__ = PluginMetadata(
     name="自动插话",
     description="可以自动插话，频率与活跃度相关。",
     usage="~",
-    config=PluginConfig(default_status=False)
+    config=PluginConfig(default_status=False),
 )
 
 # ----------------------------------------------------------------------------
@@ -54,7 +55,7 @@ auto_chat = on_message(permission=GROUP, rule=check_random(), priority=99, block
 
 
 async def check(matcher: Matcher, event: GroupMessageEvent) -> Optional[str]:
-    '''检测文字'''
+    """检测文字"""
     text = event.get_plaintext()
     if text == "":
         await matcher.finish()
@@ -63,7 +64,7 @@ async def check(matcher: Matcher, event: GroupMessageEvent) -> Optional[str]:
 
 @auto_chat.handle()
 async def _(bot: Bot, event: GroupMessageEvent, text: str = Depends(check)):
-    '''自动插话'''
+    """自动插话"""
     nickname = list(bot.config.nickname)[0]
     msg = await source.get_random_msg(event.group_id, nickname, text)
     await auto_chat.finish(msg)

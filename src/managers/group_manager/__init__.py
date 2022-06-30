@@ -4,17 +4,19 @@ import time
 
 from nonebot import get_bots, on_notice, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
-from nonebot.adapters.onebot.v11.event import (FriendAddNoticeEvent,
-                                               GroupDecreaseNoticeEvent,
-                                               GroupIncreaseNoticeEvent,
-                                               GroupMessageEvent)
-from nonebot.adapters.onebot.v11.permission import (GROUP, GROUP_ADMIN,
-                                                    GROUP_OWNER)
+from nonebot.adapters.onebot.v11.event import (
+    FriendAddNoticeEvent,
+    GroupDecreaseNoticeEvent,
+    GroupIncreaseNoticeEvent,
+    GroupMessageEvent,
+)
+from nonebot.adapters.onebot.v11.permission import GROUP, GROUP_ADMIN, GROUP_OWNER
 from nonebot.consts import REGEX_DICT
 from nonebot.params import Depends
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot.typing import T_State
+
 from src.params import NoticeType, PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
@@ -26,7 +28,7 @@ from . import data_source as source
 
 __plugin_meta__ = PluginMetadata(
     name="群管理插件",
-    description='''
+    description="""
         群管理插件，实现功能有：
         * 绑定服务器
         * 设置活跃值
@@ -35,35 +37,53 @@ __plugin_meta__ = PluginMetadata(
         * 菜单
         * 管理员帮助
         * 滴滴
-        ''',
+        """,
     usage="参考“管理员帮助”指令",
-    config=PluginConfig(enable_managed=False)
+    config=PluginConfig(enable_managed=False),
 )
 
 # 绑定服务器
-bind_server = on_regex(pattern=r"^绑定 (?p<value>[\u4e00-\u9fa5]+)$", permission=SUPERUSER |
-                       GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)
+bind_server = on_regex(
+    pattern=r"^绑定 (?p<value>[\u4e00-\u9fa5]+)$",
+    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    priority=2,
+    block=True,
+)
 
 # 设置活跃值[0-99]
-set_activity = on_regex(pattern=r"^活跃值 (?p<value>(\d){1,2})$", permission=SUPERUSER |
-                        GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)
+set_activity = on_regex(
+    pattern=r"^活跃值 (?p<value>(\d){1,2})$",
+    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    priority=2,
+    block=True,
+)
 
 # 设置机器人开关
-robot_status = on_regex(pattern=r"^机器人 (?<command>[开关])$", permission=SUPERUSER |
-                        GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)
+robot_status = on_regex(
+    pattern=r"^机器人 (?<command>[开关])$",
+    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    priority=2,
+    block=True,
+)
 
 # 晚安通知，离群通知，进群通知
-notice = on_regex(pattern=r"^((晚安)|(离群)|(进群))通知 ", permission=SUPERUSER |
-                  GROUP_ADMIN | GROUP_OWNER, priority=2, block=True)
+notice = on_regex(
+    pattern=r"^((晚安)|(离群)|(进群))通知 ",
+    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    priority=2,
+    block=True,
+)
 
 # 菜单
-meau = on_regex(pattern=r"^((菜单)|(状态))$", permission=GROUP,  priority=3, block=True)
+meau = on_regex(pattern=r"^((菜单)|(状态))$", permission=GROUP, priority=3, block=True)
 
 # 管理员帮助
 admin_help = on_regex(pattern=r"^管理员帮助$", permission=GROUP, priority=3, block=True)
 
 # 滴滴
-didi = on_regex(pattern=r"^滴滴 ", permission=GROUP_ADMIN | GROUP_OWNER, priority=3, block=True)
+didi = on_regex(
+    pattern=r"^滴滴 ", permission=GROUP_ADMIN | GROUP_OWNER, priority=3, block=True
+)
 
 # 通知事件
 get_notice = on_notice(priority=3, block=True)
@@ -74,37 +94,37 @@ get_notice = on_notice(priority=3, block=True)
 
 
 def get_value(state: T_State) -> str:
-    '''
+    """
     说明:
         Dependcey，获取value值
 
     返回:
         * `value`：value值
-    '''
+    """
     regex_dict: dict = state[REGEX_DICT]
-    return regex_dict['value']
+    return regex_dict["value"]
 
 
 def get_status(state: T_State) -> bool:
-    '''
+    """
     说明:
         Dependcey，获取命令中的开关
 
     返回:
         * `bool`：命令开关
-    '''
+    """
     regex_dict: dict = state[REGEX_DICT]
-    return regex_dict['command'] == "开"
+    return regex_dict["command"] == "开"
 
 
 def get_notice_type(event: GroupMessageEvent) -> NoticeType:
-    '''
+    """
     说明:
         Dependcey，返回通知类型
 
     返回:
         * `NoticeType`：通知类型枚举
-    '''
+    """
     msg = event.get_plaintext()[:4]
     match msg:
         case "晚安通知":
@@ -116,14 +136,15 @@ def get_notice_type(event: GroupMessageEvent) -> NoticeType:
 
 
 async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
-    '''返回要说的话'''
+    """返回要说的话"""
     msg = event.get_message()
     group = await bot.get_group_info(group_id=event.group_id)
-    group_name = group['group_name']
+    group_name = group["group_name"]
     user_name = event.sender.card if event.sender.card != "" else event.sender.nickname
     msg_header = f"收到 | {user_name}({event.user_id}) | @群【{group_name}】({event.group_id}) | 的滴滴消息\n\n"
     msg[0] = MessageSegment.text(msg_header + str(msg[0])[3:])
     return msg
+
 
 # ----------------------------------------------------------------
 #  matcher实现
@@ -132,10 +153,8 @@ async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
 
 @bind_server.handle()
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
-    '''绑定服务器'''
-    logger.info(
-        f"<y>群管理</y> | <g>群{event.group_id}</g> | 请求绑定服务器 | {name}"
-    )
+    """绑定服务器"""
+    logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 请求绑定服务器 | {name}")
     server = await source.get_main_server(name)
     if server is None:
         await bind_server.finish(f"绑定失败，未找到服务器：{name}")
@@ -146,10 +165,8 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
 
 @set_activity.handle()
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
-    '''设置活跃值'''
-    logger.info(
-        f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置活跃值 | {name}"
-    )
+    """设置活跃值"""
+    logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置活跃值 | {name}")
     activity = int(name)
     await source.set_activity(event.group_id, activity)
     await set_activity.finish(f"机器人当前活跃值为：{name}")
@@ -157,46 +174,42 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
 
 @robot_status.handle()
 async def _(event: GroupMessageEvent, status: bool = Depends(get_status)):
-    '''设置机器人开关'''
-    logger.info(
-        f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置机器人开关 | {status}"
-    )
+    """设置机器人开关"""
+    logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置机器人开关 | {status}")
     await source.set_status(event.group_id, status)
-    name = "开启"if status else "关闭"
+    name = "开启" if status else "关闭"
     await robot_status.finish(f"设置成功，机器人当前状态为：{name}")
 
 
 @notice.handle()
-async def _(event: GroupMessageEvent, notice_type: NoticeType = Depends(get_notice_type)):
-    '''设置通知内容'''
+async def _(
+    event: GroupMessageEvent, notice_type: NoticeType = Depends(get_notice_type)
+):
+    """设置通知内容"""
     logger.info(
         f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置通知内容 | {notice_type} | {event.get_message()}"
     )
     await source.handle_data_notice(event.group_id, notice_type, event.get_message())
-    await notice.finish(
-        f"设置{notice_type.name}成功！"
-    )
+    await notice.finish(f"设置{notice_type.name}成功！")
 
 
 @meau.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
-    '''菜单'''
+    """菜单"""
     pagename = "meau.html"
     meau_data = await source.get_meau_data(event.group_id)
     nickname = list(bot.config.nickname)[0]
     bot_id = bot.self_id
 
-    img = await browser.template_to_image(pagename=pagename,
-                                          data=meau_data,
-                                          nickname=nickname,
-                                          bot_id=bot_id
-                                          )
+    img = await browser.template_to_image(
+        pagename=pagename, data=meau_data, nickname=nickname, bot_id=bot_id
+    )
     await meau.finish(MessageSegment.image(img))
 
 
 @admin_help.handle()
 async def _():
-    '''管理员帮助'''
+    """管理员帮助"""
     pagename = "admin_help.html"
     img = await browser.template_to_image(pagename=pagename)
     await admin_help.finish(MessageSegment.image(img))
@@ -204,10 +217,8 @@ async def _():
 
 @didi.handle()
 async def _(bot: Bot, event: GroupMessageEvent, msg: Message = Depends(get_didi_msg)):
-    '''滴滴功能'''
-    logger.info(
-        f"<y>群管理</y> | <g>群{event.group_id}</g> | 滴滴功能 | {msg}"
-    )
+    """滴滴功能"""
+    logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 滴滴功能 | {msg}")
     superusers = list(bot.config.superusers)
     if not superusers:
         await didi.finish("本机器人没有管理员，不知道发给谁呀。")
@@ -218,13 +229,13 @@ async def _(bot: Bot, event: GroupMessageEvent, msg: Message = Depends(get_didi_
 
 @get_notice.handle()
 async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
-    '''群成员增加事件'''
+    """群成员增加事件"""
     # 判断是否为自己
     group_id = event.group_id
     if event.self_id == event.user_id:
         # 机器人被邀请进群，注册消息
         group = await bot.get_group_info(group_id=group_id)
-        group_name = group['group_name']
+        group_name = group["group_name"]
         logger.info(
             f"加入群【<g>{group_name}</g>】({str(group_id)}) | 操作者：<y>{str(event.operator_id)}</y>"
         )
@@ -235,8 +246,12 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
         # 注册成员信息
         member_list = await bot.get_group_member_list(group_id=group_id)
         for one_member in member_list:
-            user_id = one_member['user_id']
-            user_name = one_member['nickname'] if one_member['card'] == "" else one_member['card']
+            user_id = one_member["user_id"]
+            user_name = (
+                one_member["nickname"]
+                if one_member["card"] == ""
+                else one_member["card"]
+            )
             await server_source.user_init(user_id, group_id, user_name)
 
         # 给管理员发送消息
@@ -267,7 +282,7 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
 
 @get_notice.handle()
 async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
-    '''有人离群事件'''
+    """有人离群事件"""
     # 判断是否为自己
     group_id = event.group_id
     if event.self_id == event.user_id:
@@ -279,7 +294,7 @@ async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
         for user in superusers:
             try:
                 group = await bot.get_group_info(group_id=group_id)
-                group_name = group['group_name']
+                group_name = group["group_name"]
                 logger.info(
                     f"退出群【<g>{group_name}</g>】({str(group_id)}) | 操作者：<y>{str(event.operator_id)}</y>"
                 )
@@ -300,9 +315,9 @@ async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
 
 @get_notice.handle()
 async def _(bot: Bot, event: FriendAddNoticeEvent):
-    '''好友增加通知事件'''
+    """好友增加通知事件"""
     friend = await bot.get_stranger_info(user_id=event.user_id)
-    nickname = friend['nickname']
+    nickname = friend["nickname"]
     msg = f"我添加了好友【{nickname}】({event.user_id})"
     superusers = list(bot.config.superusers)
     async for user_id in GroupList_Async(superusers):
@@ -318,10 +333,8 @@ async def _(bot: Bot, event: FriendAddNoticeEvent):
 # -------------------------------------------------------------
 @scheduler.scheduled_job("cron", hour=0, minute=0)
 async def _():
-    '''晚安通知'''
-    logger.info(
-        "<y>群管理</y> | 晚安通知 | 正在发送晚安通知"
-    )
+    """晚安通知"""
+    logger.info("<y>群管理</y> | 晚安通知 | 正在发送晚安通知")
     all_bot = get_bots()
     for _, bot in all_bot.items():
         group_list: list[dict] = await bot.get_group_list()
@@ -331,7 +344,9 @@ async def _():
         count_closed = 0
         time_start = time.time()
         async for group_id in GroupList_Async(group_list):
-            goodnight_status = await source.get_notice_status(group_id, "goodnight_status")
+            goodnight_status = await source.get_notice_status(
+                group_id, "goodnight_status"
+            )
             robot_status = await source.get_robot_status(group_id)
             if goodnight_status and robot_status:
                 try:
@@ -340,13 +355,13 @@ async def _():
                     await asyncio.sleep(random.uniform(0.3, 0.5))
                     count_success += 1
                 except Exception:
-                    log = f'群({group_id}) | 被禁言了，无法发送晚安……'
+                    log = f"群({group_id}) | 被禁言了，无法发送晚安……"
                     logger.warning(log)
                     count_failed += 1
             else:
                 count_closed += 1
         time_end = time.time()
-        time_use = round(time_end-time_start, 2)
+        time_use = round(time_end - time_start, 2)
         superusers = list(bot.config.superusers)
         for user in superusers:
             msg = f"发送晚安完毕，共发送 {count_all} 个群\n发送成功 {count_success} 个\n发送失败 {count_failed} 个\n关闭通知 {count_closed}个\n用时 {time_use} 秒"

@@ -3,6 +3,7 @@ from datetime import date
 
 from httpx import AsyncClient
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
+
 from src.modules.group_info import GroupInfo
 from src.modules.user_info import UserInfo
 from src.utils.log import logger
@@ -10,11 +11,11 @@ from src.utils.log import logger
 from .config import FRIENDLY_ADD, GOLD_BASE, LUCKY_GOLD, LUCKY_MAX, LUCKY_MIN
 
 client = AsyncClient()
-'''异步请求客户端'''
+"""异步请求客户端"""
 
 
 async def get_sign_in(user_id: int, group_id: int) -> Message:
-    '''
+    """
     :说明
         用户签到
 
@@ -24,17 +25,15 @@ async def get_sign_in(user_id: int, group_id: int) -> Message:
 
     :返回
         * Message：机器人返回消息
-    '''
+    """
     msg = MessageSegment.at(user_id)
     # 获取上次签到日期
     last_sign = await UserInfo.get_last_sign(user_id, group_id)
     # 判断是否已签到
     today = date.today()
     if today == last_sign:
-        logger.debug(
-            f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到插件 | 签到失败"
-        )
-        msg += MessageSegment.text('\n你今天已经签到了，不要贪心噢。')
+        logger.debug(f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到插件 | 签到失败")
+        msg += MessageSegment.text("\n你今天已经签到了，不要贪心噢。")
         return msg
 
     # 头像
@@ -52,22 +51,21 @@ async def get_sign_in(user_id: int, group_id: int) -> Message:
         lucky_max=LUCKY_MAX,
         friendly_add=FRIENDLY_ADD,
         gold_base=GOLD_BASE,
-        lucky_gold=LUCKY_GOLD)
+        lucky_gold=LUCKY_GOLD,
+    )
 
-    msg_txt = f'本群第 {sign_num} 位 签到完成\n'
+    msg_txt = f"本群第 {sign_num} 位 签到完成\n"
     msg_txt += f'今日运势：{data.get("today_lucky")}\n'
     msg_txt += f'获得金币：+{data.get("today_gold")}（总金币：{data.get("all_gold")}）\n'
     msg_txt += f'当前好感度：{data.get("all_friendly")}\n'
     msg_txt += f'累计签到次数：{data.get("sign_times")}'
-    msg += msg_head+MessageSegment.text(msg_txt)
-    logger.debug(
-        f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到插件 | 签到成功"
-    )
+    msg += msg_head + MessageSegment.text(msg_txt)
+    logger.debug(f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到插件 | 签到成功")
     return msg
 
 
 async def _get_qq_img(user_id: int) -> bytes:
-    '''
+    """
     :说明
         获取QQ头像
 
@@ -76,18 +74,14 @@ async def _get_qq_img(user_id: int) -> bytes:
 
     :返回
         * bytes：头像数据
-    '''
+    """
     num = random.randrange(1, 4)
-    url = f'http://q{num}.qlogo.cn/g'
-    params = {
-        'b': 'qq',
-        'nk': user_id,
-        's': 100
-    }
+    url = f"http://q{num}.qlogo.cn/g"
+    params = {"b": "qq", "nk": user_id, "s": 100}
     resp = await client.get(url, params=params)
     return resp.content
 
 
 async def reset_sign_nums():
-    '''重置签到人数'''
+    """重置签到人数"""
     await GroupInfo.reset_sign_nums()

@@ -5,6 +5,7 @@ from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
+
 from src.params import GROUP_ADMIN, PluginConfig
 from src.utils.log import logger
 
@@ -14,15 +15,15 @@ __plugin_meta__ = PluginMetadata(
     name="插件管理插件",
     description="用来控制插件的开关",
     usage="群管理输入[打开 | 关闭] 插件名称",
-    config=PluginConfig(enable_managed=False)
+    config=PluginConfig(enable_managed=False),
 )
 
 
 @run_preprocessor
 async def _(matcher: Matcher, event: GroupMessageEvent):
-    '''
+    """
     插件管理，基于hook实现插件开关
-    '''
+    """
     # 检测插件是否注册
     group_id = event.group_id
     module_name = matcher.plugin_name
@@ -48,18 +49,18 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
 #   2层通用一个“打开|关闭 [name]”指令，所以要做2次判断，目前通过优先级来传递
 # -----------------------------------------------------------------------------
 regex = r"^(打开|关闭) [\u4e00-\u9fa5]+$"
-group_status = on_regex(pattern=regex,
-                        permission=SUPERUSER | GROUP_ADMIN,
-                        priority=2, block=False)  # 群设置
+group_status = on_regex(
+    pattern=regex, permission=SUPERUSER | GROUP_ADMIN, priority=2, block=False
+)  # 群设置
 
-plugin_status = on_regex(pattern=regex,
-                         permission=SUPERUSER | GROUP_ADMIN,
-                         priority=3, block=True)  # 插件设置
+plugin_status = on_regex(
+    pattern=regex, permission=SUPERUSER | GROUP_ADMIN, priority=3, block=True
+)  # 插件设置
 
 
 @group_status.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent):
-    '''群设置开关'''
+    """群设置开关"""
     get_msg = event.get_plaintext().split(" ")
     status = get_msg[0]
     config_type = get_msg[-1]
@@ -69,15 +70,13 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
     flag = await source.change_group_config(event.group_id, config_type, status)
     if flag:
         matcher.stop_propagation()
-        await group_status.finish(
-            f"设置成功！\n[{config_type}]当前已 {status}"
-        )
+        await group_status.finish(f"设置成功！\n[{config_type}]当前已 {status}")
     await group_status.finish()
 
 
 @plugin_status.handle()
 async def _(event: GroupMessageEvent):
-    '''设置插件开关'''
+    """设置插件开关"""
     get_msg = event.get_plaintext().split(" ")
     status = get_msg[0]
     plugin_name = get_msg[-1]

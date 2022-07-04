@@ -1,60 +1,150 @@
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Literal, Optional
 
 from httpx import AsyncClient
+from pydantic import BaseModel
 
 from src.utils.config import weather_config
 from src.utils.log import logger
 
 
-class Weather(object):
+class Now(BaseModel):
+    """实时天气数据"""
+
+    obsTime: str
+    """数据观测时间"""
+    temp: str
+    """温度，默认单位：摄氏度"""
+    feelsLike: str
+    """体感温度，默认单位：摄氏度"""
+    icon: str
+    """天气状况和图标的代码"""
+    text: str
+    """天气状况的文字描述"""
+    wind360: str
+    """风向360角度"""
+    windDir: str
+    """风向"""
+    windScale: str
+    """风力等级"""
+    windSpeed: str
+    """风速，公里/小时"""
+    humidity: str
+    """相对湿度，百分比数值"""
+    precip: str
+    """当前小时累计降水量，默认单位：毫米"""
+    pressure: str
+    """大气压强，默认单位：百帕"""
+    vis: str
+    """能见度，默认单位：公里"""
+    cloud: Optional[str]
+    """云量，百分比数值。可能为空"""
+    dew: Optional[str]
+    """露点温度。可能为空"""
+
+
+class NowApiResponse(BaseModel):
+    """实时天气接口返回"""
+
+    code: str
+    """API状态码"""
+    updateTime: str
+    """当前API的最近更新时间"""
+    now: Now
+    """实时数据"""
+
+
+class Daily(BaseModel):
+    """逐天天气数据"""
+
+    fxDate: str
+    """预报日期"""
+    week: Optional[str]
+    date: Optional[str]
+    tempMax: str
+    tempMin: str
+    textDay: str
+    textNight: str
+    iconDay: str
+    iconNight: str
+
+
+class DailyApi(BaseModel):
+    code: str
+    daily: list[Daily]
+
+
+class Air(BaseModel):
+    category: str
+    aqi: str
+    pm2p5: str
+    pm10: str
+    o3: str
+    co: str
+    no2: str
+    so2: str
+    tag_color: Optional[str]
+
+
+class AirApi(BaseModel):
+    code: str
+    now: Optional[Air]
+
+
+class Warning(BaseModel):
+    title: str
+    type: str
+    pubTime: str
+    text: str
+
+
+class WarningApi(BaseModel):
+    code: str
+    warning: list[Warning]
+
+
+class Weather:
     """请求天气封装"""
 
-    _api_key: str
+    api_key: str
     """和风天气的apikey"""
-    _days_type: str
+    days_type: Literal["3d", "7d"]
     """最多请求天数，普通版只能3天"""
-    _weather_api: str
-    """api地址"""
-    _geoapi: str
+    weather_api_url: str
+    """请求天气api地址"""
+    geo_api_url: str
     """请求城市id地址"""
-    _weather_warning: str
+    weather_warning_url: str
     """天气灾害预警地址"""
-    _client: AsyncClient
+    client: AsyncClient
     """httpx异步客户端"""
 
-    def __new__(cls, *args, **kwargs):
-        """单例"""
-        if not hasattr(cls, "_instance"):
-            orig = super(Weather, cls)
-            cls._instance = orig.__new__(cls, *args, **kwargs)
-        return cls._instance
-
     def __init__(self):
-        self._api_key = weather_config.api_key
+        self.api_key = weather_config.api_key
         api_type = weather_config.api_type
-        if api_type == 0:
-            # 普通版apikey
-            self._weather_api = "https://devapi.qweather.com/v7/weather/"
-            self._geoapi = "https://geoapi.qweather.com/v2/city/"
-            self._weather_warning = "https://devapi.qweather.com/v7/warning/now"
-            self._days_type = "3d"
-        elif api_type == 1:
-            # 个人开发版apikey
-            self._weather_api = "https://devapi.qweather.com/v7/weather/"
-            self._geoapi = "https://geoapi.qweather.com/v2/city/"
-            self._weather_warning = "https://devapi.qweather.com/v7/warning/now"
-            self._days_type = "7d"
-        else:
-            # 商业版apikey
-            self._weather_api = "https://api.qweather.com/v7/weather/"
-            self._geoapi = "https://geoapi.qweather.com/v2/city/"
-            self._weather_warning = "https://api.qweather.com/v7/warning/now"
-            self._days_type = "7d"
-        self._client = AsyncClient()
+        match api_type:
+            case 0:
+                # 普通版apikey
+                self.weather_api_url = "https://devapi.qweather.com/v7/weather/"
+                self.geo_api_url = "https://geoapi.qweather.com/v2/city/"
+                self.weather_warning_url = "https://devapi.qweather.com/v7/warning/now"
+                self.days_type = "3d"
+            case 1:
+                # 个人开发版apikey
+                self.weather_api_url = "https://devapi.qweather.com/v7/weather/"
+                self.geo_api_url = "https://geoapi.qweather.com/v2/city/"
+                self.weather_warning_url = "https://devapi.qweather.com/v7/warning/now"
+                self.days_type = "7d"
+            case 2:
+                # 商业版apikey
+                self.weather_api_url = "https://api.qweather.com/v7/weather/"
+                self.geo_api_url = "https://geoapi.qweather.com/v2/city/"
+                self.weather_warning_url = "https://api.qweather.com/v7/warning/now"
+                self.days_type = "7d"
+        self.client = AsyncClient()
 
     @classmethod
-    def _handle_days(cls, days: List[Dict[str, str]]) -> dict:
+    def _handle_days(cls, days: list[dict[str, str]]) -> dict:
         """处理days数据，增加week，date字段"""
         week_map = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
         data = []
@@ -73,7 +163,7 @@ class Weather(object):
 
     async def _get_city_info(
         self, city_kw: str, api_type: str = "lookup"
-    ) -> Tuple[Optional[int], Optional[str]]:
+    ) -> tuple[Optional[int], Optional[str]]:
         """
         :说明
             获取城市信息
@@ -95,7 +185,7 @@ class Weather(object):
             city_id: int = int(req_json["location"][0]["id"])
             city_name: str = req_json["location"][0]["name"]
             if code != "200":
-                log = f"<r>获取城市id失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
+                log = f"<r>获取城市id失败，code：{code}</r>"
                 logger.error(log)
                 return None, None
             return city_id, city_name
@@ -124,7 +214,7 @@ class Weather(object):
             req_json: dict = req.json()
             code = req_json["code"]
             if code != "200":
-                log = f"<r>获取天气消息失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
+                log = f"<r>获取天气消息失败，code：{code}</r>"
                 logger.error(log)
                 return None
             return req_json
@@ -150,7 +240,7 @@ class Weather(object):
             req_json: dict = req.json()
             code = req_json["code"]
             if code != "200":
-                log = f"<r>获取天气预警失败，code：{code}，请参考 https://dev.qweather.com/docs/start/status-code/</r>"
+                log = f"<r>获取天气预警失败，code：{code}</r>"
                 logger.error(log)
                 return None
             return req_json

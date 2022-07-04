@@ -3,7 +3,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment
 from src.utils.browser import browser
 from src.utils.log import logger
 
-from ._weather import weather_client
+from .model import weather_client
 
 
 async def get_weather(city: str) -> MessageSegment:

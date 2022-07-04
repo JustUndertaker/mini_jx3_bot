@@ -1,7 +1,10 @@
 from nonebot import on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
+from nonebot.consts import REGEX_DICT
+from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
+from nonebot.typing import T_State
 
 from src.params import PluginConfig, cost_gold
 from src.utils.log import logger
@@ -16,19 +19,19 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-weather_regex = r"(^[\u4e00-\u9fa5]+天气$)|(^天气 [\u4e00-\u9fa5]+$)"
+def get_city(state: T_State):
+    """获取命令中城市名"""
+    regex_dict = state[REGEX_DICT]
+    return regex_dict["vlue1"] if regex_dict["value1"] else regex_dict["value2"]
+
+
+weather_regex = r"^(?P<value1>[\u4e00-\u9fa5]+)天气$|^天气 (?P<value2>[\u4e00-\u9fa5]+$)"
 weather = on_regex(pattern=weather_regex, permission=GROUP, priority=5, block=True)
 
 
 @weather.handle(parameterless=[cost_gold(gold=10)])
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent, city: str = Depends(get_city)):
     """查询天气"""
-    get_msg = event.get_plaintext()
-    msg_list = get_msg.split(" ")
-    if len(msg_list) > 1:
-        city = msg_list[-1]
-    else:
-        city = get_msg[:-2]
     logger.info(f"<y>群{event.group_id}</> | <g>{event.user_id}</g> | 天气查询 | 请求：{city}")
     msg = await get_weather(city)
     await weather.finish(msg)

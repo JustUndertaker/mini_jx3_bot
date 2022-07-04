@@ -1,12 +1,13 @@
+from datetime import datetime
+
 from nonebot import on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.plugin import PluginMetadata
 
+from src.jx3api import JX3API
 from src.params import PluginConfig, cost_gold
 from src.utils.log import logger
-
-from .data_source import get_tiangou
 
 __plugin_meta__ = PluginMetadata(
     name="舔狗日记",
@@ -14,6 +15,8 @@ __plugin_meta__ = PluginMetadata(
     usage="舔狗 | 日记 | 舔狗日记",
     config=PluginConfig(cost_gold=10),
 )
+
+api = JX3API()
 
 
 tiangou_regex = r"(^舔狗$)|(^日记$)|(^舔狗日记$)"
@@ -24,5 +27,11 @@ tiangou = on_regex(pattern=tiangou_regex, permission=GROUP, priority=5, block=Tr
 async def _(event: GroupMessageEvent):
     """舔狗日记"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 舔狗日记 | 请求日记")
-    msg = await get_tiangou()
+    response = await api.transmit_random()
+    msg = None
+    if response.code == 200:
+        text = response.data["text"]
+        date_now = datetime.now()
+        date_str = date_now.strftime("%Y年%m月%d日")
+        msg = date_str + "\n" + text
     await tiangou.finish(msg)

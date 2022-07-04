@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from typing_extensions import Protocol
 
 from src.utils.config import Jx3ApiConfig, jx3api_config
+from src.utils.log import logger
 
 
 class _ApiCall(Protocol):
@@ -61,9 +62,11 @@ class JX3API:
             res = await self.client.get(url=url, params=data)
             return Response.parse_obj(res.json())
         except Exception as e:
+            logger.error(f"<y>jx3api请求出错：</y> | {str(e)}")
             return Response(code=0, msg=f"{str(e)}", data={}, time=0)
 
     def __getattr__(self, name: str) -> _ApiCall:
         # 拼接url
+        logger.debug(f"<y>jx3api请求功能:</y> | {name}")
         url = self.config.api_url + name.replace("_", "/")
         return partial(self.call_api, url)

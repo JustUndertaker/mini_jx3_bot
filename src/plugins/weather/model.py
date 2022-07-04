@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import Literal, Optional
 
 from httpx import AsyncClient
@@ -8,6 +8,24 @@ from src.utils.config import weather_config
 from src.utils.log import logger
 
 
+class CityInfo(BaseModel):
+    """城市信息数据"""
+
+    name: str
+    """城市名"""
+    id: str
+    """城市id"""
+
+
+class CityApiResponse(BaseModel):
+    """城市信息返回"""
+
+    code: str
+    """返回码"""
+    location: Optional[list[CityInfo]]
+    """城市信息"""
+
+
 class Now(BaseModel):
     """实时天气数据"""
 
@@ -15,32 +33,20 @@ class Now(BaseModel):
     """数据观测时间"""
     temp: str
     """温度，默认单位：摄氏度"""
-    feelsLike: str
-    """体感温度，默认单位：摄氏度"""
     icon: str
     """天气状况和图标的代码"""
     text: str
     """天气状况的文字描述"""
-    wind360: str
-    """风向360角度"""
     windDir: str
     """风向"""
     windScale: str
     """风力等级"""
-    windSpeed: str
-    """风速，公里/小时"""
     humidity: str
     """相对湿度，百分比数值"""
     precip: str
     """当前小时累计降水量，默认单位：毫米"""
-    pressure: str
-    """大气压强，默认单位：百帕"""
     vis: str
     """能见度，默认单位：公里"""
-    cloud: Optional[str]
-    """云量，百分比数值。可能为空"""
-    dew: Optional[str]
-    """露点温度。可能为空"""
 
 
 class NowApiResponse(BaseModel):
@@ -48,9 +54,9 @@ class NowApiResponse(BaseModel):
 
     code: str
     """API状态码"""
-    updateTime: str
+    updateTime: Optional[str]
     """当前API的最近更新时间"""
-    now: Now
+    now: Optional[Now]
     """实时数据"""
 
 
@@ -60,47 +66,84 @@ class Daily(BaseModel):
     fxDate: str
     """预报日期"""
     week: Optional[str]
+    """星期"""
     date: Optional[str]
+    """日期"""
     tempMax: str
+    """预报当天最高温度"""
     tempMin: str
+    """预报当天最低温度"""
     textDay: str
+    """预报白天天气状况文字描述，包括阴晴雨雪等天气状态的描述"""
     textNight: str
+    """预报晚间天气状况文字描述，包括阴晴雨雪等天气状态的描述"""
     iconDay: str
+    """预报白天天气状况的图标代码"""
     iconNight: str
+    """预报夜间天气状况的图标代码"""
 
 
-class DailyApi(BaseModel):
+class DailyApiResponse(BaseModel):
+    """逐天天气接口返回"""
+
     code: str
-    daily: list[Daily]
+    """API状态码"""
+    daily: Optional[list[Daily]]
+    """逐天天气数据"""
 
 
 class Air(BaseModel):
+    """空气质量数据"""
+
     category: str
+    """空气质量指数级别"""
     aqi: str
+    """空气质量指数"""
     pm2p5: str
+    """PM2.5"""
     pm10: str
+    """	PM10"""
     o3: str
+    """臭氧"""
     co: str
+    """一氧化碳"""
     no2: str
+    """二氧化氮"""
     so2: str
+    """二氧化硫"""
     tag_color: Optional[str]
+    """tag颜色"""
 
 
-class AirApi(BaseModel):
+class AirApiResponse(BaseModel):
+    """空气质量接口返回"""
+
     code: str
+    """API状态码"""
     now: Optional[Air]
+    """当前空气质量数据"""
 
 
 class Warning(BaseModel):
+    """预警信息"""
+
     title: str
+    """预警信息标题"""
     type: str
+    """预警类型ID"""
     pubTime: str
+    """预警发布时间"""
     text: str
+    """预警详细文字描述"""
 
 
-class WarningApi(BaseModel):
+class WarningApiResponse(BaseModel):
+    """预警信息接口返回"""
+
     code: str
-    warning: list[Warning]
+    """API状态码"""
+    warning: Optional[list[Warning]]
+    """预警信息"""
 
 
 class Weather:
@@ -111,11 +154,13 @@ class Weather:
     days_type: Literal["3d", "7d"]
     """最多请求天数，普通版只能3天"""
     weather_api_url: str
-    """请求天气api地址"""
+    """天气查询url"""
     geo_api_url: str
-    """请求城市id地址"""
+    """城市信息查询url"""
     weather_warning_url: str
-    """天气灾害预警地址"""
+    """天气灾害预警url"""
+    air_url: str
+    """空气质量url"""
     client: AsyncClient
     """httpx异步客户端"""
 
@@ -126,156 +171,213 @@ class Weather:
             case 0:
                 # 普通版apikey
                 self.weather_api_url = "https://devapi.qweather.com/v7/weather/"
-                self.geo_api_url = "https://geoapi.qweather.com/v2/city/"
+                self.geo_api_url = "https://geoapi.qweather.com/v2/city/lookup"
                 self.weather_warning_url = "https://devapi.qweather.com/v7/warning/now"
+                self.air_url = "https://devapi.qweather.com/v7/air/now"
                 self.days_type = "3d"
             case 1:
                 # 个人开发版apikey
                 self.weather_api_url = "https://devapi.qweather.com/v7/weather/"
-                self.geo_api_url = "https://geoapi.qweather.com/v2/city/"
+                self.geo_api_url = "https://geoapi.qweather.com/v2/city/lookup"
                 self.weather_warning_url = "https://devapi.qweather.com/v7/warning/now"
                 self.days_type = "7d"
+                self.air_url = "https://devapi.qweather.com/v7/air/now"
             case 2:
                 # 商业版apikey
                 self.weather_api_url = "https://api.qweather.com/v7/weather/"
-                self.geo_api_url = "https://geoapi.qweather.com/v2/city/"
+                self.geo_api_url = "https://geoapi.qweather.com/v2/city/lookup"
                 self.weather_warning_url = "https://api.qweather.com/v7/warning/now"
+                self.air_url = "https://api.qweather.com/v7/air/now"
                 self.days_type = "7d"
         self.client = AsyncClient()
 
     @classmethod
-    def _handle_days(cls, days: list[dict[str, str]]) -> dict:
-        """处理days数据，增加week，date字段"""
-        week_map = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
-        data = []
-        today = True
-        for one_day in days:
-            _date = one_day["fxDate"].split("-")
-            _year = int(_date[0])
-            _month = int(_date[1])
-            _day = int(_date[2])
-            week = int(datetime(_year, _month, _day).strftime("%w"))
-            one_day["week"] = "今日" if today else week_map[week]
-            today = False
-            one_day["date"] = f"{_month}月{_day}日"
-            data.append(one_day)
-        return data
-
-    async def _get_city_info(
-        self, city_kw: str, api_type: str = "lookup"
-    ) -> tuple[Optional[int], Optional[str]]:
+    def handle_days(cls, daily: list[Daily]) -> list[Daily]:
         """
-        :说明
+        说明:
+            处理days数据，增加week，date字段
+
+        参数:
+            * `daily`：日常数据列表
+
+        返回:
+            * `list[Daily]`：处理后数据
+        """
+        week_map = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+        today = True
+        for one_day in daily:
+            _date = date.fromisoformat(one_day.fxDate)
+            one_day.week = "今日" if today else week_map[_date.weekday()]
+            today = False
+            one_day.date = f"{_date.month}月{_date.day}日"
+        return daily
+
+    async def _get_city(self, city: str) -> Optional[CityInfo]:
+        """
+        说明:
             获取城市信息
 
-        :参数
-            * city_kw：请求名称
-            * api_type：请求方法，默认为“lookup”
+        参数:
+            * `city`：请求城市名称
 
         :返回
-            * city_id：城市id
-            * city_name：城市名
+            * `CityInfo`：城市信息
         """
-        url = self._geoapi + api_type
-        params = {"location": city_kw, "key": self._api_key}
+        params = {"location": city, "key": self.api_key}
         try:
-            req = await self._client.get(url=url, params=params)
-            req_json: dict = req.json()
-            code = req_json["code"]
-            city_id: int = int(req_json["location"][0]["id"])
-            city_name: str = req_json["location"][0]["name"]
-            if code != "200":
-                log = f"<r>获取城市id失败，code：{code}</r>"
-                logger.error(log)
-                return None, None
-            return city_id, city_name
+            req = await self.client.get(url=self.geo_api_url, params=params)
+            response = CityApiResponse.parse_obj(req.json())
+            if response.code != "200":
+                logger.error(f"<r>获取城市id失败，code：{response.code}</r>")
+                return None
+            return response.location[0]
 
         except Exception as e:
             log = f"<r>获取城市id接口失败：{str(e)}</r>"
             logger.error(log)
-            return None, None
+            return None
 
-    async def _get_weather_info(self, api_type: str, city_id: int) -> Optional[dict]:
+    async def _get_weather_now(self, city_id: str) -> Optional[Now]:
         """
-        :说明
-            获取城市天气信息
+        说明:
+            获取实时天气信息
 
-        :参数
-            * api_type：请求方式
-            * city_id：城市id
+        参数:
+            * `city_id`：城市id
 
-        :返回
-            * dict：返回数据
+        返回:
+            * `Now`：天气信息
         """
-        url = self._weather_api + api_type
-        params = {"location": city_id, "key": self._api_key}
+        url = self.weather_api_url + "now"
+        params = {"location": city_id, "key": self.api_key}
         try:
-            req = await self._client.get(url=url, params=params)
-            req_json: dict = req.json()
-            code = req_json["code"]
-            if code != "200":
-                log = f"<r>获取天气消息失败，code：{code}</r>"
+            req = await self.client.get(url=url, params=params)
+            response = NowApiResponse.parse_obj(req.json())
+            if response.code != "200":
+                log = f"<r>获取实时天气失败，code：{response.code}</r>"
                 logger.error(log)
                 return None
-            return req_json
+            return response.now
         except Exception as e:
             log = f"<r>访问天气接口失败：{str(e)}</r>"
             logger.error(log)
             return None
 
-    async def _get_weather_warning(self, city_id: str) -> Optional[dict]:
+    async def _get_weather_daily(self, city_id: str) -> Optional[list[Daily]]:
         """
-        :说明
-            获取城市天气预警信息
+        说明:
+            获取逐天天气信息
 
-        :参数
-            * city_id：城市id
+        参数:
+            * `city_id`：城市id
 
-        :返回
-            * dict：返回数据
+        返回:
+            * `list[Daily]`：逐天天气信息
         """
-        params = {"location": city_id, "key": self._api_key}
+        url = self.weather_api_url + self.days_type
+        params = {"location": city_id, "key": self.api_key}
         try:
-            req = await self._client.get(url=self._weather_warning, params=params)
-            req_json: dict = req.json()
-            code = req_json["code"]
-            if code != "200":
-                log = f"<r>获取天气预警失败，code：{code}</r>"
+            req = await self.client.get(url=url, params=params)
+            response = DailyApiResponse.parse_obj(req.json())
+            if response.code != "200":
+                log = f"<r>获取逐天天气失败，code：{response.code}</r>"
                 logger.error(log)
                 return None
-            return req_json
+            return self.handle_days(response.daily)
+        except Exception as e:
+            log = f"<r>访问天气接口失败：{str(e)}</r>"
+            logger.error(log)
+            return None
+
+    async def _get_weather_warning(self, city_id: str) -> Optional[list[Warning]]:
+        """
+        说明:
+            获取天气预警信息
+
+        参数:
+            * `city_id`：城市id
+
+        返回:
+            * `list[Warning]`：返回数据
+        """
+        params = {"location": city_id, "key": self.api_key}
+        try:
+            req = await self.client.get(url=self.weather_warning_url, params=params)
+            response = WarningApiResponse.parse_obj(req.json())
+            if response.code != "200":
+                log = f"<r>获取天气预警失败，code：{response.code}</r>"
+                logger.error(log)
+                return None
+            return response.warning
 
         except Exception as e:
             log = f"<r>访问天气预警接口失败：{str(e)}</r>"
             logger.error(log)
             return None
 
+    async def _get_air_info(self, city_id: str) -> Optional[Air]:
+        """
+        说明:
+            获取空气质量信息
+
+        参数:
+            * `city_id`：城市id
+
+        返回:
+            * `Air`：空气质量信息
+        """
+        params = {"location": city_id, "key": self.api_key}
+        try:
+            req = await self.client.get(url=self.air_url, params=params)
+            response = AirApiResponse.parse_obj(req.json())
+            if response.code != "200":
+                log = f"<r>获取空气质量失败，code：{response.code}</r>"
+                logger.error(log)
+                return None
+            return response.now
+        except Exception as e:
+            log = f"<r>访问空气质量接口失败：{str(e)}</r>"
+            logger.error(log)
+            return None
+
     async def get_weather(self, city: str) -> Optional[dict]:
         """
-        :说明
-            获取城市天气
+        说明:
+            获取城市天气信息
 
-        :参数
-            * city：城市名
+        参数:
+            * `city`：城市名
 
-        :返回
-            * dict：天气数据字典
+        返回:
+            * `dict`：天气数据字典
+                * `city`：城市名
+                * `now`：实时天气信息
+                * `daily`：逐天天气信息
+                * `warning`：天气预警信息
+                * `air`：空气质量信息
         """
-        city_id, city_name = await self._get_city_info(city)
-        if not city_id:
+        res_city = await self._get_city(city)
+        if not res_city:
             return None
-        daily_info = await self._get_weather_info(self._days_type, city_id)
-        now_info = await self._get_weather_info("now", city_id)
-        if not daily_info or not now_info:
+        res_now = await self._get_weather_now(res_city.id)
+        if not res_now:
             return None
-        warning = await self._get_weather_warning(city_id)
-        if not warning:
+        res_daily = await self._get_weather_daily(res_city.id)
+        if not res_daily:
             return None
-        days: list = daily_info["daily"]
-        days = self._handle_days(days)
-        now = now_info["now"]
-        data = {"city": city_name, "now": now, "days": days, "warning": warning}
-        return data
+        res_warning = await self._get_weather_warning(res_city.id)
+        if not res_warning:
+            return None
+        res_air = await self._get_air_info(res_city.id)
+        if not res_air:
+            return None
+        return {
+            "city": res_city.name,
+            "now": res_now,
+            "daily": res_daily,
+            "warning": res_warning,
+            "air": res_air,
+        }
 
 
 weather_client = Weather()

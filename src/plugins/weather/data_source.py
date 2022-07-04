@@ -23,11 +23,5 @@ async def get_weather(city: str) -> MessageSegment:
         return MessageSegment.text("天气数据请求失败了！")
     logger.debug(f"<y>天气查询</y> | 返回：{data}")
     pagename = "weather.html"
-    image = await browser.template_to_image(
-        pagename=pagename,
-        now=data["now"],
-        days=data["days"],
-        city=data["city"],
-        warning=data["warning"],
-    )
+    image = await browser.template_to_image(pagename=pagename, **data)
     return MessageSegment.image(image)

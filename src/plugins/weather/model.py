@@ -1,3 +1,4 @@
+import asyncio
 from datetime import date
 from typing import Literal, Optional
 
@@ -359,18 +360,12 @@ class Weather:
         res_city = await self._get_city(city)
         if not res_city:
             return None
-        res_now = await self._get_weather_now(res_city.id)
-        if not res_now:
-            return None
-        res_daily = await self._get_weather_daily(res_city.id)
-        if not res_daily:
-            return None
-        res_warning = await self._get_weather_warning(res_city.id)
-        if not res_warning:
-            return None
-        res_air = await self._get_air_info(res_city.id)
-        if not res_air:
-            return None
+        res_now, res_daily, res_warning, res_air = await asyncio.gather(
+            self._get_weather_now(res_city.id),
+            self._get_weather_daily(res_city.id),
+            self._get_weather_warning(res_city.id),
+            self._get_air_info(res_city.id),
+        )
         return {
             "city": res_city.name,
             "now": res_now,

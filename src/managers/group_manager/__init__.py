@@ -11,11 +11,9 @@ from nonebot.adapters.onebot.v11.event import (
     GroupMessageEvent,
 )
 from nonebot.adapters.onebot.v11.permission import GROUP, GROUP_ADMIN, GROUP_OWNER
-from nonebot.consts import REGEX_DICT
-from nonebot.params import Depends
+from nonebot.params import Depends, RegexDict
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
-from nonebot.typing import T_State
 
 from src.params import NoticeType, PluginConfig
 from src.utils.browser import browser
@@ -93,7 +91,7 @@ get_notice = on_notice(priority=3, block=True)
 # -------------------------------------------------------------
 
 
-def get_value(state: T_State) -> str:
+def get_value(regex_dict: dict = RegexDict()) -> str:
     """
     说明:
         Dependcey，获取value值
@@ -101,11 +99,10 @@ def get_value(state: T_State) -> str:
     返回:
         * `value`：value值
     """
-    regex_dict: dict = state[REGEX_DICT]
     return regex_dict["value"]
 
 
-def get_status(state: T_State) -> bool:
+def get_status(regex_dict: dict = RegexDict()) -> bool:
     """
     说明:
         Dependcey，获取命令中的开关
@@ -113,7 +110,6 @@ def get_status(state: T_State) -> bool:
     返回:
         * `bool`：命令开关
     """
-    regex_dict: dict = state[REGEX_DICT]
     return regex_dict["command"] == "开"
 
 

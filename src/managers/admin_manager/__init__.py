@@ -10,12 +10,10 @@ from nonebot.adapters.onebot.v11.event import (
     GroupRequestEvent,
     PrivateMessageEvent,
 )
-from nonebot.consts import REGEX_DICT
-from nonebot.params import Depends
+from nonebot.params import Depends, RegexDict
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
-from nonebot.typing import T_State
 
 from src.jx3api import JX3API
 from src.modules.group_info import GroupInfo
@@ -143,7 +141,7 @@ ticket_clean = on_regex(
 # ----------------------------------------------------------------------------
 
 
-def get_value(state: T_State) -> str:
+def get_value(regex_dict: dict = RegexDict()) -> str:
     """
     说明:
         Dependcey，获取命令中的value值
@@ -151,11 +149,10 @@ def get_value(state: T_State) -> str:
     返回:
         * `value` ：value值
     """
-    regex_dict: dict = state[REGEX_DICT]
     return regex_dict["value"]
 
 
-def get_status(state: T_State) -> bool:
+def get_status(regex_dict: dict = RegexDict()) -> bool:
     """
     说明:
         Dependcey，获取命令中的开关状态
@@ -163,7 +160,6 @@ def get_status(state: T_State) -> bool:
     返回:
         * `bool`：开关状态
     """
-    regex_dict: dict = state[REGEX_DICT]
     return regex_dict["command"] == "打开"
 
 

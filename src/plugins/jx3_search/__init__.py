@@ -6,11 +6,9 @@ from nonebot import on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from nonebot.adapters.onebot.v11.permission import GROUP
-from nonebot.consts import REGEX_DICT
 from nonebot.matcher import Matcher
-from nonebot.params import Depends
+from nonebot.params import Depends, RegexDict
 from nonebot.plugin import PluginMetadata
-from nonebot.typing import T_State
 
 from src.jx3api import JX3API
 from src.modules.group_info import GroupInfo
@@ -123,12 +121,13 @@ help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 # ----------------------------------------------------------------
 
 
-async def get_server(matcher: Matcher, event: GroupMessageEvent, state: T_State) -> str:
+async def get_server(
+    matcher: Matcher, event: GroupMessageEvent, regex_dict: dict = RegexDict()
+) -> str:
     """
     说明:
         Dependency，获取匹配字符串中的server，如果没有则获取群绑定的默认server
     """
-    regex_dict: dict = state[REGEX_DICT]
     _server = regex_dict.get("server")
     if _server:
         response = await api.app_server(name=_server)
@@ -141,12 +140,11 @@ async def get_server(matcher: Matcher, event: GroupMessageEvent, state: T_State)
     return server
 
 
-async def get_value(state: T_State) -> str:
+async def get_value(regex_dict: dict = RegexDict()) -> str:
     """
     说明:
         Dependency，获取匹配字符串中的value字段
     """
-    regex_dict: dict = state[REGEX_DICT]
     value = regex_dict.get("value1")
     return value if value else regex_dict.get("value2")
 

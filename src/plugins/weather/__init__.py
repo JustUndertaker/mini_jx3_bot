@@ -1,10 +1,8 @@
 from nonebot import on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
-from nonebot.consts import REGEX_DICT
-from nonebot.params import Depends
+from nonebot.params import Depends, RegexDict
 from nonebot.plugin import PluginMetadata
-from nonebot.typing import T_State
 
 from src.params import PluginConfig, cost_gold
 from src.utils.log import logger
@@ -19,9 +17,8 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-def get_city(state: T_State):
+def get_city(regex_dict: dict = RegexDict()):
     """获取命令中城市名"""
-    regex_dict = state[REGEX_DICT]
     return regex_dict["vlue1"] if regex_dict["value1"] else regex_dict["value2"]
 
 

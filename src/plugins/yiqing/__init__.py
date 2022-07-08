@@ -1,7 +1,7 @@
 from nonebot import on_regex
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
-from nonebot.params import Depends
+from nonebot.params import Depends, RegexDict
 from nonebot.plugin import PluginMetadata
 
 from src.params import PluginConfig, cost_gold
@@ -17,21 +17,20 @@ __plugin_meta__ = PluginMetadata(
 )
 
 yiqing = on_regex(
-    r"([\u4e00-\u9fa5]+疫情$)|(^疫情 [\u4e00-\u9fa5]+$)",
+    r"(?P<value1>[\u4e00-\u9fa5]+)疫情$|^疫情 (?P<value2>[\u4e00-\u9fa5]+)$",
     permission=GROUP,
     priority=5,
     block=True,
 )
 
 
-def get_name(event: GroupMessageEvent) -> str:
-    """获取name"""
-    text = event.get_plaintext()
-    text_list = text.split(" ")
-    if len(text_list) == 1:
-        return text[:-2]
-    else:
-        return text_list[-1]
+def get_name(regex_dict: dict = RegexDict()) -> str:
+    """
+    说明:
+        Dependency，获取匹配字符串中的value字段
+    """
+    value = regex_dict.get("value1")
+    return value if value else regex_dict.get("value2")
 
 
 @yiqing.handle(parameterless=[cost_gold(gold=10)])

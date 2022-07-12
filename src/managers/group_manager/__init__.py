@@ -10,12 +10,14 @@ from nonebot.adapters.onebot.v11.event import (
     GroupIncreaseNoticeEvent,
     GroupMessageEvent,
 )
-from nonebot.adapters.onebot.v11.permission import GROUP, GROUP_ADMIN, GROUP_OWNER
+from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.params import Depends, RegexDict
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 
-from src.params import NoticeType, PluginConfig
+from src.jx3api import JX3API
+from src.modules.group_info import GroupInfo
+from src.params import GROUP_ADMIN, NoticeType, PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
@@ -40,10 +42,12 @@ __plugin_meta__ = PluginMetadata(
     config=PluginConfig(enable_managed=False),
 )
 
+api = JX3API()
+
 # 绑定服务器
 bind_server = on_regex(
     pattern=r"^绑定 (?p<value>[\u4e00-\u9fa5]+)$",
-    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    permission=SUPERUSER | GROUP_ADMIN,
     priority=2,
     block=True,
 )
@@ -51,7 +55,7 @@ bind_server = on_regex(
 # 设置活跃值[0-99]
 set_activity = on_regex(
     pattern=r"^活跃值 (?p<value>(\d){1,2})$",
-    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    permission=SUPERUSER | GROUP_ADMIN,
     priority=2,
     block=True,
 )
@@ -59,7 +63,7 @@ set_activity = on_regex(
 # 设置机器人开关
 robot_status = on_regex(
     pattern=r"^机器人 (?<command>[开关])$",
-    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    permission=SUPERUSER | GROUP_ADMIN,
     priority=2,
     block=True,
 )
@@ -67,7 +71,7 @@ robot_status = on_regex(
 # 晚安通知，离群通知，进群通知
 notice = on_regex(
     pattern=r"^((晚安)|(离群)|(进群))通知 ",
-    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    permission=SUPERUSER | GROUP_ADMIN,
     priority=2,
     block=True,
 )
@@ -79,9 +83,7 @@ meau = on_regex(pattern=r"^((菜单)|(状态))$", permission=GROUP, priority=3, 
 admin_help = on_regex(pattern=r"^管理员帮助$", permission=GROUP, priority=3, block=True)
 
 # 滴滴
-didi = on_regex(
-    pattern=r"^滴滴 ", permission=GROUP_ADMIN | GROUP_OWNER, priority=3, block=True
-)
+didi = on_regex(pattern=r"^滴滴 ", permission=GROUP_ADMIN, priority=3, block=True)
 
 # 通知事件
 get_notice = on_notice(priority=3, block=True)
@@ -151,11 +153,11 @@ async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     """绑定服务器"""
     logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 请求绑定服务器 | {name}")
-    server = await source.get_main_server(name)
-    if server is None:
+    response = await api.app_server(name=name)
+    if response.code != 200:
         await bind_server.finish(f"绑定失败，未找到服务器：{name}")
-
-    await source.bind_server(event.group_id, server)
+    server = response.data["server"]
+    await GroupInfo.bind_server(group_id=event.group_id, server=server)
     await bind_server.finish(f"绑定服务器【{server}】成功！")
 
 
@@ -164,7 +166,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     """设置活跃值"""
     logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置活跃值 | {name}")
     activity = int(name)
-    await source.set_activity(event.group_id, activity)
+    await GroupInfo.set_activity(group_id=event.group_id, activity=activity)
     await set_activity.finish(f"机器人当前活跃值为：{name}")
 
 
@@ -172,7 +174,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
 async def _(event: GroupMessageEvent, status: bool = Depends(get_status)):
     """设置机器人开关"""
     logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置机器人开关 | {status}")
-    await source.set_status(event.group_id, status)
+    await GroupInfo.set_status(group_id=event.group_id, status=status)
     name = "开启" if status else "关闭"
     await robot_status.finish(f"设置成功，机器人当前状态为：{name}")
 
@@ -261,18 +263,18 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
 
         # 发送欢迎语
         msg = None
-        robot_status = await source.get_robot_status(group_id)
+        robot_status = await GroupInfo.get_bot_status(group_id=group_id)
         if robot_status:
             nickname = list(bot.config.nickname)[0]
             msg = f"{nickname}驾到，有什么问题来问我吧！"
         await get_notice.finish(msg)
 
     # 有人进群，发送欢迎语
-    flag = await source.get_notice_status(group_id, "welcome_status")
-    robot_status = await source.get_robot_status(group_id)
+    flag = await GroupInfo.get_config_status(group_id, NoticeType.进群通知)
+    robot_status = await GroupInfo.get_bot_status(group_id=group_id)
     msg = None
     if flag and robot_status:
-        msg = await source.message_decoder(group_id, "进群通知")
+        msg = await source.message_decoder(group_id, NoticeType.进群通知)
     await get_notice.finish(msg)
 
 
@@ -301,11 +303,11 @@ async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
         await get_notice.finish()
 
     # 有人退群，发送退群消息
-    flag = await source.get_notice_status(group_id, "someoneleft_status")
-    robot_status = await source.get_robot_status(group_id)
+    flag = await GroupInfo.get_config_status(group_id, NoticeType.离群通知)
+    robot_status = await GroupInfo.get_bot_status(group_id=group_id)
     msg = None
     if flag and robot_status:
-        msg = await source.message_decoder(group_id, "离群通知")
+        msg = await source.message_decoder(group_id, NoticeType.离群通知)
     await get_notice.finish(msg)
 
 
@@ -340,13 +342,13 @@ async def _():
         count_closed = 0
         time_start = time.time()
         async for group_id in GroupList_Async(group_list):
-            goodnight_status = await source.get_notice_status(
-                group_id, "goodnight_status"
+            goodnight_status = await GroupInfo.get_config_status(
+                group_id, NoticeType.晚安通知
             )
-            robot_status = await source.get_robot_status(group_id)
+            robot_status = await GroupInfo.get_bot_status(group_id=group_id)
             if goodnight_status and robot_status:
                 try:
-                    msg = await source.message_decoder(group_id, "晚安通知")
+                    msg = await source.message_decoder(group_id, NoticeType.晚安通知)
                     await bot.send_group_msg(group_id=group_id, message=msg)
                     await asyncio.sleep(random.uniform(0.3, 0.5))
                     count_success += 1

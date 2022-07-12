@@ -4,9 +4,8 @@ from typing import Optional
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
 from src.modules.group_info import GroupInfo
+from src.nlp import chat
 from src.utils.log import logger
-
-from .model import chat
 
 
 async def get_active(group_id: int) -> int:

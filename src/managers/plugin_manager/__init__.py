@@ -5,7 +5,7 @@ from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
 from nonebot.params import Depends, RegexDict
 from nonebot.permission import SUPERUSER
-from nonebot.plugin import PluginMetadata
+from nonebot.plugin import PluginMetadata, get_loaded_plugins
 
 from src.modules.group_info import GroupInfo
 from src.modules.plugin_info import PluginInfo
@@ -73,11 +73,15 @@ async def get_group_setting(
             await matcher.finish()
 
 
-def get_plugin_name(regex_dict: dict = RegexDict()) -> str:
+async def get_plugin_name(matcher: Matcher, regex_dict: dict = RegexDict()) -> str:
     """
-    获取插件名称
+    获取插件模块名称
     """
-    return regex_dict["value"]
+    plugin_name = regex_dict["value"]
+    for plugin in get_loaded_plugins():
+        if plugin_name == plugin.metadata.name:
+            return plugin.name
+    await matcher.finish(f"未找到插件[{plugin_name}]。")
 
 
 def get_status(regex_dict: dict = RegexDict()) -> bool:

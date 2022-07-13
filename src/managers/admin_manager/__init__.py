@@ -39,21 +39,13 @@ api = JX3API()
 # ----------------------------------------------------------------------------
 
 
-async def _event_check(event: Event) -> bool:
-    return isinstance(event, PrivateMessageEvent)
-
-
-def CheckEvent() -> bool:
-    return Depends(_event_check)
-
-
-class EventRule:
-    async def __call__(self, check: bool = CheckEvent()) -> bool:
-        return check
-
-
 def check_event() -> Rule:
-    return Rule(EventRule())
+    """匹配私聊消息"""
+
+    def check(event: Event) -> bool:
+        return isinstance(event, PrivateMessageEvent)
+
+    return Rule(check)
 
 
 # ----------------------------------------------------------------------------

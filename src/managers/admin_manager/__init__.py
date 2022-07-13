@@ -74,7 +74,7 @@ friend_list = on_regex(
 )
 # 删除好友
 friend_delete = on_regex(
-    pattern=r"^删除好友 (?p<value>[\d]+)$",
+    pattern=r"^删除好友 (?P<value>[\d]+)$",
     rule=check_event(),
     permission=SUPERUSER,
     priority=3,
@@ -86,7 +86,7 @@ group_list = on_regex(
 )
 # 退群
 group_delete = on_regex(
-    pattern=r"^退群 (?p<value>[\d]+)$",
+    pattern=r"^退群 (?P<value>[\d]+)$",
     rule=check_event(),
     permission=SUPERUSER,
     priority=3,
@@ -94,7 +94,7 @@ group_delete = on_regex(
 )
 # 广播
 borodcast = on_regex(
-    pattern=r"^广播 (?p<value>[\d]+) ",
+    pattern=r"^广播 (?P<value>[\d]+) ",
     rule=check_event(),
     permission=SUPERUSER,
     priority=3,
@@ -106,7 +106,7 @@ borodcast_all = on_regex(
 )
 # 打开关闭机器人
 handle_robot = on_regex(
-    pattern=r"^(?p<command>打开|关闭) (?p<value>[0-9]+)$",
+    pattern=r"^(?P<command>打开|关闭) (?P<value>[0-9]+)$",
     rule=check_event(),
     permission=SUPERUSER,
     priority=3,
@@ -118,7 +118,7 @@ help = on_regex(
 )
 # 添加ticket
 ticket_add = on_regex(
-    pattern=r"^添加 (?p<value>[^\s]+)$",
+    pattern=r"^添加 (?P<value>[^\s]+)$",
     rule=check_event(),
     permission=SUPERUSER,
     priority=3,
@@ -126,7 +126,7 @@ ticket_add = on_regex(
 )
 # 删除ticket
 ticket_del = on_regex(
-    pattern=r"^删除 (?p<value>[\d]+)$",
+    pattern=r"^删除 (?P<value>[\d]+)$",
     rule=check_event(),
     permission=SUPERUSER,
     priority=3,

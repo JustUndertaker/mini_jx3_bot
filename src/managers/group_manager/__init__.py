@@ -46,7 +46,7 @@ api = JX3API()
 
 # 绑定服务器
 bind_server = on_regex(
-    pattern=r"^绑定 (?p<value>[\u4e00-\u9fa5]+)$",
+    pattern=r"^绑定 (?P<value>[\u4e00-\u9fa5]+)$",
     permission=SUPERUSER | GROUP_ADMIN,
     priority=2,
     block=True,
@@ -54,7 +54,7 @@ bind_server = on_regex(
 
 # 设置活跃值[0-99]
 set_activity = on_regex(
-    pattern=r"^活跃值 (?p<value>(\d){1,2})$",
+    pattern=r"^活跃值 (?P<value>(\d){1,2})$",
     permission=SUPERUSER | GROUP_ADMIN,
     priority=2,
     block=True,
@@ -62,7 +62,7 @@ set_activity = on_regex(
 
 # 设置机器人开关
 robot_status = on_regex(
-    pattern=r"^机器人 (?<command>[开关])$",
+    pattern=r"^机器人 (?P<command>[开关])$",
     permission=SUPERUSER | GROUP_ADMIN,
     priority=2,
     block=True,

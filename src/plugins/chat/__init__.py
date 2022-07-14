@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import to_me
 
-from src.nlp import chat
+from src.internal.nlp import chat
 from src.params import PluginConfig
 from src.utils.log import logger
 

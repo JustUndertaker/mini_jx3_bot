@@ -5,7 +5,7 @@ from typing import Literal, Optional
 from httpx import AsyncClient
 from pydantic import BaseModel
 
-from src.utils.config import weather_config
+from src.config import weather_config
 from src.utils.log import logger
 
 

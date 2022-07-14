@@ -3,8 +3,8 @@ from typing import Optional
 
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
+from src.internal.nlp import chat
 from src.modules.group_info import GroupInfo
-from src.nlp import chat
 from src.utils.log import logger
 
 

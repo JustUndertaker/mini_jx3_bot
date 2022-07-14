@@ -5,7 +5,7 @@ from typing import Optional
 
 from httpx import AsyncClient
 
-from src.utils.config import nlp_config, voice_config
+from src.config import nlp_config, voice_config
 from src.utils.log import logger
 
 from .jx3api import JX3API, Response

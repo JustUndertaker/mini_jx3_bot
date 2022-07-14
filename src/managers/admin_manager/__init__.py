@@ -15,12 +15,12 @@ from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
 
-from src.jx3api import JX3API
+from src.config import default_config
+from src.internal.jx3api import JX3API
 from src.modules.group_info import GroupInfo
 from src.modules.ticket_info import TicketInfo
 from src.params import PluginConfig
 from src.utils.browser import browser
-from src.utils.config import default_config
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
 

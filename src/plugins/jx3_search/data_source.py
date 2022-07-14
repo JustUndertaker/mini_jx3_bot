@@ -1,10 +1,6 @@
 import time
 from datetime import datetime
 
-from src.jx3api import JX3API
-
-api = JX3API()
-
 # -------------------------------------------------------------
 # 返回数据处理阶段，处理api返回data，方便模板使用
 # -------------------------------------------------------------

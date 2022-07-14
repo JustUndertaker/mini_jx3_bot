@@ -9,7 +9,7 @@ from httpx import AsyncClient
 from pydantic import BaseModel
 from typing_extensions import Protocol
 
-from src.utils.config import Jx3ApiConfig, jx3api_config
+from src.config import Jx3ApiConfig, jx3api_config
 from src.utils.log import logger
 
 

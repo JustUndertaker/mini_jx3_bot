@@ -4,7 +4,7 @@
 import nonebot
 from nonebot.adapters.onebot.v11 import Adapter
 
-from src.utils.database import database_init
+from src.internal.database import database_init
 from src.utils.scheduler import start_scheduler
 
 nonebot.init()

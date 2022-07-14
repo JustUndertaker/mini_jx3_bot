@@ -2,12 +2,12 @@ from pathlib import Path
 
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
+from src.config import path_config
 from src.modules.group_info import GroupInfo
 from src.modules.plugin_info import PluginInfo
 from src.modules.search_record import SearchRecord
 from src.modules.user_info import UserInfo
 from src.params import NoticeType
-from src.utils.config import path_config
 
 from .model import ImageHandler
 

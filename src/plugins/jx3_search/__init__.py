@@ -10,7 +10,7 @@ from nonebot.matcher import Matcher
 from nonebot.params import Depends, RegexDict
 from nonebot.plugin import PluginMetadata
 
-from src.jx3api import JX3API
+from src.internal.jx3api import JX3API
 from src.modules.group_info import GroupInfo
 from src.modules.search_record import SearchRecord
 from src.modules.ticket_info import TicketInfo

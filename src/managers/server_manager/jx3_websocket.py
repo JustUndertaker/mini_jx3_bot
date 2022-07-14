@@ -8,7 +8,7 @@ from nonebot.message import handle_event
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 from websockets.legacy.client import WebSocketClientProtocol
 
-from src.utils.config import jx3api_config
+from src.config import jx3api_config
 from src.utils.log import logger
 
 from ._jx3_event import WsClosed, WsData, event_register

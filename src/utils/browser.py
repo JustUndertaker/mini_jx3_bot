@@ -5,7 +5,8 @@ from typing import AsyncIterator, Optional
 import jinja2
 from playwright.async_api import Browser, Error, Page, async_playwright
 
-from .config import path_config
+from src.config import path_config
+
 from .log import logger
 
 

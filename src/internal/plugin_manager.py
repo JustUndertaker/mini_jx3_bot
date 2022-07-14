@@ -1,3 +1,7 @@
+"""
+插件管理器模块，用来管理插件
+"""
+
 from nonebot.plugin import Plugin, get_loaded_plugins
 
 from src.modules.plugin_info import PluginInfo
@@ -63,3 +67,9 @@ class PluginManager:
                 description=metadata.description,
                 status=config.default_status,
             )
+
+
+plugin_manager = PluginManager()
+"""
+插件管理器实例
+"""

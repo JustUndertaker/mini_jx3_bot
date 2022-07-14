@@ -8,6 +8,7 @@ from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from tortoise import Tortoise
 
+from src.internal.plugin_manager import plugin_manager
 from src.modules.group_info import GroupInfo
 from src.modules.user_info import UserInfo
 from src.params import PluginConfig
@@ -16,7 +17,6 @@ from src.utils.log import logger
 from src.utils.utils import GroupList_Async
 
 from ._jx3_event import RecvEvent, WsClosed
-from ._plugin_manager import PluginManager
 from .data_source import get_ws_status
 from .jx3_websocket import ws_client
 
@@ -29,7 +29,6 @@ __plugin_meta__ = PluginMetadata(
 
 
 driver = get_driver()
-plugin_manager = PluginManager()
 
 # ----------------------------------------------------------------
 #   bot服务的各种hook

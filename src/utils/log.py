@@ -4,7 +4,7 @@ from typing import Union
 from loguru._logger import Core, Logger
 from nonebot.plugin import PluginMetadata
 
-from .config import logs_config, path_config
+from src.config import logs_config, path_config
 
 logger = Logger(
     core=Core(),

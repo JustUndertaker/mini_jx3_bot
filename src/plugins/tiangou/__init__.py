@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.plugin import PluginMetadata
 
-from src.jx3api import JX3API
+from src.internal.jx3api import JX3API
 from src.params import PluginConfig, cost_gold
 from src.utils.log import logger
 

@@ -15,7 +15,7 @@ from nonebot.params import Depends, RegexDict
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 
-from src.jx3api import JX3API
+from src.internal.jx3api import JX3API
 from src.modules.group_info import GroupInfo
 from src.params import GROUP_ADMIN, NoticeType, PluginConfig
 from src.utils.browser import browser

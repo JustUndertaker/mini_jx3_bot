@@ -4,8 +4,8 @@ from typing import Optional
 from tortoise import fields
 from tortoise.models import Model
 
+from src.config import default_config
 from src.params import GroupSetting, NoticeType
-from src.utils.config import default_config
 
 
 def encode_text(text: str):

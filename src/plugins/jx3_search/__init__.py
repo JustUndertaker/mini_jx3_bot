@@ -211,19 +211,20 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
         await daily_query.finish(msg)
 
     data = response.data
-    msg = f"日常[{server}]\n"
-    msg += f'当前时间：{data.get("date","未知")} 星期{data.get("week","未知")}\n'
-    msg += f'今日大战：{data.get("war","未知")}\n'
-    msg += f'今日战场：{data.get("battle","未知")}\n'
-    msg += f'公共任务：{data.get("relief","未知")}\n'
-    msg += f'阵营任务：{data.get("camp","未知")}\n'
-    msg += DAILIY_LIST.get(data.get("week", "未知"))
+    msg = (
+        f"日常[{server}]\n"
+        f'当前时间：{data.get("date","未知")} 星期{data.get("week","未知")}\n'
+        f'今日大战：{data.get("war","未知")}\n'
+        f'今日战场：{data.get("battle","未知")}\n'
+        f'公共任务：{data.get("relief","未知")}\n'
+        f'阵营任务：{data.get("camp","未知")}\n'
+        f'阵营任务：{data.get("camp","未知")}\n'
+        f'{DAILIY_LIST.get(data.get("week", "未知"))}'
+    )
     if data.get("draw"):
         msg += f'美人画像：{data.get("draw")}\n'
     team: list = data.get("team")
-    msg += f"\n武林通鉴·公共任务\n{team[0]}\n"
-    msg += f"武林通鉴·秘境任务\n{team[1]}\n"
-    msg += f"武林通鉴·团队秘境\n{team[2]}"
+    msg += f"\n武林通鉴·公共任务\n{team[0]}\n" f"武林通鉴·秘境任务\n{team[1]}\n" f"武林通鉴·团队秘境\n{team[2]}"
     await daily_query.finish(msg)
 
 
@@ -257,12 +258,14 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
 
     data: dict = response.data[0]
     date_now = datetime.now().strftime("%m-%d %H:%M")
-    msg = f"金价[{server}] {date_now}\n"
-    msg += f'官方平台：1元={data.get("wanbaolou")}金\n'
-    msg += f'百度贴吧：1元={data.get("tieba")}金\n'
-    msg += f'悠悠平台：1元={data.get("uu898")}金\n'
-    msg += f'嘟嘟平台：1元={data.get("dd373")}金\n'
-    msg += f'其他平台：1元={data.get("5173")}金'
+    msg = (
+        f"金价[{server}] {date_now}\n"
+        f'官方平台：1元={data.get("wanbaolou")}金\n'
+        f'百度贴吧：1元={data.get("tieba")}金\n'
+        f'悠悠平台：1元={data.get("uu898")}金\n'
+        f'嘟嘟平台：1元={data.get("dd373")}金\n'
+        f'其他平台：1元={data.get("5173")}金'
+    )
     await gold_query.finish(msg)
 
 
@@ -287,11 +290,13 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
 
     data = response.data
     name = data.get("name")
-    msg = f"[{name}]小药：\n"
-    msg += f'增强食品：{data.get("heighten_food")}\n'
-    msg += f'辅助食品：{data.get("auxiliary_food")}\n'
-    msg += f'增强药品：{data.get("heighten_drug")}\n'
-    msg += f'辅助药品：{data.get("auxiliary_drug")}'
+    msg = (
+        f"[{name}]小药：\n"
+        f'增强食品：{data.get("heighten_food")}\n'
+        f'辅助食品：{data.get("auxiliary_food")}\n'
+        f'增强药品：{data.get("heighten_drug")}\n'
+        f'辅助药品：{data.get("auxiliary_drug")}\n'
+    )
 
     await medicine_query.finish(msg)
 
@@ -325,9 +330,11 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
         await macro_query.finish(msg)
 
     data = response.data
-    msg = f'宏 {data.get("name")} 更新时间：{data.get("time")}\n'
-    msg += f'{data.get("macro")}\n'
-    msg += f'奇穴：{data.get("qixue")}'
+    msg = (
+        f'宏 {data.get("name")} 更新时间：{data.get("time")}\n'
+        f'{data.get("macro")}\n'
+        f'奇穴：{data.get("qixue")}'
+    )
 
     await macro_query.finish(msg)
 

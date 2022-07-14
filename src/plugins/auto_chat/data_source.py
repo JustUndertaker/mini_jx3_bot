@@ -4,13 +4,7 @@ from typing import Optional
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
 from src.internal.nlp import chat
-from src.modules.group_info import GroupInfo
 from src.utils.log import logger
-
-
-async def get_active(group_id: int) -> int:
-    """获取活跃值"""
-    return await GroupInfo.get_bot_active(group_id)
 
 
 async def get_random_msg(

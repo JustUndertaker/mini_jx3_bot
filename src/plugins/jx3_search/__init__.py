@@ -166,7 +166,7 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> st
 def cold_down(name: str, cd_time: int) -> None:
     """
     说明:
-        Dependency，增加命令冷却
+        Dependency，增加命令冷却，同时会在数据库中记录一次查询
 
     参数:
         * `name`：app名称，相同名称会使用同一组cd

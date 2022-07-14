@@ -10,6 +10,7 @@ from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
 
+from src.modules.group_info import GroupInfo
 from src.params import PluginConfig
 
 from . import data_source as source
@@ -26,24 +27,14 @@ __plugin_meta__ = PluginMetadata(
 # ----------------------------------------------------------------------------
 
 
-async def _random_check(event: GroupMessageEvent) -> bool:
-    group_id = event.group_id
-    active = await source.get_active(group_id)
-    random_num = random.uniform(0, 200)
-    return random_num < active
-
-
-def CheckRandom() -> bool:
-    return Depends(_random_check)
-
-
-class RandomRule:
-    async def __call__(self, check: bool = CheckRandom()) -> bool:
-        return check
-
-
 def check_random() -> Rule:
-    return Rule(RandomRule())
+    async def _random_check(event: GroupMessageEvent) -> bool:
+        group_id = event.group_id
+        active = await GroupInfo.get_bot_active(group_id)
+        random_num = random.uniform(0, 200)
+        return random_num < active
+
+    return Rule(_random_check)
 
 
 # ----------------------------------------------------------------------------

@@ -12,18 +12,12 @@ class PluginInfo(Model):
     """QQ群号"""
     module_name = fields.CharField(max_length=255)
     """模块名称"""
-    plugin_name = fields.CharField(max_length=255)
-    """插件名称"""
-    usage = fields.CharField(max_length=255)
-    """使用命令"""
-    description = fields.CharField(max_length=255)
-    """插件描述"""
     status = fields.BooleanField(default=False)
     """插件状态"""
 
     class Meta:
         table = "plugin_info"
-        table_description = "用来记录插件状态"
+        table_description = "用来记录插件开关"
 
     @classmethod
     async def check_inited(cls, group_id: int, module_name: str) -> bool:
@@ -46,9 +40,6 @@ class PluginInfo(Model):
         cls,
         group_id: int,
         module_name: str,
-        plugin_name: str,
-        description: str,
-        usage: str,
         status: bool,
     ):
         """
@@ -58,9 +49,6 @@ class PluginInfo(Model):
         await cls.create(
             group_id=group_id,
             module_name=module_name,
-            plugin_name=plugin_name,
-            description=description,
-            usage=usage,
             status=status,
         )
 
@@ -104,25 +92,23 @@ class PluginInfo(Model):
         return False
 
     @classmethod
-    async def get_meau_data(cls, group_id: int) -> list[dict]:
+    async def get_group_plugin_status(cls, group_id: int) -> list[dict]:
         """
         说明:
-            获取插件菜单数据
+            获取一个群的所有插件的开关状态
 
         参数:
             * `group_id`：群号
 
         返回:
-            * `list[dict]`：插件菜单数据，以plugin_name排序
-                * `plugin_name` `str`：插件名
-                * `description` `str`：插件描述
-                * `usage` `str`：插件用法
+            * `list[dict]`：群的所有插件的开关状态，以module_name排序
+                * `module_name` `str`：插件模块名
                 * `status` `bool`：插件开关
         """
         return (
             await cls.filter(group_id=group_id)
-            .order_by("plugin_name")
-            .values("plugin_name", "description", "usage", "status")
+            .order_by("module_name")
+            .values("module_name", "status")
         )
 
     @classmethod

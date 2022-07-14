@@ -5,8 +5,9 @@ from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
 from nonebot.params import Depends, RegexDict
 from nonebot.permission import SUPERUSER
-from nonebot.plugin import PluginMetadata, get_loaded_plugins
+from nonebot.plugin import PluginMetadata
 
+from src.internal.plugin_manager import plugin_manager
 from src.modules.group_info import GroupInfo
 from src.modules.plugin_info import PluginInfo
 from src.params import GROUP_ADMIN, GroupSetting, PluginConfig
@@ -78,10 +79,10 @@ async def get_plugin_name(matcher: Matcher, regex_dict: dict = RegexDict()) -> s
     获取插件模块名称
     """
     plugin_name = regex_dict["value"]
-    for plugin in get_loaded_plugins():
-        if plugin_name == plugin.metadata.name:
-            return plugin.name
-    await matcher.finish(f"未找到插件[{plugin_name}]。")
+    module_name = plugin_manager.get_module_name(plugin_name)
+    if not module_name:
+        await matcher.finish(f"未找到插件[{plugin_name}]。")
+    return module_name
 
 
 def get_status(regex_dict: dict = RegexDict()) -> bool:

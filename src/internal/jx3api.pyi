@@ -1,7 +1,7 @@
 from httpx import AsyncClient
 from pydantic import BaseModel
 
-from src.utils.config import Jx3ApiConfig
+from src.config import Jx3ApiConfig
 
 class Response(BaseModel):
     """返回数据模型"""

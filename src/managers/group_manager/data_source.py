@@ -3,6 +3,7 @@ from pathlib import Path
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 from src.config import path_config
+from src.internal.plugin_manager import plugin_manager
 from src.modules.group_info import GroupInfo
 from src.modules.plugin_info import PluginInfo
 from src.modules.search_record import SearchRecord
@@ -93,5 +94,5 @@ async def get_meau_data(group_id: int) -> dict:
     """获取菜单数据"""
     req_data = {}
     req_data["group"] = await GroupInfo.get_meau_data(group_id)
-    req_data["plugin"] = await PluginInfo.get_meau_data(group_id)
+    req_data["plugin"] = await plugin_manager.get_group_plugin_status(group_id)
     return req_data

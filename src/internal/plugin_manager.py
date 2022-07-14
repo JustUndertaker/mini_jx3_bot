@@ -2,6 +2,8 @@
 插件管理器模块，用来管理插件
 """
 
+from typing import Optional
+
 from nonebot.plugin import Plugin, get_loaded_plugins
 
 from src.modules.plugin_info import PluginInfo
@@ -67,6 +69,51 @@ class PluginManager:
                 description=metadata.description,
                 status=config.default_status,
             )
+
+    def get_module_name(self, plugin_name: str) -> Optional[str]:
+        """
+        说明:
+            获取插件名称对应的模块名称
+
+        参数:
+            * `plugin_name`: 插件名称
+
+        返回:
+            * `str`: 模块名称
+        """
+        self.init()
+        for module_name, plugin in self.plugins.items():
+            if plugin_name == plugin.metadata.name:
+                return module_name
+        return None
+
+    async def get_group_plugin_status(self, group_id: int) -> list[dict]:
+        """
+        说明:
+            获取某个群的插件状态
+
+        参数:
+            * `group_id`：群号
+
+        返回:
+            * `list[dict]`：插件相关内容
+        """
+
+        self.init()
+        plugin_data = await PluginInfo.get_group_plugin_status(group_id)
+        plugin_list = []
+        for one in plugin_data:
+            plugin = self.plugins[one["module_name"]]
+            config: PluginConfig = plugin.metadata.config
+            one_data = {
+                "plugin_name": plugin.metadata.name,
+                "usage": plugin.metadata.usage,
+                "description": plugin.metadata.description,
+                "cost_gold": config.cost_gold,
+                "status": one["status"],
+            }
+            plugin_list.append(one_data)
+        return plugin_list
 
 
 plugin_manager = PluginManager()

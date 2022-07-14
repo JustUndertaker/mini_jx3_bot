@@ -89,6 +89,8 @@ class MyBrowser:
             await page.goto(pagename)
             await page.set_content(html, wait_until="networkidle")
             await page.wait_for_timeout(wait)
+
+            # 选择标签main，这里是为了获得更好的图片，所以每个页面都需要有一个main标签
             element_handle = await page.query_selector("#main")
             img_raw = await element_handle.screenshot(type="jpeg", quality=100)
         return img_raw
@@ -158,7 +160,7 @@ class MyBrowser:
         html = await self._template_to_html(template_name=pagename, **kwargs)
         return await self._html_to_pic(pagename, html)
 
-    async def get_image_from_url(self, url: str, width: int) -> bytes:
+    async def get_image_from_url(self, url: str, width: int, height: int) -> bytes:
         """
         说明:
             从url获取截图，目前在截取更新公告时使用
@@ -166,13 +168,17 @@ class MyBrowser:
         参数:
             * `url`：url地址
             * `width`：网页宽度
+            * `height`：网页高度
+
+        返回:
+            * `bytes`：图片数据
         """
         async with self._get_new_page() as page:
-            viewport_size = {"width": width, "height": 480}
+            viewport_size = {"width": width, "height": height}
             await page.set_viewport_size(viewport_size)
             await page.goto(url)
             await page.wait_for_load_state("networkidle")
-            return await page.screenshot(type="jpeg", quality=100, full_page=True)
+        return await page.screenshot(type="jpeg", quality=100, full_page=True)
 
 
 browser = MyBrowser()

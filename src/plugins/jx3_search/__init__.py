@@ -387,7 +387,7 @@ async def _(event: GroupMessageEvent):
     """更新公告"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 更新公告查询")
     url = "https://jx3.xoyo.com/launcher/update/latest.html"
-    img = await browser.get_image_from_url(url=url, width=130)
+    img = await browser.get_image_from_url(url=url, width=130, height=480)
     msg = MessageSegment.image(img)
     log = f"群{event.group_id} | 查询更新公告"
     logger.info(log)

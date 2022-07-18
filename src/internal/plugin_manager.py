@@ -64,9 +64,6 @@ class PluginManager:
             await PluginInfo.init_plugin(
                 group_id=group_id,
                 module_name=module_name,
-                plugin_name=metadata.name,
-                usage=metadata.usage,
-                description=metadata.description,
                 status=config.default_status,
             )
 

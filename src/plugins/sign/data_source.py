@@ -80,8 +80,3 @@ async def _get_qq_img(user_id: int) -> bytes:
     params = {"b": "qq", "nk": user_id, "s": 100}
     resp = await client.get(url, params=params)
     return resp.content
-
-
-async def reset_sign_nums():
-    """重置签到人数"""
-    await GroupInfo.reset_sign_nums()

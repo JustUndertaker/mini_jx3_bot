@@ -3,11 +3,12 @@ from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.plugin import PluginMetadata
 
+from src.modules.group_info import GroupInfo
 from src.params import PluginConfig
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
 
-from . import data_source as source
+from .data_source import get_sign_in
 
 __plugin_meta__ = PluginMetadata(
     name="每日签到",
@@ -26,7 +27,7 @@ async def _(event: GroupMessageEvent):
     user_id = event.user_id
     group_id = event.group_id
     logger.info(f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到插件 | 请求签到")
-    msg = await source.get_sign_in(user_id, group_id)
+    msg = await get_sign_in(user_id, group_id)
     await sign.finish(msg)
 
 
@@ -34,5 +35,5 @@ async def _(event: GroupMessageEvent):
 async def _():
     """每天零点重置签到人数"""
     logger.info("正在重置签到人数")
-    await source.reset_sign_nums()
+    await GroupInfo.reset_sign_nums()
     logger.info("签到人数已重置")

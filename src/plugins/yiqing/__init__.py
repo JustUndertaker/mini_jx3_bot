@@ -7,7 +7,7 @@ from nonebot.plugin import PluginMetadata
 from src.params import PluginConfig, cost_gold
 from src.utils.log import logger
 
-from . import data_source as source
+from .data_source import get_data
 
 __plugin_meta__ = PluginMetadata(
     name="疫情查询",
@@ -37,5 +37,5 @@ def get_name(regex_dict: dict = RegexDict()) -> str:
 async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     """疫情查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 疫情查询 | 请求：{name}")
-    msg = await source.get_data(name)
+    msg = await get_data(name)
     await yiqing.finish(msg)

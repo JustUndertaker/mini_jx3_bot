@@ -1,6 +1,7 @@
 """
 nlp聊天实现，用于自动回复
 """
+
 from typing import Optional
 
 from httpx import AsyncClient

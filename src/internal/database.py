@@ -1,3 +1,7 @@
+"""
+数据库初始化需要的模块
+"""
+
 from nonebot.log import logger
 from tortoise import Tortoise
 

@@ -36,6 +36,6 @@ def get_name(regex_dict: dict = RegexDict()) -> str:
 @yiqing.handle(parameterless=[cost_gold(gold=10)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     """疫情查询"""
-    logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 疫情查询 | 请求：{name}")
+    logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 请求：{name}")
     msg = await get_data(name)
     await yiqing.finish(msg)

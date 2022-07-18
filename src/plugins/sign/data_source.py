@@ -32,7 +32,7 @@ async def get_sign_in(user_id: int, group_id: int) -> Message:
     # 判断是否已签到
     today = date.today()
     if today == last_sign:
-        logger.debug(f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到插件 | 签到失败")
+        logger.debug(f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到失败")
         msg += MessageSegment.text("\n你今天已经签到了，不要贪心噢。")
         return msg
 
@@ -60,7 +60,7 @@ async def get_sign_in(user_id: int, group_id: int) -> Message:
     msg_txt += f'当前好感度：{data.get("all_friendly")}\n'
     msg_txt += f'累计签到次数：{data.get("sign_times")}'
     msg += msg_head + MessageSegment.text(msg_txt)
-    logger.debug(f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到插件 | 签到成功")
+    logger.debug(f"<y>群{group_id}</y> | <g>{user_id}</g> | 签到成功")
     return msg
 
 

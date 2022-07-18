@@ -29,6 +29,6 @@ weather = on_regex(pattern=weather_regex, permission=GROUP, priority=5, block=Tr
 @weather.handle(parameterless=[cost_gold(gold=10)])
 async def _(event: GroupMessageEvent, city: str = Depends(get_city)):
     """查询天气"""
-    logger.info(f"<y>群{event.group_id}</> | <g>{event.user_id}</g> | 天气查询 | 请求：{city}")
+    logger.info(f"<y>群{event.group_id}</> | <g>{event.user_id}</g> | 请求：{city}")
     msg = await get_weather(city)
     await weather.finish(msg)

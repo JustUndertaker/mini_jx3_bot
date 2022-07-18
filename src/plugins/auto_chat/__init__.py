@@ -1,5 +1,4 @@
 import random
-from typing import Optional
 
 from nonebot import on_message
 from nonebot.adapters.onebot.v11 import Bot
@@ -45,7 +44,7 @@ def check_random() -> Rule:
 auto_chat = on_message(permission=GROUP, rule=check_random(), priority=99, block=True)
 
 
-async def check(matcher: Matcher, event: GroupMessageEvent) -> Optional[str]:
+async def check(matcher: Matcher, event: GroupMessageEvent) -> str:
     """检测文字"""
     text = event.get_plaintext()
     if text == "":

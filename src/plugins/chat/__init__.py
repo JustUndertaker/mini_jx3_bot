@@ -25,8 +25,6 @@ async def _(bot: Bot, event: GroupMessageEvent):
     """智能闲聊"""
     nickname = list(bot.config.nickname)[0]
     message = event.get_plaintext()
-    logger.info(
-        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 智能闲聊 | 请求：{message}"
-    )
+    logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 请求：{message}")
     msg = await chat.chat(nickname, message)
     await chat_query.finish(msg)

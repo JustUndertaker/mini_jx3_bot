@@ -1,5 +1,4 @@
 import sys as sys
-from typing import Union
 
 from loguru._logger import Core, Logger
 from nonebot.plugin import PluginMetadata
@@ -38,11 +37,11 @@ from src.utils.log import logger
 class Filter:
     """过滤器类"""
 
-    def __init__(self) -> None:
-        self.level: Union[int, str] = "DEBUG"
-
     def __call__(self, record):
         module_name: str = record["name"]
+        name_list = module_name.split(".")
+        if len(name_list) == 4:
+            module_name = ".".join(name_list[:3])
         module = sys.modules.get(module_name)
         if module:
             # 判断是否为插件模块
@@ -50,11 +49,8 @@ class Filter:
             if metadata:
                 record["name"] = metadata.name
             else:
-                # module_name = getattr(module, "__module_name__", module_name)
-                record["name"] = module_name.split(".")[-1]
-        levelno = (
-            logger.level(self.level).no if isinstance(self.level, str) else self.level
-        )
+                record["name"] = name_list[-1]
+        levelno = logger.level(logs_config.console_level).no
         return record["level"].no >= levelno
 
 

@@ -107,7 +107,7 @@ class Jx3WebSocket(object):
                 )
                 asyncio.create_task(self._task())
                 logger.debug("<g>ws_server</g> | ws连接成功！")
-                self._raise_notice("jx3api > ws已连接！")
+                await self._raise_notice("jx3api > ws已连接！")
                 break
             except Exception as e:
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")

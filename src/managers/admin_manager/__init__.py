@@ -155,15 +155,16 @@ def get_status(regex_dict: dict = RegexDict()) -> bool:
     return regex_dict["command"] == "打开"
 
 
-def get_borod_group(event: PrivateMessageEvent) -> int:
+def get_borod_group(regex_dict: dict = RegexDict()) -> int:
     """获取广播的群号"""
-    return int(event.get_plaintext().split(" ")[1])
+    return int(regex_dict["value"])
 
 
 def get_borod_msg(event: PrivateMessageEvent) -> Message:
     """获取广播消息"""
     msg = event.get_message()
-    msg0 = " ".join(str(msg[0]).split(" ")[2:])
+    msg_head = "来自管理员的广播消息：\n\n"
+    msg0 = msg_head + " ".join(str(msg[0]).split(" ")[2:])
     msg[0] = MessageSegment.text(msg0)
     return msg
 
@@ -171,7 +172,8 @@ def get_borod_msg(event: PrivateMessageEvent) -> Message:
 def get_borod_msg_all(event: PrivateMessageEvent) -> Message:
     """获取全体广播信息"""
     msg = event.get_message()
-    msg0 = " ".join(str(msg[0]).split(" ")[1:])
+    msg_head = "来自管理员的广播消息：\n\n"
+    msg0 = msg_head + " ".join(str(msg[0]).split(" ")[1:])
     msg[0] = MessageSegment.text(msg0)
     return msg
 
@@ -234,17 +236,17 @@ async def _(bot: Bot, user_id: int = Depends(get_value)):
         msg = f"成功，删除好友：{user_name}({user_id})。"
     else:
         msg = f"失败，未找到好友：{user_id}"
-    await friend_delete(msg)
+    await friend_delete.finish(msg)
 
 
 @group_list.handle()
 async def _(bot: Bot, event: PrivateMessageEvent):
     """群列表"""
     logger.info(f"<g>超级用户管理</g> | {event.user_id} | 请求群列表")
-    group_list = await GroupInfo.get_group_list()
+    get_group_list = await GroupInfo.get_group_list()
     pagename = "group_list.html"
     img = await browser.template_to_image(
-        pagename=pagename, num=len(group_list), group_list=group_list
+        pagename=pagename, num=len(get_group_list), group_list=get_group_list
     )
     await group_list.finish(MessageSegment.image(img))
 
@@ -273,6 +275,7 @@ async def _(
     msg = None
     try:
         await bot.send_group_msg(group_id=group_id, message=message)
+        msg = f"广播消息成功，群：{group_id}。"
     except Exception as e:
         msg = f"发送失败：{str(e)}"
     await borodcast.finish(msg)
@@ -295,7 +298,7 @@ async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
         await asyncio.sleep(random.uniform(0.3, 0.5))
     end = time.time()
     use = round(end - start, 2)
-    msg = f"广播发送完毕，共发送{len(group_list)}个群\n成功 {success}个\n失败 {success}个\n共用时 {use}秒。"
+    msg = f"广播发送完毕，共发送{len(group_list)}个群\n成功 {success}个\n失败 {failed}个\n共用时 {use}秒。"
     await borodcast_all.finish(msg)
 
 
@@ -309,7 +312,7 @@ async def _(group_id: int = Depends(get_value), status: bool = Depends(get_statu
         msg = "设置成功！"
     else:
         msg = f"设置失败，未找到群：{group_id}"
-    await handle_robot(msg)
+    await handle_robot.finish(msg)
 
 
 @help.handle()

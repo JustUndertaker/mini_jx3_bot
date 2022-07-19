@@ -16,7 +16,7 @@ from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
 
-from ._jx3_event import RecvEvent, WsClosed
+from ._jx3_event import RecvEvent, WsNotice
 from .data_source import get_ws_status
 from .jx3_websocket import ws_client
 
@@ -129,7 +129,7 @@ async def _(event: PrivateMessageEvent):
     """关闭连接"""
     if not ws_client.closed:
         await ws_client.close()
-    await close_ws.finish("ws连接已关闭！")
+    await close_ws.finish()
 
 
 # ----------------------------------------------------------------
@@ -137,7 +137,7 @@ async def _(event: PrivateMessageEvent):
 # ----------------------------------------------------------------
 
 ws_recev = on(type="WsRecv", priority=4, block=True)
-ws_closed = on(type="WsClosed", priority=4, block=True)
+ws_notice = on(type="WsNotice", priority=4, block=True)
 
 
 @ws_recev.handle()
@@ -162,11 +162,11 @@ async def _(bot: Bot, event: RecvEvent):
     await ws_recev.finish()
 
 
-@ws_closed.handle()
-async def _(bot: Bot, event: WsClosed):
-    """ws关闭事件"""
+@ws_notice.handle()
+async def _(bot: Bot, event: WsNotice):
+    """ws通知主人事件"""
     superusers = list(bot.config.superusers)
-    msg = event.reason
+    msg = event.message
     async for user_id in GroupList_Async(superusers):
         await bot.send_private_msg(user_id=user_id, message=msg)
-    await ws_closed.finish()
+    await ws_notice.finish()

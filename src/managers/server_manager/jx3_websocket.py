@@ -11,7 +11,7 @@ from websockets.legacy.client import WebSocketClientProtocol
 from src.config import jx3api_config
 from src.utils.log import logger
 
-from ._jx3_event import WsClosed, WsData, event_register
+from ._jx3_event import WsData, WsNotice, event_register
 
 
 class Jx3WebSocket(object):
@@ -41,7 +41,7 @@ class Jx3WebSocket(object):
 
         except ConnectionClosedOK:
             logger.debug("<g>jx3api > ws链接已主动关闭！</g>")
-            await self._raise_closed(" 正常关闭！")
+            await self._raise_notice("jx3api > ws已正常关闭！")
 
         except ConnectionClosedError as e:
             logger.error(f"<r>jx3api > ws链接异常关闭：{e.reason}</r>")
@@ -49,15 +49,15 @@ class Jx3WebSocket(object):
             self.connect = None
             await self.init()
 
-    async def _raise_closed(self, reason: str):
+    async def _raise_notice(self, message: str):
         """
         说明:
-            抛出ws关闭事件给机器人，并表明原因
+            抛出ws通知事件给机器人
 
         参数:
-            * `reason`：关闭原因
+            * `message`：通知内容
         """
-        event = WsClosed(reason=reason)
+        event = WsNotice(message=message)
         bots = get_bots()
         for _, one_bot in bots.items():
             await handle_event(one_bot, event)
@@ -107,6 +107,7 @@ class Jx3WebSocket(object):
                 )
                 asyncio.create_task(self._task())
                 logger.debug("<g>ws_server</g> | ws连接成功！")
+                self._raise_notice("jx3api > ws已连接！")
                 break
             except Exception as e:
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
@@ -114,7 +115,7 @@ class Jx3WebSocket(object):
 
         if not self.connect:
             # 未连接成功，发送消息给bot，如果有
-            await self._raise_closed("连接ws服务器失败，请查看日志或者重连。")
+            await self._raise_notice("jx3api > 连接ws服务器失败，请查看日志或者重连。")
 
     async def close(self):
         """关闭ws链接"""

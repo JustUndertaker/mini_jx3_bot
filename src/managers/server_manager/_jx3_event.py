@@ -69,17 +69,17 @@ ws_event注册器，方便获取实例
 """
 
 
-class WsClosed(BaseEvent):
-    """ws被关闭事件"""
+class WsNotice(BaseEvent):
+    """ws通知主人事件"""
 
-    __event__ = "WsClosed"
-    post_type: str = "WsClosed"
-    reason: str = ""
-    """关闭原因"""
+    __event__ = "WsNotice"
+    post_type: str = "WsNotice"
+    message: str = ""
+    """通知内容"""
 
-    def __init__(self, reason: str):
+    def __init__(self, message: str):
         super().__init__()
-        self.reason = reason
+        self.message = message
 
     @overrides(BaseEvent)
     def get_type(self) -> str:

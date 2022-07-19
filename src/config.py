@@ -101,12 +101,6 @@ class PathConfig(BaseModel, extra=Extra.ignore):
     """日志文件"""
     templates: str = Field("", alias="path_templates")
     """html模板文件"""
-    welcome: str = Field("", alias="path_welcome")
-    """欢迎消息图片"""
-    someoneleft: str = Field("", alias="path_someoneleft")
-    """离群消息图片"""
-    goodnight: str = Field("", alias="path_goodnight")
-    """晚安消息图片"""
 
 
 class LogsConfig(BaseModel, extra=Extra.ignore):

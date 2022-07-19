@@ -21,54 +21,6 @@ class WsData(BaseModel):
     """消息数据"""
 
 
-class EventRegister:
-    """
-    ws_event注册器类，方便获取实例
-    """
-
-    data: dict
-
-    def __init__(self):
-        self.data = {}
-
-    def register(self, action: int):
-        """
-        说明:
-            注册一个ws事件class，并记录在Register内
-
-        参数:
-            * `action`：事件类型id
-        """
-
-        def register_cls(get_cls: "RecvEvent"):
-            self.data[action] = get_cls
-
-        return register_cls
-
-    def get_event(self, data: WsData) -> Optional["RecvEvent"]:
-        """
-        说明:
-            根据data内容获取event实例
-
-        参数:
-            * `data`：ws消息内容
-
-        返回:
-            * `RecvEvent`：ws事件实例，未注册字段会返回None
-        """
-        action = data.action
-        event = self.data.get(action)
-        if event:
-            return event(data.get("data"))
-        return None
-
-
-event_register = EventRegister()
-"""
-ws_event注册器，方便获取实例
-"""
-
-
 class WsNotice(BaseEvent):
     """ws通知主人事件"""
 
@@ -120,8 +72,27 @@ class RecvEvent(BaseEvent):
     __event__ = "WsRecv"
     post_type: str = "WsRecv"
     message_type: str
+    action: int
+    """ws消息类型"""
     server: Optional[str] = None
     """影响服务器"""
+
+    @classmethod
+    def get_event(cls, data: WsData) -> Optional["RecvEvent"]:
+        """
+        说明:
+            根据data内容获取event实例
+
+        参数:
+            * `data`：ws消息内容
+
+        返回:
+            * `RecvEvent`：ws事件实例，未注册字段会返回None
+        """
+        cls_ = list(filter(lambda x: x.action == data.action, cls.__subclasses__()))
+        if cls_:
+            return cls_[0](data.data)
+        return None
 
     @property
     @abstractmethod
@@ -163,12 +134,13 @@ class RecvEvent(BaseEvent):
         return False
 
 
-@event_register.register(action=2001)
 class ServerStatusEvent(RecvEvent):
     """服务器状态推送事件"""
 
     __event__ = "WsRecv.ServerStatus"
     message_type = "ServerStatus"
+    action = 2001
+    """ws消息类型"""
     status: bool
     """服务器状态"""
 
@@ -199,12 +171,13 @@ class ServerStatusEvent(RecvEvent):
             return Message(f"时间{time_now}\n[{self.server}]维护惹。")
 
 
-@event_register.register(action=2002)
 class NewsRecvEvent(RecvEvent):
     """新闻推送事件"""
 
     __event__ = "WsRecv.News"
     message_type = "News"
+    action = 2002
+    """ws消息类型"""
     news_type: str
     """新闻类型"""
     news_tittle: str
@@ -236,12 +209,13 @@ class NewsRecvEvent(RecvEvent):
         )
 
 
-@event_register.register(action=1001)
 class SerendipityEvent(RecvEvent):
     """奇遇播报事件"""
 
     __event__ = "WsRecv.Serendipity"
     message_type = "Serendipity"
+    action = 1001
+    """ws消息类型"""
     name: str
     """触发角色"""
     serendipity: str
@@ -274,12 +248,13 @@ class SerendipityEvent(RecvEvent):
         return Message(f"奇遇推送 {self.time}\n{self.serendipity} 被 {self.name} 抱走惹。")
 
 
-@event_register.register(action=1002)
 class HorseRefreshEvent(RecvEvent):
     """马驹刷新事件"""
 
     __event__ = "WsRecv.HorseRefresh"
     message_type = "HorseRefresh"
+    action = 1002
+    """ws消息类型"""
     map: str
     """刷新地图"""
     min: int
@@ -314,12 +289,13 @@ class HorseRefreshEvent(RecvEvent):
         )
 
 
-@event_register.register(action=1003)
 class HorseCatchedEvent(RecvEvent):
     """马驹捕获事件"""
 
     __event__ = "WsRecv.HorseCatched"
     message_type = "HorseCatched"
+    action = 1003
+    """ws消息类型"""
     name: str
     """触发角色名"""
     map: str
@@ -354,12 +330,13 @@ class HorseCatchedEvent(RecvEvent):
         )
 
 
-@event_register.register(action=1004)
 class FuyaoRefreshEvent(RecvEvent):
     """扶摇开启事件"""
 
     __event__ = "WsRecv.FuyaoRefresh"
     message_type = "FuyaoRefresh"
+    action = 1004
+    """ws消息类型"""
     time: str
     """事件时间"""
 
@@ -383,12 +360,13 @@ class FuyaoRefreshEvent(RecvEvent):
         return Message(f"[扶摇监控]\n扶摇九天在 {self.time} 开启了。")
 
 
-@event_register.register(action=1005)
 class FuyaoNamedEvent(RecvEvent):
     """扶摇点名事件"""
 
     __event__ = "WsRecv.FuyaoNamed"
     message_type = "FuyaoNamed"
+    action = 1005
+    """ws消息类型"""
     names: list[str]
     """点名角色组"""
     time: str
@@ -417,12 +395,13 @@ class FuyaoNamedEvent(RecvEvent):
         return Message(f"[扶摇监控] 时间：{self.time}\n唐文羽点名了[{name}]。")
 
 
-@event_register.register(action=1006)
 class FireworksEvent(RecvEvent):
     """烟花播报事件"""
 
     __event__ = "WsRecv.Fireworks"
     message_type = "Fireworks"
+    action = 1006
+    """ws消息类型"""
     role: str
     """烟花地图"""
     name: str
@@ -460,12 +439,13 @@ class FireworksEvent(RecvEvent):
         )
 
 
-@event_register.register(action=1007)
 class XuanJingEvent(RecvEvent):
     """玄晶获取事件"""
 
     __event__ = "WsRecv.XuanJing"
     message_type = "XuanJing"
+    action = 1007
+    """ws消息类型"""
     role: str
     """角色名"""
     map: str
@@ -499,12 +479,13 @@ class XuanJingEvent(RecvEvent):
         )
 
 
-@event_register.register(action=1008)
 class GameSysMsgEvent(RecvEvent):
     """游戏系统频道消息推送"""
 
     __event__ = "WsRecv.GameSysMsg"
     message_type = "GameSysMsg"
+    action = 1008
+    """ws消息类型"""
     message: Optional[str]
     """消息内容"""
     time: Optional[str]
@@ -528,12 +509,13 @@ class GameSysMsgEvent(RecvEvent):
         return Message(f"[系统频道推送]\n时间：{self.time}\n{self.message}。")
 
 
-@event_register.register(action=10001)
 class SubscribeEvent(RecvEvent):
     """订阅回执"""
 
     __event__ = "WsRecv.Subscribe"
     message_type = "Subscribe"
+    action = 10001
+    """ws消息类型"""
     action: Literal["烟花报时", "玄晶报时", "游戏消息"]
     """订阅内容"""
     server_dict: dict[str, int]
@@ -562,12 +544,13 @@ class SubscribeEvent(RecvEvent):
         return Message(f"[订阅回执]\n类型：{self.action}。")
 
 
-@event_register.register(action=10002)
 class DisSubscribeEvent(RecvEvent):
     """取消订阅回执"""
 
     __event__ = "WsRecv.DisSubscribe"
     message_type = "DisSubscribe"
+    action = 10002
+    """ws消息类型"""
     action: Literal["烟花报时", "玄晶报时", "游戏消息"]
     """订阅内容"""
     server_dict: dict[str, int]

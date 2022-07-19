@@ -178,7 +178,8 @@ class MyBrowser:
             await page.set_viewport_size(viewport_size)
             await page.goto(url)
             await page.wait_for_load_state("networkidle")
-        return await page.screenshot(type="jpeg", quality=100, full_page=True)
+            img = await page.screenshot(type="jpeg", quality=100, full_page=True)
+        return img
 
 
 browser = MyBrowser()

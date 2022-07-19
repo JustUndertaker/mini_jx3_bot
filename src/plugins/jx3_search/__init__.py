@@ -134,7 +134,7 @@ async def get_server(
         if response.code != 200:
             msg = f"未找到服务器[{_server}]，请验证后查询。"
             await matcher.finish(msg)
-        server: str = response.data["name"]
+        server: str = response.data["server"]
     else:
         server = await GroupInfo.get_server(event.group_id)
     return server

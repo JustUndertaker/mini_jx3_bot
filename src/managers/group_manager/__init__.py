@@ -16,14 +16,15 @@ from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 
 from src.internal.jx3api import JX3API
+from src.internal.plugin_manager import plugin_manager
 from src.modules.group_info import GroupInfo
+from src.modules.user_info import UserInfo
 from src.params import GROUP_ADMIN, NoticeType, PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
 from src.utils.utils import GroupList_Async
 
-from ..server_manager import data_source as server_source
 from . import data_source as source
 
 __plugin_meta__ = PluginMetadata(
@@ -238,9 +239,9 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
             f"加入群【<g>{group_name}</g>】({str(group_id)}) | 操作者：<y>{str(event.operator_id)}</y>"
         )
         # 注册群信息
-        await server_source.group_init(group_id, group_name)
+        await GroupInfo.group_init(group_id, group_name)
         # 注册插件
-        await server_source.load_plugins(group_id)
+        await plugin_manager.load_plugins(group_id)
         # 注册成员信息
         member_list = await bot.get_group_member_list(group_id=group_id)
         for one_member in member_list:
@@ -250,7 +251,7 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
                 if one_member["card"] == ""
                 else one_member["card"]
             )
-            await server_source.user_init(user_id, group_id, user_name)
+            await UserInfo.user_init(user_id, group_id, user_name)
 
         # 给管理员发送消息
         superusers = list(bot.config.superusers)

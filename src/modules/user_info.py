@@ -37,6 +37,7 @@ class UserInfo(Model):
             注册一个用户并刷新昵称
 
         参数:
+            * `user_id`: 用户QQ号
             * `group_id`：群号
             * `user_name`：用户昵称
         """

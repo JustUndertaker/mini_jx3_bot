@@ -332,7 +332,11 @@ async def _(bot: Bot, event: FriendAddNoticeEvent):
 async def _(bot: Bot, event: PokeNotifyEvent):
     """群内戳一戳提醒"""
     data = await UserInfo.get_user_data(event.user_id, event.group_id)
-    msg = f"\n好感度：{data['friendly']}\n剩余金币：{data['gold']}"
+    if data["sign"]:
+        msg = f"\n今日已签到，运势：{data['lucky']}"
+    else:
+        msg = "\n今日未签到"
+    msg += f"\n好感度：{data['friendly']}\n剩余金币：{data['gold']}"
     await get_notice.finish(MessageSegment.at(event.user_id) + msg)
 
 

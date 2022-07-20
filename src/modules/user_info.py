@@ -176,11 +176,15 @@ class UserInfo(Model):
 
         返回:
             * `dict[str,int]`：返回数据字典
+                * `sign` `bool`：是否签到
+                * `lucky`：今日运势
                 * `gold`：金币
                 * `friendly`：好友度
         """
         record, _ = await cls.get_or_create(user_id=user_id, group_id=group_id)
         return {
+            "sign": record.last_sign == date.today(),
+            "lucky": record.lucky,
             "gold": record.gold,
             "friendly": record.friendly,
         }

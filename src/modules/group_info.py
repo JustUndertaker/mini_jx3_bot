@@ -160,7 +160,7 @@ class GroupInfo(Model):
     @classmethod
     async def set_config_status(
         cls, group_id: int, setting_type: GroupSetting, status: bool
-    ):
+    ) -> bool:
         """
         说明:
             设置群内容开关
@@ -188,7 +188,10 @@ class GroupInfo(Model):
                 record.ws_horse = status
             case GroupSetting.扶摇监控:
                 record.ws_fuyao = status
+            case _:
+                return False
         await record.save()
+        return True
 
     @classmethod
     async def reset_sign_nums(cls):

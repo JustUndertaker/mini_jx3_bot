@@ -73,7 +73,8 @@
                     <div class="col-3 text-center">
                         <span class="badge bg-info fs-5" style="margin-top:10px">签到：{{ data.group.sign_nums }}</span>
                     </div>
-                    <span class="col-9 text-center badge bg-success fs-5" style="margin-top:10px">ws消息推送</span>
+                    <span class="col-9 text-center badge bg-success fs-6"
+                        style="margin-top:10px">消息推送（只是开关，不一定有数据）</span>
                 </div>
                 <div class="row align-items-center">
                     <div class="col-3 text-center">
@@ -82,11 +83,6 @@
                     </div>
                     <div class="border bordered-5 col-9 rounded">
                         <div class="row">
-                            {% if data.ws.closed %}
-                            <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
-                                <div class="btn btn-secondary">未连接到ws服务器</div>
-                            </div>
-                            {% else %}
                             {% if data.group.ws_server %}
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-primary">开服推送</div>
@@ -105,7 +101,6 @@
                                 <div class="btn btn-secondary">新闻推送</div>
                             </div>
                             {% endif %}
-                            {% if data.ws.serendipity %}
                             {% if data.group.ws_serendipity %}
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-primary">奇遇推送</div>
@@ -115,8 +110,6 @@
                                 <div class="btn btn-secondary">奇遇推送</div>
                             </div>
                             {% endif %}
-                            {% endif %}
-                            {% if data.ws.horse %}
                             {% if data.group.ws_horse %}
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-primary">抓马监控</div>
@@ -126,8 +119,6 @@
                                 <div class="btn btn-secondary">抓马监控</div>
                             </div>
                             {% endif %}
-                            {% endif %}
-                            {% if data.ws.fuyao %}
                             {% if data.group.ws_fuyao %}
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-primary">扶摇监控</div>
@@ -136,8 +127,6 @@
                             <div class="col text-center" style="margin-bottom:10px;margin-top:10px">
                                 <div class="btn btn-secondary">扶摇监控</div>
                             </div>
-                            {% endif %}
-                            {% endif %}
                             {% endif %}
                         </div>
                     </div>
@@ -153,6 +142,7 @@
                                 <th scope="col">名称</th>
                                 <th scope="col">命令</th>
                                 <th scope="col">描述</th>
+                                <th scope="col">金币</th>
                                 <th scope="col">开关</th>
                             </tr>
                         </thead>
@@ -160,8 +150,9 @@
                             {% for one in data.plugin %}
                             <tr>
                                 <td scope="col">{{ one.plugin_name }}</td>
-                                <td scope="col">{{ one.command }}</td>
                                 <td scope="col">{{ one.usage }}</td>
+                                <td scope="col">{{ one.description }}</td>
+                                <td scope="col">{{ one.cost_gold }}</td>
                                 <td scope="col">
                                     {% if one.status %}
                                     <div class="form-check form-switch"><input class="form-check-input" type="checkbox"

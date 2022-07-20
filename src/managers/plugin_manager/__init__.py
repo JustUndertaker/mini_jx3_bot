@@ -116,27 +116,32 @@ async def _(
 ):
     """群设置开关"""
     logger.info(
-        f"<y>插件管理</y> | <g>群{event.group_id}</g> | 设置通知 | {config_type.name} | {status}"
+        f"<y>插件管理</y> | <g>群{event.group_id}</g> | 设置通知 | {config_type.name} | {'打开' if status else '关闭'}"
     )
-    await GroupInfo.set_config_status(event.group_id, config_type, status)
-    group_status.stop_propagation()
-    await group_status.finish(f"设置成功！\n[{config_type}]当前已 {status}")
+    flag = await GroupInfo.set_config_status(event.group_id, config_type, status)
+    msg = None
+    if flag:
+        group_status.stop_propagation(group_status)
+        msg = f"设置成功！\n[{config_type.name}]当前已 {'打开' if status else '关闭'}"
+    await group_status.finish(msg)
 
 
 @plugin_status.handle()
 async def _(
     event: GroupMessageEvent,
-    plugin_name: str = Depends(get_plugin_name),
+    module_name: str = Depends(get_plugin_name),
     status: bool = Depends(get_status),
+    regex_dict: dict = RegexDict(),
 ):
     """设置插件开关"""
+    plugin_name = regex_dict["value"]
     logger.info(
-        f"<y>插件管理</y> | <g>群{event.group_id}</g> | 插件开关 | {plugin_name} | {status}"
+        f"<y>插件管理</y> | <g>群{event.group_id}</g> | 插件开关 | {plugin_name} | {'打开' if status else '关闭'}"
     )
 
-    flag = await PluginInfo.set_plugin_status(event.group_id, plugin_name, status)
+    flag = await PluginInfo.set_plugin_status(event.group_id, module_name, status)
     if flag:
-        msg = f"设置成功！\n插件[{plugin_name}]当前已 {status}"
+        msg = f"设置成功！\n插件[{plugin_name}]当前已 {'打开' if status else '关闭'}"
     else:
         msg = f"设置失败！未找到插件[{plugin_name}]"
     await plugin_status.finish(msg)

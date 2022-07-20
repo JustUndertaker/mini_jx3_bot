@@ -66,9 +66,10 @@ class CoroData:
             `CityInfo`：城市信息
         """
         if name in CITY_MAP:
-            return CityInfo(
-                legal=True, province=CITY_MAP[name][0], city=CITY_MAP[name][1]
-            )
+            if CITY_MAP[name] == "":
+                return CityInfo(legal=True, province=name, city="")
+            else:
+                return CityInfo(legal=True, province=CITY_MAP[name], city=name)
         else:
             return CityInfo(legal=False)
 

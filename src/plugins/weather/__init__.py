@@ -19,7 +19,7 @@ __plugin_meta__ = PluginMetadata(
 
 def get_city(regex_dict: dict = RegexDict()):
     """获取命令中城市名"""
-    return regex_dict["vlue1"] if regex_dict["value1"] else regex_dict["value2"]
+    return regex_dict["value1"] if regex_dict["value1"] else regex_dict["value2"]
 
 
 weather_regex = r"^(?P<value1>[\u4e00-\u9fa5]+)天气$|^天气 (?P<value2>[\u4e00-\u9fa5]+$)"

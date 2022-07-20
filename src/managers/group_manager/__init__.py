@@ -9,6 +9,7 @@ from nonebot.adapters.onebot.v11.event import (
     GroupDecreaseNoticeEvent,
     GroupIncreaseNoticeEvent,
     GroupMessageEvent,
+    PokeNotifyEvent,
 )
 from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.params import Depends, RegexDict
@@ -325,6 +326,14 @@ async def _(bot: Bot, event: FriendAddNoticeEvent):
         except Exception:
             pass
     await get_notice.finish(msg)
+
+
+@get_notice.handle()
+async def _(bot: Bot, event: PokeNotifyEvent):
+    """群内戳一戳提醒"""
+    data = await UserInfo.get_user_data(event.user_id, event.group_id)
+    msg = f"\n好感度：{data['friendly']}\n剩余金币：{data['gold']}"
+    await get_notice.finish(MessageSegment.at(event.user_id) + msg)
 
 
 # -------------------------------------------------------------

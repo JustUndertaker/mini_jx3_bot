@@ -163,3 +163,24 @@ class UserInfo(Model):
             await record.save()
             return True
         return False
+
+    @classmethod
+    async def get_user_data(cls, user_id: int, group_id: int) -> dict[str, int]:
+        """
+        说明:
+            获取用户数据，查看用户当前的数据
+
+        参数:
+            * `user_id`：用户名
+            * `group_id`：群号
+
+        返回:
+            * `dict[str,int]`：返回数据字典
+                * `gold`：金币
+                * `friendly`：好友度
+        """
+        record, _ = await cls.get_or_create(user_id=user_id, group_id=group_id)
+        return {
+            "gold": record.gold,
+            "friendly": record.friendly,
+        }

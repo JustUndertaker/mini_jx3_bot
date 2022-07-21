@@ -38,7 +38,7 @@ module.exports = {
             ['/development/', '开发说明'],
             ['/development/environment', '环境安装'],
             ['/development/plugin', '额外插件'],
-            ['/development/other', '其他设置'],
+            ['/development/other', '其他工具'],
           ]
         }
       ]

@@ -1,4 +1,5 @@
 module.exports = {
+  base: '/mini_jx3_bot/',
   title: '团子机器人',
   head: [
     ['link', { rel: 'icon', href: '/favicon.png' }],

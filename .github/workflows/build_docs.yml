@@ -14,5 +14,5 @@ jobs:
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         TARGET_BRANCH: docs
-        BUILD_SCRIPT: yarn && yarn build
+        BUILD_SCRIPT: npm run docs:build
         BUILD_DIR: /

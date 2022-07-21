@@ -15,4 +15,4 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.BUILD_DOC }}
         TARGET_BRANCH: docs
         BUILD_SCRIPT: npm ci && npm run docs:build
-        BUILD_DIR: docs/
+        BUILD_DIR: docs/.vuepress/dist/

@@ -15,4 +15,4 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         TARGET_BRANCH: docs
         BUILD_SCRIPT: npm ci && npm run docs:build
-        BUILD_DIR: /dict
+        BUILD_DIR: docs/

@@ -10,7 +10,7 @@
 ::: tip 虚拟环境
 养成良好的习惯，不是吗？强烈推荐你使用conda管理环境，你只需要使用以下命令：
 ```bash
-conda init
+conda activate your_env
 ```
 :::
 

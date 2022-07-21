@@ -1,6 +1,7 @@
 module.exports = {
   base: '/mini_jx3_bot/',
   title: '团子机器人',
+  plugins: ['@vuepress/last-updated'],
   head: [
     ['link', { rel: 'icon', href: '/favicon.png' }],
   ],
@@ -22,15 +23,23 @@ module.exports = {
           title: '用户文档',
           sidebarDepth: 2,
           children: [
-            ['/guide/', '部署机器人'],
-            ['/guide/config', '设置配置'],
-            ['/guide/setting', '启动机器人'],
+            ['/guide/', '项目说明'],
+            ['/guide/deploy', '部署机器人'],
+            ['/guide/meau', '功能列表'],
+            ['/guide/question', '常见问题'],
           ]
         }
       ],
       '/development/': [
         {
           title: '开发手册',
+          sidebarDepth: 2,
+          children: [
+            ['/development/', '开发说明'],
+            ['/development/environment', '环境安装'],
+            ['/development/plugin', '额外插件'],
+            ['/development/other', '其他设置'],
+          ]
         }
       ]
     }

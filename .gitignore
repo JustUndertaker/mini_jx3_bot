@@ -143,6 +143,7 @@ dmypy.json
 .env.dev
 data/
 /log
+/node_modules
 docker-compose.yml
 Dockerfile
 pyproject.toml

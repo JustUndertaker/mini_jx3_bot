@@ -1,22 +1,4 @@
-<div align="center">
-
-# mini_jx3_bot
-
-_✨基于[nonebot2](https://github.com/nonebot/nonebot2)的剑网三群聊机器人，采用[jx3api](https://jx3api.com)作为数据源。✨_
-
-</div>
-
-<p align="center">
-<a href="https://www.python.org/">
-<img src="https://img.shields.io/badge/python-3.8%2B-blue" alt="license"></a>
-<a href="https://github.com/nonebot/nonebot2">
-<img src="https://img.shields.io/badge/nonebot-2.0.0b1-yellow"></a>
-<a href="https://github.com/Mrs4s/go-cqhttp">
-<img src="https://img.shields.io/badge/go--cqhttp-v1.0.0--beta8fix2-red"></a>
-</p>
-
-
-## 这是什么
+## 项目说明
 一个使用gocq作为协议端的QQ群聊机器人，可以接受处理QQ消息并回复，接入了[www.jx3api.com](https://www.jx3api.com)的数据后，可以查询《剑网三》内的游戏数据,你可以：
 - 自己部署到服务器，创建自己的机器人
 - 添加自己写的插件，适配到机器人中

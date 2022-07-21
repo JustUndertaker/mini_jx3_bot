@@ -12,7 +12,7 @@ jobs:
     - name: vuepress-deploy
       uses: jenkey2011/vuepress-deploy@master
       env:
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        ACCESS_TOKEN: ${{ secrets.BUILD_DOC }}
         TARGET_BRANCH: docs
         BUILD_SCRIPT: npm ci && npm run docs:build
         BUILD_DIR: docs/

@@ -2,7 +2,7 @@ module.exports = {
   base: '/mini_jx3_bot/',
   title: '团子机器人',
   head: [
-    ['link', { rel: 'icon', href: '$withBase(/favicon.png)' }],
+    ['link', { rel: 'icon', href: '/favicon.png' }],
   ],
   markdown: {
     lineNumbers: true // 代码块显示行号
@@ -12,12 +12,12 @@ module.exports = {
     sidebarDepth: 2,
     lastUpdated: 'Last Updated',
     nav: [
-      { text: '用户文档', link: '$withBase(/guide/)' },
-      { text: '开发手册', link: '$withBase(/development/)' },
+      { text: '用户文档', link: '/guide/' },
+      { text: '开发手册', link: '/development/' },
       { text: 'Github', link: 'https://github.com/JustUndertaker/mini_jx3_bot' }
     ],
     sidebar: {
-      '$withBase(/guide/)': [
+      '/guide/': [
         {
           title: '用户文档',
           sidebarDepth: 2,
@@ -28,7 +28,7 @@ module.exports = {
           ]
         }
       ],
-      '$withBase(/development/)': [
+      '/development/': [
         {
           title: '开发手册',
         }

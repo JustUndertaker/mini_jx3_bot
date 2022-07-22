@@ -12,7 +12,7 @@ __plugin_meta__ = PluginMetadata(
     name="疫情查询",
     description="查询疫情情况。",
     usage="XX疫情 | 疫情 XX",
-    config=PluginConfig(cost_gold=10),
+    config=PluginConfig(cost_gold=1),
 )
 
 yiqing = on_regex(
@@ -32,7 +32,7 @@ def get_name(regex_dict: dict = RegexDict()) -> str:
     return value if value else regex_dict.get("value2")
 
 
-@yiqing.handle(parameterless=[cost_gold(gold=10)])
+@yiqing.handle(parameterless=[cost_gold(gold=1)])
 async def _(event: GroupMessageEvent, name: str = Depends(get_name)):
     """疫情查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 请求：{name}")

@@ -12,7 +12,7 @@ __plugin_meta__ = PluginMetadata(
     name="天气查询",
     description="查询天气，使用和风天气",
     usage="XX天气 | 天气 XX",
-    config=PluginConfig(cost_gold=10),
+    config=PluginConfig(cost_gold=1),
 )
 
 
@@ -25,7 +25,7 @@ weather_regex = r"^(?P<value1>[\u4e00-\u9fa5]+)天气$|^天气 (?P<value2>[\u4e0
 weather = on_regex(pattern=weather_regex, permission=GROUP, priority=5, block=True)
 
 
-@weather.handle(parameterless=[cost_gold(gold=10)])
+@weather.handle(parameterless=[cost_gold(gold=1)])
 async def _(event: GroupMessageEvent, city: str = Depends(get_city)):
     """查询天气"""
     logger.info(f"<y>群{event.group_id}</> | <g>{event.user_id}</g> | 请求：{city}")

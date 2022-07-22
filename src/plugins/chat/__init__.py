@@ -1,7 +1,5 @@
 from nonebot import on_message
-from nonebot.adapters.onebot.v11 import Bot
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.adapters.onebot.v11.permission import GROUP
+from nonebot.adapters.onebot.v11 import GROUP, Bot, GroupMessageEvent
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import to_me
 

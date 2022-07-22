@@ -1,6 +1,5 @@
 from nonebot import on_regex
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.adapters.onebot.v11.permission import GROUP
+from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent
 from nonebot.params import Depends, RegexDict
 from nonebot.plugin import PluginMetadata
 

@@ -2,8 +2,7 @@ import asyncio
 import random
 
 from nonebot import get_driver, on, on_regex
-from nonebot.adapters.onebot.v11 import Bot
-from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, PrivateMessageEvent
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from tortoise import Tortoise

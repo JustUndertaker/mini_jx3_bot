@@ -3,9 +3,7 @@ from datetime import datetime
 from enum import Enum
 
 from nonebot import on_regex
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.adapters.onebot.v11.message import MessageSegment
-from nonebot.adapters.onebot.v11.permission import GROUP
+from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent, MessageSegment
 from nonebot.matcher import Matcher
 from nonebot.params import Depends, RegexDict
 from nonebot.plugin import PluginMetadata

@@ -4,10 +4,12 @@ import time
 
 from nonebot import on_regex, on_request
 from nonebot.adapters import Event
-from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
-from nonebot.adapters.onebot.v11.event import (
+from nonebot.adapters.onebot.v11 import (
+    Bot,
     FriendRequestEvent,
     GroupRequestEvent,
+    Message,
+    MessageSegment,
     PrivateMessageEvent,
 )
 from nonebot.params import Depends, RegexDict

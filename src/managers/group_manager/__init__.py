@@ -3,12 +3,14 @@ import random
 import time
 
 from nonebot import get_bots, on_notice, on_regex
-from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
-from nonebot.adapters.onebot.v11.event import (
+from nonebot.adapters.onebot.v11 import (
+    Bot,
     FriendAddNoticeEvent,
     GroupDecreaseNoticeEvent,
     GroupIncreaseNoticeEvent,
     GroupMessageEvent,
+    Message,
+    MessageSegment,
     PokeNotifyEvent,
 )
 from nonebot.adapters.onebot.v11.permission import GROUP

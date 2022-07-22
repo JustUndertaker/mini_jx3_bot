@@ -3,9 +3,12 @@
 """
 from enum import Enum, auto
 
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.adapters.onebot.v11.message import MessageSegment
-from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
+from nonebot.adapters.onebot.v11 import (
+    GROUP_ADMIN,
+    GROUP_OWNER,
+    GroupMessageEvent,
+    MessageSegment,
+)
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
 

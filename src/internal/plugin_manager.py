@@ -106,7 +106,7 @@ class PluginManager:
                 "plugin_name": plugin.metadata.name,
                 "usage": plugin.metadata.usage,
                 "description": plugin.metadata.description,
-                "cost_gold": config.cost_gold,
+                "cost_gold": config.cost_gold if config.cost_gold != 0 else "-",
                 "status": one["status"],
             }
             plugin_list.append(one_data)

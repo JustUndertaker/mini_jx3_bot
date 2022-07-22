@@ -214,7 +214,7 @@ async def _(bot: Bot, event: PrivateMessageEvent):
     logger.info(f"<g>超级用户管理</g> | {event.user_id} | 请求好友列表")
     user_list = await bot.get_friend_list()
     num = len(user_list)
-    pagename = "friend_list.html"
+    pagename = "好友列表.html"
     img = await browser.template_to_image(
         pagename=pagename, num=num, user_list=user_list
     )
@@ -246,7 +246,7 @@ async def _(bot: Bot, event: PrivateMessageEvent):
     """群列表"""
     logger.info(f"<g>超级用户管理</g> | {event.user_id} | 请求群列表")
     get_group_list = await GroupInfo.get_group_list()
-    pagename = "group_list.html"
+    pagename = "群列表.html"
     img = await browser.template_to_image(
         pagename=pagename, num=len(get_group_list), group_list=get_group_list
     )
@@ -320,7 +320,7 @@ async def _(group_id: int = Depends(get_value), status: bool = Depends(get_statu
 @help.handle()
 async def _(event: PrivateMessageEvent):
     """请求帮助"""
-    pagename = "super_help.html"
+    pagename = "超级用户帮助.html"
     img = await browser.template_to_image(pagename=pagename)
     await help.finish(MessageSegment.image(img))
 

@@ -427,7 +427,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
         await price_query.finish(msg)
 
     data = response.data
-    pagename = "price.html"
+    pagename = "物品价格.html"
     item_name = data.get("name")
     item_info = data.get("info")
     item_img = data.get("upload")
@@ -460,7 +460,7 @@ async def _(
         await serendipity_query.finish(msg)
 
     data = response.data
-    pagename = "serendipity.html"
+    pagename = "角色奇遇.html"
     get_data = source.handle_data_serendipity(data)
     img = await browser.template_to_image(
         pagename=pagename, server=server, name=name, data=get_data
@@ -484,7 +484,7 @@ async def _(
         await serendipity_list_query.finish(msg)
 
     data = response.data
-    pagename = "serendipity_list.html"
+    pagename = "奇遇统计.html"
     get_data = source.handle_data_serendipity_list(data)
     img = await browser.template_to_image(
         pagename=pagename, server=server, name=name, data=get_data
@@ -504,7 +504,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
         await serendipity_summary_query.finish(msg)
 
     data = response.data
-    pagename = "serendipity_summary.html"
+    pagename = "奇遇汇总.html"
     get_data = source.handle_data_serendipity_summary(data)
     img = await browser.template_to_image(
         pagename=pagename, server=server, data=get_data
@@ -529,7 +529,7 @@ async def _(
         await match_query.finish(msg)
 
     data = response.data
-    pagename = "match.html"
+    pagename = "比赛记录.html"
     get_data = source.handle_data_match(data)
     img = await browser.template_to_image(
         pagename=pagename, server=server, name=name, data=get_data
@@ -554,7 +554,7 @@ async def _(
         await equip_query.finish(msg)
 
     data = response.data
-    pagename = "equip.html"
+    pagename = "角色装备.html"
     get_data = source.handle_data_equip(data)
     img = await browser.template_to_image(
         pagename=pagename, server=server, name=name, data=get_data
@@ -567,6 +567,6 @@ async def _(event: GroupMessageEvent):
     """帮助"""
     token = api.config.api_token
     flag = token != ""
-    pagename = "search_help.html"
+    pagename = "查询帮助.html"
     img = await browser.template_to_image(pagename=pagename, flag=flag)
     await help.finish(MessageSegment.image(img))

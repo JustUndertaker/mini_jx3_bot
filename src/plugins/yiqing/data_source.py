@@ -29,6 +29,6 @@ async def get_data(name: str) -> MessageSegment:
 
     time_now = date.today()
     data["time"] = time_now.strftime("%Y-%m-%d")
-    pagename = "yiqing.html"
+    pagename = "疫情查询.html"
     img = await browser.template_to_image(pagename=pagename, data=data)
     return MessageSegment.image(img)

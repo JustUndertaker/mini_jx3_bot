@@ -198,7 +198,7 @@ async def _(
 @meau.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     """菜单"""
-    pagename = "meau.html"
+    pagename = "菜单.html"
     meau_data = await source.get_meau_data(event.group_id)
     nickname = list(bot.config.nickname)[0]
     bot_id = bot.self_id
@@ -212,7 +212,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
 @admin_help.handle()
 async def _():
     """管理员帮助"""
-    pagename = "admin_help.html"
+    pagename = "管理员帮助.html"
     img = await browser.template_to_image(pagename=pagename)
     await admin_help.finish(MessageSegment.image(img))
 

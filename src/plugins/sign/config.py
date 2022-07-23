@@ -19,5 +19,5 @@ GOLD_BASE = 10
 """每次签到金币底薪"""
 
 
-LUCKY_GOLD = 1
+LUCKY_GOLD = 5
 """幸运值影响金币因子"""

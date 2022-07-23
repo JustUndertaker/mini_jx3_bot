@@ -27,6 +27,7 @@ module.exports = {
             ['/guide/deploy', '部署机器人'],
             ['/guide/meau', '功能列表'],
             ['/guide/question', '常见问题'],
+            ['/guide/about', '作者的话']
           ]
         }
       ],

@@ -11,7 +11,7 @@ from websockets.legacy.client import WebSocketClientProtocol
 from src.config import jx3api_config
 from src.utils.log import logger
 
-from ._jx3_event import RecvEvent, WsData, WsNotice
+from ._jx3_event import EventRister, WsData, WsNotice
 
 
 class Jx3WebSocket(object):
@@ -70,7 +70,7 @@ class Jx3WebSocket(object):
         try:
             ws_obj = json.loads(message)
             data = WsData.parse_obj(ws_obj)
-            event = RecvEvent.get_event(data)
+            event = EventRister.get_event(data)
             if event:
                 logger.debug(event.log)
                 bots = get_bots()

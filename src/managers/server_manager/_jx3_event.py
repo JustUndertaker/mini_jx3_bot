@@ -17,8 +17,8 @@ class EventRister:
     """事件映射字典"""
 
     @classmethod
-    def rister(cls, action: int) -> "RecvEvent":
-        def _rister(event):
+    def rister(cls, action: int):
+        def _rister(event: "RecvEvent"):
             cls.event_dict[action] = event
             return event
 
@@ -94,8 +94,6 @@ class RecvEvent(BaseEvent):
     __event__ = "WsRecv"
     post_type: str = "WsRecv"
     message_type: str
-    action: int
-    """ws消息类型"""
     server: Optional[str] = None
     """影响服务器"""
 
@@ -145,7 +143,7 @@ class ServerStatusEvent(RecvEvent):
 
     __event__ = "WsRecv.ServerStatus"
     message_type = "ServerStatus"
-    status: bool
+    status: Optional[bool]
     """服务器状态"""
 
     def __init__(self, data: dict):
@@ -181,13 +179,13 @@ class NewsRecvEvent(RecvEvent):
 
     __event__ = "WsRecv.News"
     message_type = "News"
-    news_type: str
+    news_type: Optional[str]
     """新闻类型"""
-    news_tittle: str
+    news_tittle: Optional[str]
     """新闻标题"""
-    news_url: str
+    news_url: Optional[str]
     """新闻url链接"""
-    news_date: str
+    news_date: Optional[str]
     """新闻日期"""
 
     def __init__(self, data: dict):
@@ -218,13 +216,13 @@ class SerendipityEvent(RecvEvent):
 
     __event__ = "WsRecv.Serendipity"
     message_type = "Serendipity"
-    name: str
+    name: Optional[str]
     """触发角色"""
-    serendipity: str
+    serendipity: Optional[str]
     """奇遇名"""
-    level: int
+    level: Optional[int]
     """奇遇等级"""
-    time: str
+    time: Optional[str]
     """触发时间"""
 
     def __init__(self, data: dict):
@@ -256,13 +254,13 @@ class HorseRefreshEvent(RecvEvent):
 
     __event__ = "WsRecv.HorseRefresh"
     message_type = "HorseRefresh"
-    map: str
+    map: Optional[str]
     """刷新地图"""
-    min: int
+    min: Optional[int]
     """时间范围min"""
-    max: int
+    max: Optional[int]
     """时间范围max"""
-    time: str
+    time: Optional[str]
     """推送时间"""
 
     def __init__(self, data: dict):
@@ -296,13 +294,13 @@ class HorseCatchedEvent(RecvEvent):
 
     __event__ = "WsRecv.HorseCatched"
     message_type = "HorseCatched"
-    name: str
+    name: Optional[str]
     """触发角色名"""
-    map: str
+    map: Optional[str]
     """地图"""
-    horse: str
+    horse: Optional[str]
     """马驹名"""
-    time: str
+    time: Optional[str]
     """事件时间"""
 
     def __init__(self, data: dict):
@@ -336,7 +334,7 @@ class FuyaoRefreshEvent(RecvEvent):
 
     __event__ = "WsRecv.FuyaoRefresh"
     message_type = "FuyaoRefresh"
-    time: str
+    time: Optional[str]
     """事件时间"""
 
     def __init__(self, data: dict):
@@ -365,9 +363,9 @@ class FuyaoNamedEvent(RecvEvent):
 
     __event__ = "WsRecv.FuyaoNamed"
     message_type = "FuyaoNamed"
-    names: list[str]
+    names: Optional[list[str]]
     """点名角色组"""
-    time: str
+    time: Optional[str]
     """点名时间"""
 
     def __init__(self, data: dict):
@@ -399,15 +397,15 @@ class FireworksEvent(RecvEvent):
 
     __event__ = "WsRecv.Fireworks"
     message_type = "Fireworks"
-    role: str
+    role: Optional[str]
     """烟花地图"""
-    name: str
+    name: Optional[str]
     """接受烟花的角色"""
-    sender: str
+    sender: Optional[str]
     """使用烟花的角色"""
-    recipient: str
+    recipient: Optional[str]
     """烟花名字"""
-    time: str
+    time: Optional[str]
     """烟花使用时间"""
 
     def __init__(self, data: dict):
@@ -442,13 +440,13 @@ class XuanJingEvent(RecvEvent):
 
     __event__ = "WsRecv.XuanJing"
     message_type = "XuanJing"
-    role: str
+    role: Optional[str]
     """角色名"""
-    map: str
+    map: Optional[str]
     """地图名"""
-    name: str
+    name: Optional[str]
     """玄晶名"""
-    time: str
+    time: Optional[str]
     """获取时间"""
 
     def __init__(self, data: dict):
@@ -510,9 +508,9 @@ class SubscribeEvent(RecvEvent):
 
     __event__ = "WsRecv.Subscribe"
     message_type = "Subscribe"
-    action: Literal["烟花报时", "玄晶报时", "游戏消息"]
+    action: Optional[Literal["烟花报时", "玄晶报时", "游戏消息"]]
     """订阅内容"""
-    server_dict: dict[str, int]
+    server_dict: Optional[dict[str, int]]
     """已订阅服务器"""
 
     def __init__(self, data: dict):
@@ -544,9 +542,9 @@ class DisSubscribeEvent(RecvEvent):
 
     __event__ = "WsRecv.DisSubscribe"
     message_type = "DisSubscribe"
-    action: Literal["烟花报时", "玄晶报时", "游戏消息"]
+    action: Optional[Literal["烟花报时", "玄晶报时", "游戏消息"]]
     """订阅内容"""
-    server_dict: dict[str, int]
+    server_dict: Optional[dict[str, int]]
     """已订阅服务器"""
 
     def __init__(self, data: dict):

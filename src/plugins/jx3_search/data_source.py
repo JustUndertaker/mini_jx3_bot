@@ -118,24 +118,25 @@ def handle_data_match(data: dict) -> dict:
             time_end = int((time_ago + 30) / 60)
             if time_end == 0:
                 time_end = 1
-            one_req_data["ago"] = str(time_end) + " 分钟"
+            one_req_data["ago"] = str(time_end) + " 分钟前"
         elif time_ago < 86400:
             # 一天内用小时表示
             time_end = int((time_ago + 1800) / 3600)
             if time_end == 0:
                 time_end = 1
-            one_req_data["ago"] = str(time_end) + " 小时"
+            one_req_data["ago"] = str(time_end) + " 小时前"
         elif time_ago < 864000:
             # 10天内用天表示
             time_end = int((time_ago + 43200) / 86400)
             if time_end == 0:
                 time_end = 1
-            one_req_data["ago"] = str(time_end) + " 天"
+            one_req_data["ago"] = str(time_end) + " 天前"
         else:
             # 超过10天用日期表示
             timeArray = time.localtime(end_time)
             one_req_data["ago"] = time.strftime("%Y年%m月%d日", timeArray)
         req_data["history"].append(one_req_data)
+        req_data["camp"] = data.get("camp", "")
     return req_data
 
 
@@ -145,24 +146,33 @@ def handle_data_equip(data: dict) -> dict:
     req_data["kungfu"] = data["kungfu"]
     req_data["dateTime"] = data["dateTime"]
     info = data["info"]
-    req_data["score"] = info["score"]
+    if info:
+        req_data["score"] = info.get("score")
 
-    # 处理info数据
-    info_panel: list[dict] = info["panel"]
-    data_info = []
-    for one in info_panel:
-        value = str(one["value"])
-        if one["percent"]:
-            value += "%"
-        one_data = {"name": one["name"], "value": value}
-        data_info.append(one_data)
-    req_data["info"] = data_info
+        # 处理info数据
+        info_panel: list[dict] = info["panel"]
+        data_info = []
+        for one in info_panel:
+            value = str(one["value"])
+            if one["percent"]:
+                value += "%"
+            one_data = {"name": one["name"], "value": value}
+            data_info.append(one_data)
+        req_data["info"] = data_info
 
+    color_level_map = {
+        "0": "darkgray",
+        "1": "gray",
+        "2": "darkgreen",
+        "3": "dodgerblue",
+        "4": "blueviolet",
+        "5": "chocolate",
+    }
     # 处理equip数据
     equip: list[dict] = data["equip"]
     data_equip = []
     for one in equip:
-        _source = one["source"]
+        _source = one.get("source")
         if _source is None:
             source = ""
         else:
@@ -171,6 +181,8 @@ def handle_data_equip(data: dict) -> dict:
             "name": one["name"],
             "kind": one["subKind"],
             "icon": one["icon"],
+            "quality": one["quality"],
+            "color": color_level_map.get(one["color"], "black"),
             "strengthLevel": int(one["strengthLevel"]),
             "source": source,
         }
@@ -197,6 +209,8 @@ def handle_data_equip(data: dict) -> dict:
     qixue: list = data["qixue"]
     data_qixue = []
     for one in qixue:
+        if one["name"] == "未知":
+            continue
         one_data = {
             "name": one["name"],
             "icon": one["icon"],

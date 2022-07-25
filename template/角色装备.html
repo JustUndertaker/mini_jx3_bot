@@ -11,66 +11,40 @@
 
 <body>
     <div class="container " id="main">
-        <div class="card" style="width: 70rem;">
+        <div class="card" style="background-image: url('img/bg.png');">
             <div class="card-header">
-                <div class="row">
-                    <div class="col">
-                        <div class="text-center fs-4">
-                            <p><img src="./img/location.png" height="40" width="40">{{ server }}</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="text-center fs-4">
-                            <p><img src="./img/book.png" height="40" width="40">{{ name }}</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="text-center fs-4">
-                            <p><img src="./img/tag.png" height="40" width="40">装备属性</p>
-                        </div>
-                    </div>
+                <div style="text-align:center; margin:10px">
+                    <h2><img src="sect/{{ data.kungfu }}.png" height="50" width="50"><strong> {{server}} • {{name}}</strong></h2>
                 </div>
             </div>
             <div class="card-body">
                 <!--角色属性-->
-                <div class="row">
-                    <div class="alert alert-primary text-center fs-4">
-                        <div class="row align-items-center">
-                            <div class="col-4">
-                                <img src="sect/{{ data.kungfu }}.png" height="40" width="40">
-                                <span class="badge bg-primary fs-5">{{ data.kungfu }}</span>
-                            </div>
-                            <div class="col-4">装分：{{ data.score }}</div>
-                            <div class="col-4">{{ data.dateTime }}</div>
-                        </div>
+                {% if data.info %}
+                <hr>
+                <div class="row" style="padding: 20px">
+                    {% for one in data.info %}
+                    <div class="col-4">
+                        <h3><strong>{{ one.name }}：</strong>{{ one.value }}</h3>
                     </div>
-                    <div class="card bg-light p-3 mb-4">
-                        <div class="row text-center text-secondary fs-4 p-1">
-                            {% for one in data.info %}
-                            <div class="col-2">
-                                <p class="text-primary">{{ one.name }}</p>
-                                <p class="text-success fs-5">{{ one.value }}</p>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
+                <hr>
+                <h2><strong>装备分数：{{ data.score }}</strong></h2>
+                <hr>
+                {% endif %}
                 <!--角色装备-->
                 <div class="row">
-                    <div class="alert alert-success text-center fs-4">角色装备</div>
                     {% for one in data.equip %}
-                    <div class="card bg-light">
-                        <div class="row align-items-center">
-                            <div class="col-1 text-center ">
-                                <span class="badge bg-primary fs-5">{{ one.kind }}</span>
-                            </div>
+                        <div class="row">
                             <div class="col-1">
-                                <img src="{{ one.icon }}" width="70" height="70">
+                                <div style="border: 3px solid {{one.color}}; margin: 0 -10px 0 0;">
+                                    <img src="{{ one.icon }}" width="70" height="70">
+                                </div>
                             </div>
                             <div class="col-4">
-                                <p style="margin:1px;">{{ one.name }}</p>
+                                <p style="margin:1px;font-size: 25px;"><strong style="color: {{one.color}};">{{ one.name }}</strong>({{one.quality}})</p>
                                 <p style="margin:1px;">{{ one.modifyType }}</p>
-                                <p style="margin:1px;">{{ one.source }}</p>
+                                <p style="margin:1px;color: darkgray;">{{ one.source }}</p>
                             </div>
                             <div class="col text-end fs-5 offset-md-3 justify-content-end">
                                 <p style="margin:1px;">
@@ -78,7 +52,7 @@
                                     <img src="img/star.png" width="25" height="25">
                                     {% endfor %}
                                 </p>
-                                <p style="margin:1px;">{{ one.permanentEnchant }}</p>
+                                <p style="margin:1px;color:cornflowerblue;">{{ one.permanentEnchant }}</p>
                                 <p style="margin:1px;">
                                     {% for icon in one.fiveStone %}
                                     <img src="{{ icon }}" width="30" height="30">
@@ -86,24 +60,22 @@
                                 </p>
                             </div>
                         </div>
-
-                    </div>
+                        <hr>
                     {% endfor %}
 
                 </div>
                 <!--角色奇穴-->
+                {% if data.qixue %}
                 <div style="margin-top:10px;"></div>
                 <div class="row">
-                    <div class=" alert alert-danger text-center fs-4">角色奇穴</div>
                     {% for one in data.qixue %}
                     <div class="col-1 text-center fs-5">
-                        <div class="card align-items-center">
-                            <img src="{{ one.icon }}" width="50" height="50" style="margin-top:20px;">
-                            <p>{{ one.name }}</p>
-                        </div>
+                        <img src="{{ one.icon }}" width="50" height="50" style="margin-top:20px;">
+                        <p>{{ one.name }}</p>
                     </div>
                     {% endfor %}
                 </div>
+                {% endif %}
             </div>
             <div class="card-footer">
                 <h6 class="text-center fs-3">数据来源：www.jx3api.com</h6>

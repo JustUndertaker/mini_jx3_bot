@@ -71,7 +71,7 @@ async def get_group_setting(
         case "扶摇监控":
             return GroupSetting.扶摇监控
         case _:
-            await matcher.finish()
+            await matcher.skip()
 
 
 async def get_plugin_name(matcher: Matcher, regex_dict: dict = RegexDict()) -> str:

@@ -3,40 +3,35 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <!-- <meta content="IE=edge" http-equiv="X-UA-Compatible"> -->
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>战绩查询</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container" id="main">
-        <div class="card">
+    <div  id="main" class="container">
+        <div class="card" style="background-image: url('img/bg.png');">
             <div class="card-header">
-                <div class="row">
-                    <div class="col">
-                        <div class="text-center fs-4">
-                            <p><img src="./img/location.png" height="40" width="40">{{ server }}</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="text-center fs-4">
-                            <p><img src="./img/book.png" height="40" width="40">{{ name }}</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="text-center fs-4">
-                            <p><img src="./img/sword.png" height="40" width="40">战绩记录</p>
-                        </div>
-                    </div>
+                <div style="text-align:center; margin:10px">
+                    <h3><img src="./img/{{data.camp}}.png" height="40" width="48"><strong> {{server}} • {{name}}</strong></h3>
                 </div>
             </div>
             <div class="card-body">
-                <div class="alert alert-primary text-center fs-3">战绩总览</div>
-                {% if data.performance['2v2'] is defined %}
-                <div class="card bg-light p-3 mb-4">
-                    <div class="row text-center text-secondary fs-4 p-1">
+                {% if data.performance['2v2'] %}
+                <div>
+                    <div class="row text-center text-body fs-4 p-1">
                         <div class="col"><span class="badge bg-primary">2v2</span></div>
+                        <div class="col">总场次</div>
+                        <div class="col">最佳</div>
+                        <div class="col">胜场</div>
+                        <div class="col">胜率</div>
+                        <div class="col">评分</div>
+                        <div class="col">周排名</div>
+                    </div>
+                    <div class="row text-center text-secondary fs-4 p-1">
+                        <div class="col">{{ data.performance['2v2'].grade }}段</div>
                         <div class="col">{{ data.performance['2v2'].totalCount }}</div>
                         <div class="col">{{ data.performance['2v2'].mvpCount }}</div>
                         <div class="col">{{ data.performance['2v2'].winCount }}</div>
@@ -44,8 +39,13 @@
                         <div class="col">{{ data.performance['2v2'].mmr }}</div>
                         <div class="col">{{ data.performance['2v2'].ranking }}</div>
                     </div>
+                </div>
+                <hr>
+                {% endif %}
+                {% if data.performance['3v3'] %}
+                <div>
                     <div class="row text-center text-body fs-4 p-1">
-                        <div class="col">{{ data.performance['2v2'].grade }}段</div>
+                        <div class="col"><span class="badge bg-primary">3v3</span></div>
                         <div class="col">总场次</div>
                         <div class="col">最佳</div>
                         <div class="col">胜场</div>
@@ -53,12 +53,8 @@
                         <div class="col">评分</div>
                         <div class="col">周排名</div>
                     </div>
-                </div>
-                {% endif %}
-                {% if data.performance['3v3'] is defined %}
-                <div class="card bg-light p-3 mb-4">
                     <div class="row text-center text-secondary fs-4 p-1">
-                        <div class="col"><span class="badge bg-primary">3v3</span></div>
+                        <div class="col">{{ data.performance['3v3'].grade }}段</div>
                         <div class="col">{{ data.performance['3v3'].totalCount }}</div>
                         <div class="col">{{ data.performance['3v3'].mvpCount }}</div>
                         <div class="col">{{ data.performance['3v3'].winCount }}</div>
@@ -66,8 +62,13 @@
                         <div class="col">{{ data.performance['3v3'].mmr }}</div>
                         <div class="col">{{ data.performance['3v3'].ranking }}</div>
                     </div>
+                </div>
+                <hr>
+                {% endif %}
+                {% if data.performance['5v5'] %}
+                <div>
                     <div class="row text-center text-body fs-4 p-1">
-                        <div class="col">{{ data.performance['3v3'].grade }}段</div>
+                        <div class="col"><span class="badge bg-primary">5v5</span></div>
                         <div class="col">总场次</div>
                         <div class="col">最佳</div>
                         <div class="col">胜场</div>
@@ -75,12 +76,8 @@
                         <div class="col">评分</div>
                         <div class="col">周排名</div>
                     </div>
-                </div>
-                {% endif %}
-                {% if data.performance['5v5'] is defined %}
-                <div class="card bg-light p-3 mb-4">
                     <div class="row text-center text-secondary fs-4 p-1">
-                        <div class="col"><span class="badge bg-primary">5v5</span></div>
+                        <div class="col">{{ data.performance['5v5'].grade }}段</div>
                         <div class="col">{{ data.performance['5v5'].totalCount }}</div>
                         <div class="col">{{ data.performance['5v5'].mvpCount }}</div>
                         <div class="col">{{ data.performance['5v5'].winCount }}</div>
@@ -88,55 +85,39 @@
                         <div class="col">{{ data.performance['5v5'].mmr }}</div>
                         <div class="col">{{ data.performance['5v5'].ranking }}</div>
                     </div>
-                    <div class="row text-center text-body fs-4 p-1">
-                        <div class="col">{{ data.performance['5v5'].grade }}段</div>
-                        <div class="col">总场次</div>
-                        <div class="col">最佳</div>
-                        <div class="col">胜场</div>
-                        <div class="col">胜率</div>
-                        <div class="col">评分</div>
-                        <div class="col">周排名</div>
-                    </div>
                 </div>
+                <hr>
                 {% endif %}
-
-                <div class="alert alert-info text-center fs-3">历史战绩</div>
                 <table class="table h5" id="table">
                     <thead class="table-dark">
                         <tr class="text-center">
                             <th scope="col">心法</th>
                             <th scope="col">比赛模式</th>
+                            <th scope="col">段位</th>
                             <th scope="col">评分变化</th>
                             <th scope="col">比赛时长</th>
                             <th scope="col">结束时间</th>
-                            <th scope="col">比赛结果</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for one in data.history %}
                         <tr class="text-center align-middle fs-5">
-                            <td>
+                            <td class="text-center">
                                 <img src="sect/{{ one.kungfu }}.png" width="40" height="40">
-                                <span class="badge bg-info fs-5">{{ one.kungfu }}</span>
                             </td>
                             <td>
-                                <p><span class="badge bg-success">{{ one.pvpType }}</span></p>
-                                <p>{{ one.avgGrade }}段局</p>
+                                {{ one.pvpType }}
+                            </td>
+                            <td>
+                                <strong>{{ one.avgGrade }}段</strong>
                             </td>
                             {% if one.won %}
-                            <td>{{ one.totalMmr }} <span class="badge bg-primary">+ {{ one.mmr
-                                    }}</span></td>
+                            <td>{{ one.totalMmr }} <img src="img/向上.svg" width="10" height="10"> <strong style="color:#2a830f;">{{one.mmr}}</strong></td>
                             {% else %}
-                            <td>{{ one.totalMmr }} <span class="badge bg-danger">- {{ one.mmr
-                                    }}</span></td>
+                            <td>{{ one.totalMmr }} <img src="img/向下.svg" width="10" height="10"> <strong style="color:#8f1313;">{{one.mmr}}</strong></td>
                             {% endif %}
                             <td>{{ one.time }}</td>
                             <td>{{ one.ago }}</td>
-                            {% if one.won %}
-                            <td class="text-primary"><span class="badge bg-primary fs-4">胜利</span></td>
-                            {% else %}
-                            <td class="text-danger"><span class="badge bg-danger fs-4">失败</span></td>
-                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>

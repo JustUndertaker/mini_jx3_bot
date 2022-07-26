@@ -57,7 +57,7 @@ class NLP:
             req: Response = await self.api.transmit_chat(
                 secretId=self.nlp_config.secretId,
                 secretKey=self.nlp_config.secretKey,
-                nickname=nickname,
+                name=nickname,
                 question=text,
             )
             if req.code == 200:

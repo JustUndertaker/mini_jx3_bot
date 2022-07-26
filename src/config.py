@@ -24,8 +24,8 @@ class NlpConfig(BaseModel, extra=Extra.ignore):
     nlp配置
     """
 
-    secretId: str = Field("", alias="nlp_secretId")
-    secretKey: str = Field("", alias="nlp_secretKey")
+    secretId: str = Field("", alias="nlp_secretid")
+    secretKey: str = Field("", alias="nlp_secretkey")
 
 
 class VoiceConfig(BaseModel, extra=Extra.ignore):

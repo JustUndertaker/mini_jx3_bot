@@ -37,7 +37,6 @@ class REGEX(Enum):
     日常任务 = r"^日常$|^日常 (?P<server>[\u4e00-\u9fa5]+)$"
     开服检查 = r"^开服$|^开服 (?P<server>[\u4e00-\u9fa5]+)$"
     金价比例 = r"^金价$|^金价 (?P<server>[\u4e00-\u9fa5]+)$"
-    沙盘图片 = r"^沙盘$|^沙盘 (?P<server>[\u4e00-\u9fa5]+)$"
     推荐小药 = r"^小药 (?P<value1>[\u4e00-\u9fa5]+)$|^(?P<value2>[\u4e00-\u9fa5]+)小药$"
     推荐装备 = r"^配装 (?P<value1>[\u4e00-\u9fa5]+)$|^(?P<value2>[\u4e00-\u9fa5]+)配装$"
     查宏命令 = r"^宏 (?P<value1>[\u4e00-\u9fa5]+)$|^(?P<value2>[\u4e00-\u9fa5]+)宏$"
@@ -65,9 +64,6 @@ server_query = on_regex(
 )
 gold_query = on_regex(
     pattern=REGEX.金价比例.value, permission=GROUP, priority=5, block=True
-)
-sand_query = on_regex(
-    pattern=REGEX.沙盘图片.value, permission=GROUP, priority=5, block=True
 )
 medicine_query = on_regex(
     pattern=REGEX.推荐小药.value, permission=GROUP, priority=5, block=True
@@ -265,16 +261,6 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
         f'其他平台：1元={data.get("5173")}金'
     )
     await gold_query.finish(msg)
-
-
-@sand_query.handle(parameterless=[cold_down(name="沙盘查询", cd_time=0)])
-async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
-    """沙盘查询"""
-    logger.info(
-        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 沙盘查询 | 请求：{server}"
-    )
-    # TODO: 后续实现
-    await sand_query.finish()
 
 
 @medicine_query.handle(parameterless=[cold_down(name="小药查询", cd_time=0)])

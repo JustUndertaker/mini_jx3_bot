@@ -22,7 +22,7 @@ from src.internal.jx3api import JX3API
 from src.internal.plugin_manager import plugin_manager
 from src.modules.group_info import GroupInfo
 from src.modules.user_info import UserInfo
-from src.params import GROUP_ADMIN, NoticeType, PluginConfig
+from src.params import GROUP_ADMIN, GroupSetting, NoticeType, PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
@@ -274,7 +274,7 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
         await get_notice.finish(msg)
 
     # 有人进群，发送欢迎语
-    flag = await GroupInfo.get_config_status(group_id, NoticeType.进群通知)
+    flag = await GroupInfo.get_config_status(group_id, GroupSetting.进群通知)
     robot_status = await GroupInfo.get_bot_status(group_id=group_id)
     msg = None
     if flag and robot_status:
@@ -307,7 +307,7 @@ async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
         await get_notice.finish()
 
     # 有人退群，发送退群消息
-    flag = await GroupInfo.get_config_status(group_id, NoticeType.离群通知)
+    flag = await GroupInfo.get_config_status(group_id, GroupSetting.离群通知)
     robot_status = await GroupInfo.get_bot_status(group_id=group_id)
     msg = None
     if flag and robot_status:
@@ -327,7 +327,7 @@ async def _(bot: Bot, event: FriendAddNoticeEvent):
             await bot.send_private_msg(user_id=user_id, message=msg)
         except Exception:
             pass
-    await get_notice.finish(msg)
+    await get_notice.finish()
 
 
 @get_notice.handle()
@@ -359,7 +359,7 @@ async def _():
         time_start = time.time()
         async for group_id in GroupList_Async(group_list):
             goodnight_status = await GroupInfo.get_config_status(
-                group_id, NoticeType.晚安通知
+                group_id, GroupSetting.晚安通知
             )
             robot_status = await GroupInfo.get_bot_status(group_id=group_id)
             if goodnight_status and robot_status:

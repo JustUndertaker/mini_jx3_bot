@@ -68,5 +68,5 @@ class JX3API:
     def __getattr__(self, name: str) -> _ApiCall:
         # 拼接url
         logger.debug(f"<y>jx3api请求功能:</y> | {name}")
-        url = self.config.api_url + name.replace("_", "/")
+        url = self.config.api_url + name.replace("_", "/", 1)
         return partial(self.call_api, url)

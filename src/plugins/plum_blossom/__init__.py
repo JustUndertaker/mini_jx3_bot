@@ -16,7 +16,7 @@ __plugin_meta__ = PluginMetadata(
     config=PluginConfig(cost_gold=5),
 )
 
-suangua = on_regex(pattern=r"^算(一)*卦$", permission=GROUP, priority=5, block=True)
+suangua = on_regex(pattern=r"^算(一){0,1}卦$", permission=GROUP, priority=5, block=True)
 
 
 @suangua.handle(parameterless=[cost_gold(gold=5)])

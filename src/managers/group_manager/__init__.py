@@ -327,7 +327,7 @@ async def _(bot: Bot, event: FriendAddNoticeEvent):
             await bot.send_private_msg(user_id=user_id, message=msg)
         except Exception:
             pass
-    await get_notice.finish(msg)
+    await get_notice.finish()
 
 
 @get_notice.handle()

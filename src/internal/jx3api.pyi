@@ -33,12 +33,30 @@ class JX3API:
             * `next`: 可选，查询天数，默认为0
         """
         ...
+    async def app_calculate(self, *, count: int = ...) -> Response:
+        """
+        说明:
+            搜索当天前后指定日期的日常信息
+
+        参数:
+            * `count`：可选，计算天数，搜索当天前后指定日期的日常信息
+        """
+        ...
     async def app_check(self, *, server: str) -> Response:
         """
         说明：
             检查目标服务器的开服状态，可用于开服监控。
 
         参数：
+            * `server`：服务器名
+        """
+        ...
+    async def app_status(self, *, server: str) -> Response:
+        """
+        说明:
+            检查指定区服的状态，不适用于开服监控
+
+        参数:
             * `server`：服务器名
         """
         ...
@@ -49,6 +67,15 @@ class JX3API:
 
         参数:
             * `server`：服务器名
+        """
+        ...
+    async def app_exam(self, *, question: str) -> Response:
+        """
+        说明:
+            搜索科举题目的答案，支持首字母，支持模糊搜索。
+
+        参数:
+            * `question`：科举题目，搜索目标题目答案
         """
         ...
     async def app_flower(
@@ -62,15 +89,6 @@ class JX3API:
             * `server`：服务器名
             * `map`：可选，用于筛选地图
             * `flower`：可选， 用于筛选鲜花
-        """
-        ...
-    async def app_exam(self, *, question: str) -> Response:
-        """
-        说明:
-            搜索科举题目的答案，支持首字母，支持模糊搜索。
-
-        参数:
-            * `question`：科举题目，搜索目标题目答案
         """
         ...
     async def app_furniture(self, *, name: str) -> Response:
@@ -154,15 +172,6 @@ class JX3API:
             * `name`：物品名称
         """
         ...
-    async def app_prices(self, *, name: str) -> Response:
-        """
-        说明:
-            搜索黑市的外观物品最新价格，数据来源于废牛助手。
-
-        参数:
-            * `name`：物品名称
-        """
-        ...
     async def app_horse(self, *, name: str) -> Response:
         """
         说明:
@@ -187,15 +196,6 @@ class JX3API:
             召唤一条骚话。
         """
         ...
-    async def app_movie(self, *, name: str) -> Response:
-        """
-        说明:
-            搜索某个物品的名称或编号。
-
-        参数:
-            * `name`：物品名称，支持物品编号，支持模糊搜索
-        """
-        ...
     async def app_require(self, *, name: str) -> Response:
         """
         说明:
@@ -212,6 +212,15 @@ class JX3API:
 
         参数:
             * `name`：奇遇名称
+        """
+        ...
+    async def next_price(self, *, name: str) -> Response:
+        """
+        说明:
+            搜索外观物品最新价格，统计了各个来源的数据，补充了更多的关键字。
+
+        参数:
+            * `name`： 外观简称
         """
         ...
     async def next_strategy(self, *, name: str) -> Response:
@@ -257,6 +266,46 @@ class JX3API:
         参数:
             * `server`：服务器名
             * `days`：可选，指定统计天数的触发次数，默认值7（统计七天内的记录）
+        """
+        ...
+    async def server_serendipity(self, *, serendipity: str) -> Response:
+        """
+        说明:
+            查询全服的指定奇遇数据。
+
+        参数:
+            * `serendipity`：奇遇名
+        """
+        ...
+    async def server_statistical(
+        self, *, serendipity: str, limit: int = ...
+    ) -> Response:
+        """
+        说明:
+            统计全服的指定奇遇触发记录。
+
+        参数:
+            * `serndipity`：奇遇名
+            * `limit`：可选，返回条目，支持1-50，默认20
+        """
+        ...
+    async def next_fall(self, *, server: str, name: str) -> Response:
+        """
+        说明:
+            查询特殊物品掉落情况
+
+        参数:
+            * `server`：服务器名
+            * `name`：特殊物品名称，如天乙玄晶
+        """
+        ...
+    async def next_sum(self, *, server: str) -> Response:
+        """
+        说明:
+            统计服务器掉落物品
+
+        参数:
+            * `server`：服务器名
         """
         ...
     async def next_seniority(
@@ -419,15 +468,6 @@ class JX3API:
             * `robot`：可选，用于自定义水印
         """
         ...
-    async def cloud_content(self, *, robot: str = ...) -> Response:
-        """
-        说明:
-            图片api，查看官方客户端更新内容。
-
-        参数:
-            * `robot`：可选，用于自定义水印
-        """
-        ...
     async def cloud_price(self, *, name: str, robot: str = ...) -> Response:
         """
         说明:
@@ -543,14 +583,89 @@ class JX3API:
             * `robot`：可选，用于自定义水印
         """
         ...
-    async def cloud_movie(self, *, name: str, robot: str = ...) -> Response:
+    async def cloud_server_demon(self, *, robot: str = ...) -> Response:
         """
         说明:
-            图片api，搜索某个物品的名称或编号。
+            图片api，统计全服的金价数据。
 
         参数:
-            * `name`：物品名称，支持物品编号，支持模糊搜索
             * `robot`：可选，用于自定义水印
+        """
+        ...
+    async def cloud_calculate(self, *, robot: str = ...) -> Response:
+        """
+        说明:
+            图片api，推算前后十五天的日常。
+
+        参数:
+            * `robot`：可选，用于自定义水印
+        """
+        ...
+    async def cloud_server_statistical(
+        self, *, serendipity: str, robot: str = ...
+    ) -> Response:
+        """
+        说明:
+            图片api，统计全服的奇遇数据。
+
+        参数:
+            * `serendipity`：奇遇名
+            * `robot`：可选，用于自定义水印
+        """
+        ...
+    async def cloud_server_serendipity(
+        self, *, serendipity: str, robot: str = ...
+    ) -> Response:
+        """
+        说明:
+            图片api，查询全服的奇遇数据。
+
+        参数:
+            * `serendipity`：奇遇名
+            * `robot`：可选，用于自定义水印
+        """
+        ...
+    async def cloud_fall(self, *, server: str, name: str, robot: str = ...) -> Response:
+        """
+        说明:
+            图片api，统计服务器物品掉落
+
+        参数:
+            * `server`：服务器名
+            * `name`：道具名
+        """
+        ...
+    async def cloud_sum(self, *, server: str, robot: str = ...) -> Response:
+        """
+        说明:
+            图片api，汇总服务器特殊掉落
+
+        参数:
+            * `server`：服务器名
+            * `robot`：可选，用于自定义水印
+        """
+        ...
+    async def cloud_firework(
+        self, *, server: str, name: str, robot: str = ...
+    ) -> Response:
+        """
+        说明:
+            图片api，查询指定玩家的烟花燃放记录。
+
+        参数:
+            * `server`：服务器名
+            * `name`：玩家名
+            * `robot`：可选，用于自定义水印
+        """
+        ...
+    async def cloud_circles(self, *, url: str = ..., text: str = ...) -> Response:
+        """
+        说明:
+            图片api，合成一张水墨圈圈的图片。
+
+        参数:
+            * `url`： 可选，图片链接，可以传入QQ号或者完整的URL,传入URL需要注意URL自身的拼接符
+            * `text`：可选，需要合成的字符串，建议输入角色名称
         """
         ...
     async def token_calculate(
@@ -588,24 +703,5 @@ class JX3API:
 
         参数:
             * `token`：ws token，不是api token
-        """
-        ...
-    async def next_fall(self, *, server: str, name: str) -> Response:
-        """
-        说明:
-            查询特殊物品掉落情况
-
-        参数:
-            * `server`：服务器名
-            * `name`：特殊物品名称，如天乙玄晶
-        """
-        ...
-    async def next_sum(self, *, server: str) -> Response:
-        """
-        说明:
-            统计服务器掉落物品
-
-        参数:
-            * `server`：服务器名
         """
         ...

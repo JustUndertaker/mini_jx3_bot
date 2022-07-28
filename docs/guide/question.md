@@ -40,7 +40,7 @@ convmv -f GBK -t utf-8  --notest ./*
 ::: tip token
 这是数据站[JX3API](https://www.jx3api.com)决定的，和本项目无关，按需购买。
 
-你可以在[这里](https://www.jx3api.shop)购买，token可以获得使用一些高级功能的权限。
+你可以在[这里](https://pay.jx3api.com)购买，token可以获得使用一些高级功能的权限。
 :::
 ## ticket问题
 ::: tip ticket

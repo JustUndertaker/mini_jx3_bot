@@ -14,7 +14,7 @@ from nonebot.adapters.onebot.v11 import (
     PokeNotifyEvent,
 )
 from nonebot.adapters.onebot.v11.permission import GROUP
-from nonebot.params import Depends, RegexDict
+from nonebot.params import Depends, Matcher, RegexDict
 from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 
@@ -146,6 +146,16 @@ async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
     msg_header = f"收到 | {user_name}({event.user_id}) | @群【{group_name}】({event.group_id}) | 的滴滴消息\n\n"
     msg[0] = MessageSegment.text(msg_header + str(msg[0])[3:])
     return msg
+
+
+def to_me():
+    """检测事件与机器人有关"""
+
+    async def check(matcher: Matcher, event: PokeNotifyEvent):
+        if not event.is_tome:
+            await matcher.finish()
+
+    return Depends(check)
 
 
 # ----------------------------------------------------------------
@@ -330,7 +340,7 @@ async def _(bot: Bot, event: FriendAddNoticeEvent):
     await get_notice.finish()
 
 
-@get_notice.handle()
+@get_notice.handle(parameterless=[to_me()])
 async def _(bot: Bot, event: PokeNotifyEvent):
     """群内戳一戳提醒"""
     data = await UserInfo.get_user_data(event.user_id, event.group_id)

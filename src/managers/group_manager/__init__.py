@@ -152,7 +152,7 @@ def to_me():
     """检测事件与机器人有关"""
 
     async def check(matcher: Matcher, event: PokeNotifyEvent):
-        if not event.is_tome:
+        if not event.is_tome():
             await matcher.finish()
 
     return Depends(check)

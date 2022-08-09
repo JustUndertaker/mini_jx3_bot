@@ -61,9 +61,9 @@ bot目录下的.env文件是本项目的配置文件，打开可以进行设置�
 # ============ nb2配置 ==================
 superusers = []                                     # 服务器超级用户
 nickname = ["团子"]                                 # 机器人昵称
-loglevel = "DEBUG"                                  # nb2日志等级，INFO,DEBUG,SUCCESS,ERROR
+log_level = "DEBUG"                                  # nb2日志等级，INFO,DEBUG,SUCCESS,ERROR
 host = 127.0.0.1                                    # nb服务器和端口
-port = 8000
+port = 8080
 
 # ============= 项目配置 =================
 

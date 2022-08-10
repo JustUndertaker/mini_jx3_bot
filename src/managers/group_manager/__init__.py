@@ -1,6 +1,7 @@
 import asyncio
 import random
 import time
+from typing import Union
 
 from nonebot import get_bots, on_notice, on_regex
 from nonebot.adapters.onebot.v11 import (
@@ -158,6 +159,32 @@ def to_me():
     return Depends(check)
 
 
+def bot_income():
+    """通知事件是否与机器人相关"""
+
+    async def check(
+        matcher: Matcher,
+        event: Union[GroupIncreaseNoticeEvent, GroupDecreaseNoticeEvent],
+    ):
+        if event.self_id != event.user_id:
+            await matcher.skip()
+
+    return Depends(check)
+
+
+def someone_income():
+    """通知事件与机器人无关"""
+
+    async def check(
+        matcher: Matcher,
+        event: Union[GroupIncreaseNoticeEvent, GroupDecreaseNoticeEvent],
+    ):
+        if event.self_id == event.user_id:
+            await matcher.skip()
+
+    return Depends(check)
+
+
 # ----------------------------------------------------------------
 #  matcher实现
 # ----------------------------------------------------------------
@@ -239,51 +266,44 @@ async def _(bot: Bot, event: GroupMessageEvent, msg: Message = Depends(get_didi_
     await didi.finish()
 
 
-@get_notice.handle()
+@get_notice.handle(parameterless=[bot_income()])
 async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
-    """群成员增加事件"""
-    # 判断是否为自己
+    """机器人被邀请进群"""
     group_id = event.group_id
-    if event.self_id == event.user_id:
-        # 机器人被邀请进群，注册消息
-        group = await bot.get_group_info(group_id=group_id)
-        group_name = group["group_name"]
-        logger.info(
-            f"加入群【<g>{group_name}</g>】({str(group_id)}) | 操作者：<y>{str(event.operator_id)}</y>"
+    # 机器人被邀请进群，注册消息
+    group = await bot.get_group_info(group_id=group_id)
+    group_name = group["group_name"]
+    logger.info(
+        f"加入群【<g>{group_name}</g>】({str(group_id)}) | 操作者：<y>{str(event.operator_id)}</y>"
+    )
+    # 注册群信息
+    await GroupInfo.group_init(group_id, group_name)
+    # 注册插件
+    await plugin_manager.load_plugins(group_id)
+    # 注册成员信息
+    member_list = await bot.get_group_member_list(group_id=group_id)
+    for one_member in member_list:
+        user_id = one_member["user_id"]
+        user_name = (
+            one_member["nickname"] if one_member["card"] == "" else one_member["card"]
         )
-        # 注册群信息
-        await GroupInfo.group_init(group_id, group_name)
-        # 注册插件
-        await plugin_manager.load_plugins(group_id)
-        # 注册成员信息
-        member_list = await bot.get_group_member_list(group_id=group_id)
-        for one_member in member_list:
-            user_id = one_member["user_id"]
-            user_name = (
-                one_member["nickname"]
-                if one_member["card"] == ""
-                else one_member["card"]
-            )
-            await UserInfo.user_init(user_id, group_id, user_name)
+        await UserInfo.user_init(user_id, group_id, user_name)
 
-        # 给管理员发送消息
-        superusers = list(bot.config.superusers)
-        msg = f"我加入了群【{group_name}】({str(group_id)})！"
-        for user in superusers:
-            try:
-                await bot.send_private_msg(user_id=int(user), message=msg)
-            except Exception:
-                pass
+    # 给管理员发送消息
+    superusers = list(bot.config.superusers)
+    msg = f"我加入了群【{group_name}】({str(group_id)})！"
+    for user in superusers:
+        try:
+            await bot.send_private_msg(user_id=int(user), message=msg)
+        except Exception:
+            pass
+    await get_notice.finish()
 
-        # 发送欢迎语
-        msg = None
-        robot_status = await GroupInfo.get_bot_status(group_id=group_id)
-        if robot_status:
-            nickname = list(bot.config.nickname)[0]
-            msg = f"{nickname}驾到，有什么问题来问我吧！"
-        await get_notice.finish(msg)
 
-    # 有人进群，发送欢迎语
+@get_notice.handle(parameterless=[someone_income()])
+async def _(event: GroupIncreaseNoticeEvent):
+    """其他人进群"""
+    group_id = event.group_id
     flag = await GroupInfo.get_config_status(group_id, GroupSetting.进群通知)
     robot_status = await GroupInfo.get_bot_status(group_id=group_id)
     msg = None
@@ -292,31 +312,33 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
     await get_notice.finish(msg)
 
 
-@get_notice.handle()
+@get_notice.handle(parameterless=[bot_income()])
 async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
-    """有人离群事件"""
-    # 判断是否为自己
+    """机器人被踢出群"""
     group_id = event.group_id
-    if event.self_id == event.user_id:
-        # 注销数据
-        await source.bot_group_quit(group_id)
+    # 注销数据
+    await source.bot_group_quit(group_id)
 
-        # 给管理员发送消息
-        superusers = list(bot.config.superusers)
-        for user in superusers:
-            try:
-                group = await bot.get_group_info(group_id=group_id)
-                group_name = group["group_name"]
-                logger.info(
-                    f"退出群【<g>{group_name}</g>】({str(group_id)}) | 操作者：<y>{str(event.operator_id)}</y>"
-                )
-                msg = f"我退出了群【{group_name}】({str(group_id)})！"
-                await bot.send_private_msg(user_id=int(user), message=msg)
-            except Exception:
-                pass
-        await get_notice.finish()
+    # 给管理员发送消息
+    superusers = list(bot.config.superusers)
+    for user in superusers:
+        try:
+            group = await bot.get_group_info(group_id=group_id)
+            group_name = group["group_name"]
+            logger.info(
+                f"退出群【<g>{group_name}</g>】({str(group_id)}) | 操作者：<y>{str(event.operator_id)}</y>"
+            )
+            msg = f"我退出了群【{group_name}】({str(group_id)})！"
+            await bot.send_private_msg(user_id=int(user), message=msg)
+        except Exception:
+            pass
+    await get_notice.finish()
 
-    # 有人退群，发送退群消息
+
+@get_notice.handle(parameterless=[someone_income()])
+async def _(event: GroupDecreaseNoticeEvent):
+    """群员离开事件"""
+    group_id = event.group_id
     flag = await GroupInfo.get_config_status(group_id, GroupSetting.离群通知)
     robot_status = await GroupInfo.get_bot_status(group_id=group_id)
     msg = None

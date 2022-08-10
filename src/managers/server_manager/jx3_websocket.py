@@ -79,15 +79,15 @@ class Jx3WebSocket(object):
             else:
                 logger.error(f"<r>未知的ws消息类型：{data}</r>")
         except Exception:
-            logger.success(f"<g>{ws_obj}</g>")
+            logger.error(f"未知ws消息：<g>{ws_obj}</g>")
 
-    async def init(self) -> bool:
+    async def init(self) -> Optional[bool]:
         """
         说明:
             初始化实例并连接ws服务器
         """
         if self.connect:
-            return
+            return None
 
         ws_path = jx3api_config.ws_path
         ws_token = jx3api_config.ws_token
@@ -107,7 +107,7 @@ class Jx3WebSocket(object):
                 )
                 asyncio.create_task(self._task())
                 logger.debug("<g>ws_server</g> | ws连接成功！")
-                await self._raise_notice("jx3api > ws已连接！")
+                # await self._raise_notice("jx3api > ws已连接！")
                 break
             except Exception as e:
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
@@ -115,7 +115,9 @@ class Jx3WebSocket(object):
 
         if not self.connect:
             # 未连接成功，发送消息给bot，如果有
-            await self._raise_notice("jx3api > 连接ws服务器失败，请查看日志或者重连。")
+            await self._raise_notice("jx3api > ws服务器连接失败，请查看日志或者重连。")
+            return False
+        return True
 
     async def close(self):
         """关闭ws链接"""

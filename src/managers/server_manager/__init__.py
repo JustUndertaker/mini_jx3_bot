@@ -115,11 +115,14 @@ async def _(event: PrivateMessageEvent):
 @connect_ws.handle()
 async def _(event: PrivateMessageEvent):
     """连接服务器"""
-    if ws_client.closed:
-        await ws_client.init()
-        msg = "正在连接服务器..."
-    else:
-        msg = "连接正常，请不要重复连接。"
+    if not ws_client.closed:
+        await connect_ws.finish("连接正常，请不要重复连接。")
+
+    await connect_ws.send("正在连接服务器...")
+    flag = await ws_client.init()
+    msg = None
+    if flag:
+        msg = "jx3api > ws已连接！"
     await connect_ws.finish(msg)
 
 

@@ -26,7 +26,8 @@ class TicketInfo(Model):
         返回:
             * `Optional[str]`：ticket值，None则没有
         """
-        record = await cls.get_or_none(alive=True)
+        record = await cls.filter(alive=True).first()
+        # record = await cls.get_or_none(alive=True)
         if record:
             return record.ticket
         return None

@@ -212,7 +212,6 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
         f'今日战场：{data.get("battle","未知")}\n'
         f'公共任务：{data.get("relief","未知")}\n'
         f'阵营任务：{data.get("camp","未知")}\n'
-        f'阵营任务：{data.get("camp","未知")}\n'
         f'{DAILIY_LIST.get(data.get("week", "未知"))}'
     )
     if data.get("draw"):

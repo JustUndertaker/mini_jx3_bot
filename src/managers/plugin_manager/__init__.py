@@ -47,9 +47,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
 # -----------------------------------------------------------------------------
 # Depends: 依赖注入函数
 # -----------------------------------------------------------------------------
-async def get_group_setting(
-    matcher: Matcher, regex_dict: dict = RegexDict()
-) -> GroupSetting:
+def get_group_setting(matcher: Matcher, regex_dict: dict = RegexDict()) -> GroupSetting:
     """
     获取群设置类型
     """
@@ -71,7 +69,7 @@ async def get_group_setting(
         case "扶摇监控":
             return GroupSetting.扶摇监控
         case _:
-            await matcher.skip()
+            matcher.skip()
 
 
 async def get_plugin_name(matcher: Matcher, regex_dict: dict = RegexDict()) -> str:

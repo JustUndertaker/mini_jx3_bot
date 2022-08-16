@@ -359,8 +359,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     """攻略查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 攻略查询 | 请求：{name}")
-    token = api.config.api_token
-    if token != "":
+    if api.config.api_token:
         response = await api.next_strategy(name=name)
     else:
         response = await api.app_strategy(name=name)
@@ -407,7 +406,10 @@ async def _(event: GroupMessageEvent):
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     """物价查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 物价查询 | 请求：{name}")
-    response = await api.app_price(name=name)
+    if api.config.api_token:
+        response = await api.next_price(name=name)
+    else:
+        response = await api.app_price(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await price_query.finish(msg)
@@ -551,8 +553,7 @@ async def _(
 @help.handle()
 async def _(event: GroupMessageEvent):
     """帮助"""
-    token = api.config.api_token
-    flag = token != ""
+    flag = bool(api.config.api_token)
     pagename = "查询帮助.html"
     img = await browser.template_to_image(pagename=pagename, flag=flag)
     await help.finish(MessageSegment.image(img))

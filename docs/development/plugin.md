@@ -79,6 +79,9 @@ __plugin_meta__ = PluginMetadata(
 )
 # 此插件默认开关为关闭
 ```
+::: tip 对于商店安装的插件
+使用pip或者nb plugin安装的商店插件会保存到pip的``site-packages``目录下（对于conda，他应该保存在``conda/envs/evn_name/Lib/site-packages``下），你可以将插件复制到本地插件文件夹下将其变为本地插件，然后添加元数据；也可以直接在此文件夹下修改内容添加元数据（修改后更新插件需要同步修改）
+:::
 ## 使用金币工具
 如果你想让你的插件每次被调用都会扣掉金币，则可以参考以下方法：
 ```python

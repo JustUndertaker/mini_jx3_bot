@@ -1,18 +1,45 @@
+## 插件编写指南
+::: tip 指南
+可以参考本项目内置插件编写，也可以参考：[官方文档](https://v2.nonebot.dev/docs/tutorial/plugin/introduction)
+:::
 ## 在plugins下创建新的插件
 你的插件只需要在``src/plugins/``下创建新的文件夹即可，插件会自动导入。
 ::: tip 注意插件名称
 nb2中“_”开头的插件不会被导入，请不要创建这种插件，或者选择手动导入。
 :::
-::: warning 安装nb2商店插件
-由于插件管理器的缘故，nb2商店安装的插件将无法适用于此插件管理器，意思是你无法通过指令开关该插件，并且菜单中无法显示；同时，由于项目没有``pyproject.toml``你在商店安装的插件需要手动加载，你需要在``bot.py``25行后加入：
-```python
+## 安装nb2插件商店的插件
+本项目使用nonebot2框架，支持插件商店安装插件，商店地址：[传送门](https://v2.nonebot.dev/store)
+::: danger 元数据
+由于本项目的插件管理器使用额外的插件元数据配置管理，商店插件没有此项配置，这将导致：
+ - 你无法使用“菜单”命令查看到已加载的该插件
+ - 你无法使用“打开/关闭”命令设置该插件开关
+
+如果需要适配插件管理器，可以参考[#添加插件元数据](#添加插件元数据)
+:::
+### 使用pip或者nb plugin命令安装
+::: warning 注意
+由于项目不使用``pyproject.toml``管理插件加载，所以使用命令安装插件：
+``` bash
+nb plugin install plugin_name
+```
+会提示错误：
+``` bash
+RuntimeError('Config file .../pyproject.toml does not exist!')
+```
+忽略此错误，采用手动加载插件。
+:::
+::: tip 从bot.py加载插件
+在bot.py的25行后加入：
+``` python
 nonebot.load_plugin("商店插件名称")
 ```
-如果想要适配本项目，推荐使用git下载到本地，然后放入``src/plugins``下，手动添加插件元数据。
-或者在``site-packages``的插件目录下手动添加（误入歧途
 :::
-## 使用插件元数据
-nb2在beta4中加入了插件元数据，这非常好，请在插件文件夹下的``__init__.py``中加入：
+### 使用git安装插件
+::: tip 使用git安装插件
+可以在github将插件源码下载到本地，插件文件夹放入``src/plugins``下，这样商店插件会当作本地插件自动导入了，不需要额外添加加载插件代码。
+:::
+## 添加插件元数据
+nb2在beta4中加入了插件元数据，本项目插件管理器基于此数据进行插件管理，要使用元数据，需要在插件文件夹下的``__init__.py``中加入：
 ```python
 from nonebot.plugin import PluginMetadata
 
@@ -73,9 +100,4 @@ __plugin_meta__ = PluginMetadata(
     config=PluginConfig(cost_gold=10),  # 这里在菜单显示
 )
 ```
-:::
-## 插件编写
-插件如何编写请参考Nonebot2的手册：[文档](https://v2.nonebot.dev/docs/tutorial/plugin/introduction)
-::: tip 编写插件乐趣
-完成自己写的插件是非常快乐的事，相信我！
 :::

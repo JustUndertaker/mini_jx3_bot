@@ -1,26 +1,17 @@
-## Go-cqhttp配置
-::: tip config
-具体配置请参考gocq的[文档](https://docs.go-cqhttp.org/guide/config.html)，在本项目下，你可能需要修改以下：
-:::
-```yaml
-message:
-  # 上报数据类型
-  # 可选: string,array
-  post-format: array
-
-servers:
-  - ws-reverse:
-      # 反向WS Universal 地址
-      # 注意 设置了此项地址后下面两项将会被忽略
-      universal: ws://127.0.0.1:8080/onebot/v11/ws
-```
 ## linux下安装python
-::: tip
-linux系统推荐使用ubuntu20+，自带python3.8，而且apt可以获取3.10
+::: tip 使用ubuntu
+linux系统推荐使用ubuntu20+，可以使用apt获取python3.10
 :::
 ```bash
-sudo apt-get install python3.8
+sudo apt-get install python3.10
 ```
+::: tip 使用conda
+linux和windows一样也可以使用conda获取python，同时进行虚拟环境管理，推荐使用此方式。miniconda安装地址：[传送门](https://docs.conda.io/en/latest/miniconda.html#linux-installers)
+``` bash
+conda create -n env_name python=3.10
+conda activate env_name
+```
+:::
 如果需要编译安装，请自行查找相关资料
 ## 截图中文方框问题
 ::: tip 字体问题

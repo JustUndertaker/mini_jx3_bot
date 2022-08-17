@@ -56,13 +56,16 @@ conda install --yes --file requirements.txt
 ```
 :::
 ## 设置配置
+### 项目配置
+::: tip config
 bot目录下的.env文件是本项目的配置文件，打开可以进行设置：
+:::
 ```dot
 # ============ nb2配置 ==================
-superusers = []                                     # 服务器超级用户
+superusers = [""]                                   # 服务器超级用户，就是机器人管理员，一般填你的主人qq号
 nickname = ["团子"]                                 # 机器人昵称
-log_level = "DEBUG"                                  # nb2日志等级，INFO,DEBUG,SUCCESS,ERROR
-host = 127.0.0.1                                    # nb服务器和端口
+log_level = "INFO"                                  # nb2日志等级，INFO,DEBUG,SUCCESS,ERROR
+host = 127.0.0.1                                    # nb服务器地址和端口
 port = 8080
 
 # ============= 项目配置 =================
@@ -72,6 +75,22 @@ jx3api_ws_path = "wss://socket.nicemoe.cn"          # ws连接地址
 jx3api_ws_token =  ""                               # ws的token授权，关联ws服务器推送消息类型
 jx3api_url = "https://www.jx3api.com"               # 主站地址
 jx3api_token = ""                                   # 主站token，不填将不能访问高级功能接口
+```
+### gocq配置
+::: tip config
+具体配置请参考gocq的[文档](https://docs.go-cqhttp.org/guide/config.html)，在本项目下，你可能需要修改gocq的config.yml如下：
+:::
+```yaml
+message:
+  # 上报数据类型
+  # 可选: string,array
+  post-format: array
+
+servers:
+  - ws-reverse:
+      # 反向WS Universal 地址
+      # 注意 设置了此项地址后下面两项将会被忽略
+      universal: ws://127.0.0.1:8080/onebot/v11/ws
 ```
 ## 运行机器人
 ::: tip 运行nb2

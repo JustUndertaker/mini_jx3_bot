@@ -14,7 +14,8 @@
         <div class="card" style="background-image: url('img/bg.png');">
             <div class="card-header">
                 <div style="text-align:center; margin:10px">
-                    <h2><img src="sect/{{ data.kungfu }}.png" height="50" width="50"><strong> {{server}} • {{name}}</strong></h2>
+                    <h2><img src="sect/{{ data.kungfu }}.png" height="50" width="50"><strong> {{server}} •
+                            {{name}}</strong></h2>
                 </div>
             </div>
             <div class="card-body">
@@ -29,38 +30,39 @@
                     {% endfor %}
                 </div>
                 <hr>
-                <h2><strong>装备分数：{{ data.score }}</strong></h2>
+                <h2 class="text-center"><strong>装备分数：{{ data.score }}</strong></h2>
                 <hr>
                 {% endif %}
                 <!--角色装备-->
                 <div class="row">
                     {% for one in data.equip %}
-                        <div class="row">
-                            <div class="col-1">
-                                <div style="border: 3px solid {{one.color}}; margin: 0 -10px 0 0;">
-                                    <img src="{{ one.icon }}" width="70" height="70">
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <p style="margin:1px;font-size: 25px;"><strong style="color: {{one.color}};">{{ one.name }}</strong>({{one.quality}})</p>
-                                <p style="margin:1px;">{{ one.modifyType }}</p>
-                                <p style="margin:1px;color: darkgray;">{{ one.source }}</p>
-                            </div>
-                            <div class="col text-end fs-5 offset-md-3 justify-content-end">
-                                <p style="margin:1px;">
-                                    {% for i in range(one.strengthLevel) %}
-                                    <img src="img/star.png" width="25" height="25">
-                                    {% endfor %}
-                                </p>
-                                <p style="margin:1px;color:cornflowerblue;">{{ one.permanentEnchant }}</p>
-                                <p style="margin:1px;">
-                                    {% for icon in one.fiveStone %}
-                                    <img src="{{ icon }}" width="30" height="30">
-                                    {% endfor %}
-                                </p>
+                    <div class="row">
+                        <div class="col-1">
+                            <div style="border: 3px solid {{one.color}}; margin: 0 -10px 0 0;">
+                                <img src="{{ one.icon }}" width="70" height="70">
                             </div>
                         </div>
-                        <hr>
+                        <div class="col-4">
+                            <p style="margin:1px;font-size: 25px;"><strong style="color: {{one.color}};">{{ one.name
+                                    }}</strong>({{one.quality}})</p>
+                            <p style="margin:1px;">{{ one.modifyType }}</p>
+                            <p style="margin:1px;color: darkgray;">{{ one.source }}</p>
+                        </div>
+                        <div class="col text-end fs-5 offset-md-3 justify-content-end">
+                            <p style="margin:1px;">
+                                {% for i in range(one.strengthLevel) %}
+                                <img src="img/star.png" width="25" height="25">
+                                {% endfor %}
+                            </p>
+                            <p style="margin:1px;color:cornflowerblue;">{{ one.permanentEnchant }}</p>
+                            <p style="margin:1px;">
+                                {% for icon in one.fiveStone %}
+                                <img src="{{ icon }}" width="30" height="30">
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                    <hr>
                     {% endfor %}
 
                 </div>

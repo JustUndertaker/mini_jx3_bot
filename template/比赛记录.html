@@ -7,15 +7,16 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>战绩查询</title>
     <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <div  id="main" class="container">
+    <div id="main" class="container">
         <div class="card" style="background-image: url('img/bg.png');">
             <div class="card-header">
                 <div style="text-align:center; margin:10px">
-                    <h3><img src="./img/{{data.camp}}.png" height="40" width="48"><strong> {{server}} • {{name}}</strong></h3>
+                    <h3><img src="./img/{{data.camp}}.png" height="40" width="48"><strong> {{server}} •
+                            {{name}}</strong></h3>
                 </div>
             </div>
             <div class="card-body">
@@ -112,9 +113,11 @@
                                 <strong>{{ one.avgGrade }}段</strong>
                             </td>
                             {% if one.won %}
-                            <td>{{ one.totalMmr }} <img src="img/向上.svg" width="10" height="10"> <strong style="color:#2a830f;">{{one.mmr}}</strong></td>
+                            <td>{{ one.totalMmr }} <img src="img/up.png" width="10" height="10"> <strong
+                                    style="color:#2a830f;">{{one.mmr}}</strong></td>
                             {% else %}
-                            <td>{{ one.totalMmr }} <img src="img/向下.svg" width="10" height="10"> <strong style="color:#8f1313;">{{one.mmr}}</strong></td>
+                            <td>{{ one.totalMmr }} <img src="img/down.png" width="10" height="10"> <strong
+                                    style="color:#8f1313;">{{one.mmr}}</strong></td>
                             {% endif %}
                             <td>{{ one.time }}</td>
                             <td>{{ one.ago }}</td>

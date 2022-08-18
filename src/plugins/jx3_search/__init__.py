@@ -51,6 +51,7 @@ class REGEX(Enum):
     奇遇汇总 = r"^汇总$|^汇总 (?P<server>[\u4e00-\u9fa5]+)$"
     比赛战绩 = r"^战绩 (?P<value1>[\S]+)$|^战绩 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
     装备属性 = r"^(?:(?:装备)|(?:属性)) (?P<value1>[\S]+)$|^(?:(?:装备)|(?:属性)) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    烟花记录 = r"^烟花 (?P<value1>[\S]+)$|^烟花 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
 
 
 # ----------------------------------------------------------------
@@ -106,6 +107,9 @@ match_query = on_regex(
 )
 equip_query = on_regex(
     pattern=REGEX.装备属性.value, permission=GROUP, priority=5, block=True
+)
+firework_query = on_regex(
+    pattern=REGEX.烟花记录.value, permission=GROUP, priority=5, block=True
 )
 help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 
@@ -547,6 +551,30 @@ async def _(
         pagename=pagename, server=server, name=name, data=get_data
     )
     await equip_query.finish(MessageSegment.image(img))
+
+
+@firework_query.handle(parameterless=[cold_down(name="烟花记录", cd_time=10)])
+async def _(
+    event: GroupMessageEvent,
+    server: str = Depends(get_server),
+    name: str = Depends(get_value),
+):
+    """烟花记录查询"""
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 烟花记录查询 | 请求：server:{server},name:{name}"
+    )
+    response = await api.role_firework(server=server, name=name)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
+        await firework_query.finish(msg)
+
+    data = response.data
+    get_data = source.handle_data_firework(data)
+    pagename = "烟花记录.html"
+    img = await browser.template_to_image(
+        pagename=pagename, server=server, name=name, data=get_data
+    )
+    await firework_query.finish(MessageSegment.image(img))
 
 
 @help.handle()

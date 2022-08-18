@@ -1,6 +1,10 @@
 import time
 from datetime import datetime
 
+from pydantic import parse_obj_as
+
+from .config import FireWorkRecord
+
 # -------------------------------------------------------------
 # 返回数据处理阶段，处理api返回data，方便模板使用
 # -------------------------------------------------------------
@@ -218,4 +222,20 @@ def handle_data_equip(data: dict) -> dict:
         data_qixue.append(one_data)
     req_data["qixue"] = data_qixue
 
+    return req_data
+
+
+def handle_data_firework(data: list[dict]) -> list[dict]:
+    """处理烟花数据"""
+    list_data = parse_obj_as(list[FireWorkRecord], data)
+    req_data = []
+    last = list_data[0]
+    last.times -= 1
+    for one in list_data:
+        if one == last:
+            last.times += 1
+        else:
+            req_data.append(last.dict())
+            last = one
+    req_data.append(last.dict())
     return req_data

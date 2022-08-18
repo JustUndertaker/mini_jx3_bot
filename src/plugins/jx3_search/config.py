@@ -1,5 +1,8 @@
+from datetime import date
 from enum import Enum
 from typing import Optional
+
+from pydantic import BaseModel, Extra, validator
 
 """剑网三查询插件配置"""
 
@@ -82,3 +85,36 @@ DAILIY_LIST = {
     "日": "攻防前置：昆仑(12:00)\n阵营攻防：恶人谷；奇袭：浩气盟(13:00，19:00)\n",
 }
 """日常任务对应表"""
+
+
+class FireWorkRecord(BaseModel, extra=Extra.ignore):
+    """烟花记录"""
+
+    server: str
+    """服务器名"""
+    name: str
+    """烟花名"""
+    map: str
+    """地图名"""
+    sender: str
+    """发送方"""
+    recipient: str
+    """接收方"""
+    time: str
+    """时间"""
+    times: int = 1
+    """计数"""
+
+    @validator("time", pre=True)
+    def check_status(cls, v):
+        return date.fromtimestamp(v).strftime("%Y-%m-%d")
+
+    def __eq__(self, other: "FireWorkRecord"):
+        return (
+            self.server == other.server
+            and self.map == other.map
+            and self.name == other.name
+            and self.sender == other.sender
+            and self.recipient == other.recipient
+            and self.time == other.time
+        )

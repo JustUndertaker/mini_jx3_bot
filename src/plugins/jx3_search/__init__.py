@@ -289,6 +289,21 @@ def get_type():
     return Depends(dependency)
 
 
+def get_camp():
+    """帮会排名-获取阵营"""
+
+    async def dependency(matcher: Matcher, name: str = Depends(get_value)) -> str:
+        match name:
+            case "浩气" | "浩气盟":
+                return "浩气"
+            case "恶人" | "恶人谷":
+                return "恶人"
+            case _:
+                await matcher.finish("请输入正确的阵营名！")
+
+    return Depends(dependency)
+
+
 def cold_down(name: str, cd_time: int) -> None:
     """
     说明:
@@ -785,6 +800,33 @@ async def _(
 
     data = response.data
     pagename = "个人排行.html"
+    img = await browser.template_to_image(
+        pagename=pagename, server=server, type=type_, data=data
+    )
+    await matcher.finish(MessageSegment.image(img))
+
+
+@aixin_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+@shenbing_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+async def _(
+    matcher: Matcher,
+    event: GroupMessageEvent,
+    server: str = Depends(get_server),
+    type_: str = get_type(),
+    camp: str = get_camp(),
+):
+    """帮会排名"""
+    type_ = camp + type_
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | {type_} | 请求：server:{server}"
+    )
+    response = await api.rank_faction(server=server, type=type_)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
+        await matcher.finish(msg)
+
+    data = response.data
+    pagename = "帮会排行.html"
     img = await browser.template_to_image(
         pagename=pagename, server=server, type=type_, data=data
     )

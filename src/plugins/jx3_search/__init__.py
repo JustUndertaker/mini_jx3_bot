@@ -54,6 +54,17 @@ class REGEX(Enum):
     装备属性 = r"^(?:(?:装备)|(?:属性)) (?P<value1>[\S]+)$|^(?:(?:装备)|(?:属性)) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
     烟花记录 = r"^烟花 (?P<value1>[\S]+)$|^烟花 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
     招募查询 = r"^招募$|^招募 (?P<server1>[\u4e00-\u9fa5]+)$|^招募 (?P<server2>[\u4e00-\u9fa5]+) (?P<keyword>[\u4e00-\u9fa5]+)$"
+    资历榜 = r"^资历榜$|^资历榜 (?P<server1>[\u4e00-\u9fa5]+)$|^资历榜 (?P<server2>[\u4e00-\u9fa5]+) (?P<keyword>[\u4e00-\u9fa5]+)$"
+    声望榜 = r"^(?P<type1>声望榜)$|^(?P<type2>声望榜) (?P<server>[\u4e00-\u9fa5]+)$"
+    老江湖 = r"^(?P<type1>老江湖)$|^(?P<type2>老江湖) (?P<server>[\u4e00-\u9fa5]+)$"
+    兵甲榜 = r"^(?P<type1>兵甲榜)$|^(?P<type2>兵甲榜) (?P<server>[\u4e00-\u9fa5]+)$"
+    名师榜 = r"^(?P<type1>名师榜)$|^(?P<type2>名师榜) (?P<server>[\u4e00-\u9fa5]+)$"
+    战阶榜 = r"^(?P<type1>战阶榜)$|^(?P<type2>战阶榜) (?P<server>[\u4e00-\u9fa5]+)$"
+    薪火榜 = r"^(?P<type1>薪火榜)$|^(?P<type2>薪火榜) (?P<server>[\u4e00-\u9fa5]+)$"
+    梓行榜 = r"^(?P<type1>梓行榜)$|^(?P<type2>梓行榜) (?P<server>[\u4e00-\u9fa5]+)$"
+    爱心榜 = r"^(?P<type1>爱心榜) (?P<value1>[\S]+)$|^(?P<type2>爱心榜) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    神兵榜 = r"^(?P<type1>神兵榜) (?P<value1>[\S]+)$|^(?P<type2>神兵榜) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    试炼榜 = r"^(?P<type1>试炼榜) (?P<value1>[\S]+)$|^(?P<type2>试炼榜) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
 
 
 # ----------------------------------------------------------------
@@ -116,6 +127,34 @@ firework_query = on_regex(
 recruit_query = on_regex(
     pattern=REGEX.招募查询.value, permission=GROUP, priority=5, block=True
 )
+zili_query = on_regex(pattern=REGEX.资历榜.value, permission=GROUP, priority=5, block=True)
+shengwang_query = on_regex(
+    pattern=REGEX.声望榜.value, permission=GROUP, priority=5, block=True
+)
+laojianghu_query = on_regex(
+    pattern=REGEX.老江湖.value, permission=GROUP, priority=5, block=True
+)
+bingjia_query = on_regex(
+    pattern=REGEX.兵甲榜.value, permission=GROUP, priority=5, block=True
+)
+mingshi_query = on_regex(
+    pattern=REGEX.名师榜.value, permission=GROUP, priority=5, block=True
+)
+zhanjie_query = on_regex(
+    pattern=REGEX.战阶榜.value, permission=GROUP, priority=5, block=True
+)
+zixing_query = on_regex(
+    pattern=REGEX.梓行榜.value, permission=GROUP, priority=5, block=True
+)
+aixin_query = on_regex(
+    pattern=REGEX.爱心榜.value, permission=GROUP, priority=5, block=True
+)
+shenbing_query = on_regex(
+    pattern=REGEX.神兵榜.value, permission=GROUP, priority=5, block=True
+)
+shilian_query = on_regex(
+    pattern=REGEX.试炼榜.value, permission=GROUP, priority=5, block=True
+)
 help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 
 
@@ -166,8 +205,8 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> st
     await matcher.finish(msg)
 
 
-def recruit_server():
-    """招募查询-获取server"""
+def get_server_with_keyword():
+    """获取server，会判断是不是keyword"""
 
     async def dependency(
         matcher: Matcher, event: GroupMessageEvent, regex_dict: dict = RegexDict()
@@ -197,7 +236,7 @@ def recruit_server():
     return Depends(dependency)
 
 
-def recruit_keyword():
+def get_keyword():
     """招募查询-关键字"""
 
     async def dependency(regex_dict: dict = RegexDict()) -> Optional[str]:
@@ -214,6 +253,38 @@ def recruit_keyword():
         else:
             keyword = None
         return keyword
+
+    return Depends(dependency)
+
+
+def get_type():
+    """排行榜-获取类型"""
+
+    def dependency(regex_dict: dict = RegexDict()) -> str:
+        _type = regex_dict.get("type2")
+        if not _type:
+            _type = regex_dict.get("type1")
+        match _type:
+            case "声望榜":
+                return "名士五十强"
+            case "老江湖":
+                return "老江湖五十强"
+            case "兵甲榜":
+                return "兵甲藏家五十强"
+            case "名师榜":
+                return "名师五十强"
+            case "战阶榜":
+                return "阵营英雄五十强"
+            case "薪火榜":
+                return "薪火相传五十强"
+            case "梓行榜":
+                return "庐园广记一百强"
+            case "爱心榜":
+                return "爱心帮会五十强"
+            case "神兵榜":
+                return "神兵宝甲五十强"
+            case _:
+                return ""
 
     return Depends(dependency)
 
@@ -637,8 +708,8 @@ async def _(
 @recruit_query.handle(parameterless=[cold_down(name="招募查询", cd_time=10)])
 async def _(
     event: GroupMessageEvent,
-    server: str = recruit_server(),
-    keyword: Optional[str] = recruit_keyword(),
+    server: str = get_server_with_keyword(),
+    keyword: Optional[str] = get_keyword(),
 ):
     """招募查询"""
     logger.info(
@@ -660,6 +731,64 @@ async def _(
         data=get_data,
     )
     await recruit_query.finish(MessageSegment.image(img))
+
+
+@zili_query.handle(parameterless=[cold_down(name="资历排行", cd_time=10)])
+async def _(
+    event: GroupMessageEvent,
+    server: str = get_server_with_keyword(),
+    kungfu: Optional[str] = get_keyword(),
+):
+    """资历榜"""
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 资历排行 | 请求：server:{server},kunfu:{kungfu}"
+    )
+    ticket = await TicketInfo.get_ticket()
+    response = await api.next_seniority(server=server, kungfu=kungfu, ticket=ticket)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
+        await zili_query.finish(msg)
+
+    data = response.data
+    get_time = datetime.fromtimestamp(data.get("time")).strftime("%H:%M:%S")
+    get_data = source.handle_data_recruit(data)
+    pagename = "资历排行.html"
+    img = await browser.template_to_image(
+        pagename=pagename,
+        server=server,
+        time=get_time,
+        data=get_data,
+    )
+    await zili_query.finish(MessageSegment.image(img))
+
+
+@shengwang_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+@laojianghu_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+@bingjia_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+@mingshi_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+@zhanjie_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+@zixing_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+async def _(
+    matcher: Matcher,
+    event: GroupMessageEvent,
+    server: str = Depends(get_server),
+    type_: str = get_type(),
+):
+    """个人排名查询"""
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | {type_} | 请求：server:{server}"
+    )
+    response = await api.rank_role(server=server, type=type_)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
+        await matcher.finish(msg)
+
+    data = response.data
+    pagename = "个人排行.html"
+    img = await browser.template_to_image(
+        pagename=pagename, server=server, type=type_, data=data
+    )
+    await matcher.finish(MessageSegment.image(img))
 
 
 @help.handle()

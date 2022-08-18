@@ -239,3 +239,22 @@ def handle_data_firework(data: list[dict]) -> list[dict]:
             last = one
     req_data.append(last.dict())
     return req_data
+
+
+def handle_data_recruit(data: dict) -> list[dict]:
+    """处理招募信息"""
+    req_data = []
+    get_data: list[data] = data.get("data")
+    for one in get_data:
+        one_data = {
+            "activity": one.get("activity"),
+            "level": one.get("level"),
+            "leader": one.get("leader"),
+            "createTime": datetime.fromtimestamp(one.get("createTime")).strftime(
+                "%H:%M:%S"
+            ),
+            "number": f"{one.get('number')}/{one.get('maxNumber')}",
+            "content": one.get("content"),
+        }
+        req_data.append(one_data)
+    return req_data

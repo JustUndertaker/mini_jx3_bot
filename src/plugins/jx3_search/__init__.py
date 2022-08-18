@@ -1,6 +1,7 @@
 import time
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 
 from nonebot import on_regex
 from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent, MessageSegment
@@ -52,6 +53,7 @@ class REGEX(Enum):
     比赛战绩 = r"^战绩 (?P<value1>[\S]+)$|^战绩 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
     装备属性 = r"^(?:(?:装备)|(?:属性)) (?P<value1>[\S]+)$|^(?:(?:装备)|(?:属性)) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
     烟花记录 = r"^烟花 (?P<value1>[\S]+)$|^烟花 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    招募查询 = r"^招募$|^招募 (?P<server1>[\u4e00-\u9fa5]+)$|^招募 (?P<server2>[\u4e00-\u9fa5]+) (?P<keyword>[\u4e00-\u9fa5]+)$"
 
 
 # ----------------------------------------------------------------
@@ -111,6 +113,9 @@ equip_query = on_regex(
 firework_query = on_regex(
     pattern=REGEX.烟花记录.value, permission=GROUP, priority=5, block=True
 )
+recruit_query = on_regex(
+    pattern=REGEX.招募查询.value, permission=GROUP, priority=5, block=True
+)
 help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 
 
@@ -159,6 +164,58 @@ async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> st
     # 未找到职业
     msg = f"未找到职业[{name}]，请检查参数。"
     await matcher.finish(msg)
+
+
+def recruit_server():
+    """招募查询-获取server"""
+
+    async def dependency(
+        matcher: Matcher, event: GroupMessageEvent, regex_dict: dict = RegexDict()
+    ) -> str:
+        _server = regex_dict.get("server2")
+        if _server:
+            response = await api.app_server(name=_server)
+            if response.code != 200:
+                msg = f"未找到服务器[{_server}]，请验证后查询。"
+                await matcher.finish(msg)
+            else:
+                return response.data["server"]
+        else:
+            _server = regex_dict.get("server1")
+            if _server:
+                # 判断server是不是keyword
+                response = await api.app_server(name=_server)
+                if response.code != 200:
+                    server = await GroupInfo.get_server(event.group_id)
+                else:
+                    server = response.data["server"]
+            else:
+                # 单招募
+                server = await GroupInfo.get_server(event.group_id)
+            return server
+
+    return Depends(dependency)
+
+
+def recruit_keyword():
+    """招募查询-关键字"""
+
+    async def dependency(regex_dict: dict = RegexDict()) -> Optional[str]:
+        _keyword = regex_dict.get("keyword")
+        if _keyword:
+            return _keyword
+        _keyword = regex_dict.get("server1")
+        if _keyword:
+            response = await api.app_server(name=_keyword)
+            if response.code == 200:
+                keyword = None
+            else:
+                keyword = _keyword
+        else:
+            keyword = None
+        return keyword
+
+    return Depends(dependency)
 
 
 def cold_down(name: str, cd_time: int) -> None:
@@ -575,6 +632,34 @@ async def _(
         pagename=pagename, server=server, name=name, data=get_data
     )
     await firework_query.finish(MessageSegment.image(img))
+
+
+@recruit_query.handle(parameterless=[cold_down(name="招募查询", cd_time=10)])
+async def _(
+    event: GroupMessageEvent,
+    server: str = recruit_server(),
+    keyword: Optional[str] = recruit_keyword(),
+):
+    """招募查询"""
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 招募查询 | 请求：server:{server},keyword:{keyword}"
+    )
+    response = await api.next_recruit(server=server, keyword=keyword)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
+        await recruit_query.finish(msg)
+
+    data = response.data
+    get_time = datetime.fromtimestamp(data.get("time")).strftime("%H:%M:%S")
+    get_data = source.handle_data_recruit(data)
+    pagename = "团队招募.html"
+    img = await browser.template_to_image(
+        pagename=pagename,
+        server=server,
+        time=get_time,
+        data=get_data,
+    )
+    await recruit_query.finish(MessageSegment.image(img))
 
 
 @help.handle()

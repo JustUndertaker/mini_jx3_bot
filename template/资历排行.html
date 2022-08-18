@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>资历排行</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="card" style="background-image: url('img/bg.png');">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                        <div class="text-center fs-4">
+                            <p><img src="./img/location.png" height="30" width="30">{{ server }}</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="text-center fs-4">
+                            <p><img src="./img/cube.png" height="30" width="30">资历排名</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <table class="table table-striped table-hover">
+                        <thead class="fs-4 text-center">
+                            <tr>
+                                <th scope="col" class="text-start">推栏名称</th>
+                                <th scope="col">角色名称</th>
+                                <th scope="col">所属区服</th>
+                                <th scope="col">所属门派</th>
+                                <th scope="col">资历分数</th>
+                            </tr>
+                        </thead>
+                        <tbody class="fs-6 text-center">
+                            {% for one in data %}
+                            <tr>
+                                <td scope="col-1" class="text-start">
+                                    <img src="{{ one.avatar }}" height="30" width="30">{{ one.name }}
+                                </td>
+                                <td scope="col">{{ one.role }}</td>
+                                <td scope="col">
+                                    <button type="button" class="btn btn-secondary">{{ one.server }}</button>
+                                </td>
+                                <td scope="col">
+                                    <button type="button" class="btn btn-warning">{{ one.sect }}</button>
+                                </td>
+                                <td scope="col">
+                                    <button type="button" class="btn btn-success">{{ one.value }}</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <h6 class="text-center fs-5">数据来源：www.jx3api.com</h6>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

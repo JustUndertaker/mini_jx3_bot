@@ -761,20 +761,19 @@ async def _(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 资历排行 | 请求：server:{server},kunfu:{kungfu}"
     )
     ticket = await TicketInfo.get_ticket()
+    if not kungfu:
+        kungfu = "ALL"
     response = await api.next_seniority(server=server, kungfu=kungfu, ticket=ticket)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await zili_query.finish(msg)
 
     data = response.data
-    get_time = datetime.fromtimestamp(data.get("time")).strftime("%H:%M:%S")
-    get_data = source.handle_data_recruit(data)
     pagename = "资历排行.html"
     img = await browser.template_to_image(
         pagename=pagename,
         server=server,
-        time=get_time,
-        data=get_data,
+        data=data,
     )
     await zili_query.finish(MessageSegment.image(img))
 

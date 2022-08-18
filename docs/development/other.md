@@ -70,6 +70,20 @@ async def fun():
 ::: tip jinja2
 本项目使用jinja2模板：[文档](http://doc.yonyoucloud.com/doc/jinja2-docs-cn/index.html)
 :::
+::: warning 模板标签
+为了更好的获取图片，``browser.template_to_image``接口会选择``#main``标签：
+```python
+# 选择标签main，这里是为了获得更好的图片，所以每个页面都需要有一个main标签
+element_handle = await page.query_selector("#main")
+```
+所以如果使用此接口，需要保证你的模板文件有此标签：
+```html
+<!-- 这里id="main"将会作为最外层进行截取 -->
+<div class="..." id="main">
+    ...
+</div>
+```
+:::
 ::: tip 相对引用
 特别地，本项目将模板的根目录定位在了``template``下，如果你想在模板文件下使用外部文件，可以相对此目录引用：
 ```html

@@ -386,6 +386,45 @@ class JX3API:
             * `name`：角色名
         """
         ...
+    async def next_recruit(self, *, server: str, keyword: str) -> Response:
+        """
+        说明:
+            查询指定区服的团队招募信息。
+
+        参数:
+            * `server`：服务器名
+            * `keyword`：关键字，从团长名称，活动名称，招募内容中筛选关键字；
+        """
+        ...
+    async def rank_role(self, *, type: str, server: str) -> Response:
+        """
+        说明:
+            个人排行榜。
+
+        参数:
+            * `type`：排名类型，可选范围[名士五十强 老江湖五十强 兵甲藏家五十强 名师五十强 阵营英雄五十强 薪火相传五十强 庐园广记一百强]；
+            * `server`：：服务器名
+        """
+        ...
+    async def rank_faction(self, *, type: str, server: str) -> Response:
+        """
+        说明:
+            帮会排行榜。
+
+        参数:
+            * `type`：排名类型，可选范围[浩气神兵宝甲五十强 恶人神兵宝甲五十强 浩气爱心帮会五十强 恶人爱心帮会五十强]；
+            * `server`：：服务器名
+        """
+        ...
+    async def rank_trials(self, *, server: str) -> Response:
+        """
+        说明:
+            试炼之地排名。
+
+        参数:
+            * `server`：：服务器名
+        """
+        ...
     async def transmit_chat(
         self, *, secretId: str, secretKey: str, name: str, question: str
     ) -> Response:

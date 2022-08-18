@@ -416,13 +416,14 @@ class JX3API:
             * `server`：：服务器名
         """
         ...
-    async def rank_trials(self, *, server: str) -> Response:
+    async def rank_trials(self, *, server: str, school: str) -> Response:
         """
         说明:
             试炼之地排名。
 
         参数:
-            * `server`：：服务器名
+            * `server`：服务器名
+            * `school`：门派名
         """
         ...
     async def transmit_chat(

@@ -64,7 +64,9 @@ class REGEX(Enum):
     梓行榜 = r"^(?P<type1>梓行榜)$|^(?P<type2>梓行榜) (?P<server>[\u4e00-\u9fa5]+)$"
     爱心榜 = r"^(?P<type1>爱心榜) (?P<value1>[\S]+)$|^(?P<type2>爱心榜) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
     神兵榜 = r"^(?P<type1>神兵榜) (?P<value1>[\S]+)$|^(?P<type2>神兵榜) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
-    试炼榜 = r"^(?P<type1>试炼榜) (?P<value1>[\S]+)$|^(?P<type2>试炼榜) (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    试炼榜 = (
+        r"^试炼榜 (?P<value1>[\S]+)$|^试炼榜 (?P<server>[\u4e00-\u9fa5]+) (?P<value2>[\S]+)$"
+    )
 
 
 # ----------------------------------------------------------------
@@ -831,6 +833,27 @@ async def _(
         pagename=pagename, server=server, type=type_, data=data
     )
     await matcher.finish(MessageSegment.image(img))
+
+
+@shilian_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+async def _(
+    event: GroupMessageEvent,
+    server: str = Depends(get_server),
+    school: str = Depends(get_value),
+):
+    """试炼之地排行"""
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 试炼之地排行 | 请求：server:{server}，school:{school}"
+    )
+    response = await api.rank_trials(server=server, school=school)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
+        await shilian_query.finish(msg)
+
+    data = response.data
+    pagename = "试炼排行.html"
+    img = await browser.template_to_image(pagename=pagename, server=server, data=data)
+    await shilian_query.finish(MessageSegment.image(img))
 
 
 @help.handle()

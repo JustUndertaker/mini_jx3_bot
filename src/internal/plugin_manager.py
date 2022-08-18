@@ -38,7 +38,7 @@ class PluginManager:
             if metadata is None:
                 continue
             config: PluginConfig = metadata.config
-            # 判断config是否为None
+            # 判断config是否为PluginConfig
             if not isinstance(config, PluginConfig):
                 continue
 

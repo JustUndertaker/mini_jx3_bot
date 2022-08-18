@@ -7,6 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>奇遇汇总</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/table.css" rel="stylesheet">
 </head>
 
 <body>
@@ -16,12 +17,12 @@
                 <div class="row">
                     <div class="col">
                         <div class="text-center fs-4">
-                            <p><img src="./img/location.png" height="40" width="40">{{ server }}</p>
+                            <p><img src="img/location.png" height="40" width="40">{{ server }}</p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="text-center fs-4">
-                            <p><img src="./img/book.png" height="40" width="40">奇遇汇总</p>
+                            <p><img src="img/book.png" height="40" width="40">奇遇汇总</p>
                         </div>
                     </div>
                 </div>
@@ -31,7 +32,7 @@
                     {% for one in data %}
                     <div class="col-4">
                         <div class="card border-0" style="width: 18rem;">
-                            <img src="./serendipity/{{ one.serendipity }}.png">
+                            <img src="serendipity/{{ one.serendipity }}.png">
                             <div class="card-body text-center fs-5">
                                 <p><img src="img/header.png" height="30" width="30">{{ one.name }}</p>
                                 <p><img src="img/calendar.png" height="30" width="30">{{ one.time }}</p>

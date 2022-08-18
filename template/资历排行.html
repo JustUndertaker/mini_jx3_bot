@@ -7,6 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>资历排行</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/table.css" rel="stylesheet">
 </head>
 
 <body>
@@ -16,12 +17,12 @@
                 <div class="row">
                     <div class="col">
                         <div class="text-center fs-4">
-                            <p><img src="./img/location.png" height="30" width="30">{{ server }}</p>
+                            <p><img src="img/location.png" height="30" width="30">{{ server }}</p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="text-center fs-4">
-                            <p><img src="./img/cube.png" height="30" width="30">资历排名</p>
+                            <p><img src="img/cube.png" height="30" width="30">资历排名</p>
                         </div>
                     </div>
                 </div>
@@ -42,13 +43,14 @@
                             {% for one in data %}
                             <tr>
                                 <td scope="col-1" class="text-start">
-                                    <img src="{{ one.avatar }}" height="30" width="30">{{ one.name }}
+                                    <img src="{{ one.avatar }}" height="40" width="40">{{ one.name }}
                                 </td>
                                 <td scope="col">{{ one.role }}</td>
                                 <td scope="col">
                                     <button type="button" class="btn btn-secondary">{{ one.server }}</button>
                                 </td>
                                 <td scope="col">
+                                    <img src="sect/{{ one.sect }}.png" height="27" width="42">
                                     <button type="button" class="btn btn-warning">{{ one.sect }}</button>
                                 </td>
                                 <td scope="col">

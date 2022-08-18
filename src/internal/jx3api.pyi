@@ -386,14 +386,14 @@ class JX3API:
             * `name`：角色名
         """
         ...
-    async def next_recruit(self, *, server: str, keyword: str) -> Response:
+    async def next_recruit(self, *, server: str, keyword: str = ...) -> Response:
         """
         说明:
             查询指定区服的团队招募信息。
 
         参数:
             * `server`：服务器名
-            * `keyword`：关键字，从团长名称，活动名称，招募内容中筛选关键字；
+            * `keyword`：关键字，可选,从团长名称，活动名称，招募内容中筛选关键字；
         """
         ...
     async def rank_role(self, *, type: str, server: str) -> Response:

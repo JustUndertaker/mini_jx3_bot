@@ -117,6 +117,9 @@ async def _(event: PrivateMessageEvent):
     if not ws_client.closed:
         await connect_ws.finish("连接正常，请不要重复连接。")
 
+    if ws_client.is_connecting:
+        await connect_ws.finish("正在连接中，请不要重复连接。")
+
     await connect_ws.send("正在连接服务器...")
     flag = await ws_client.init()
     msg = None

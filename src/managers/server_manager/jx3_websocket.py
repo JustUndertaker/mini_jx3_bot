@@ -21,6 +21,8 @@ class Jx3WebSocket(object):
 
     connect: Optional[WebSocketClientProtocol] = None
     """ws链接"""
+    is_connecting: bool = False
+    """是否正在连接"""
 
     def __new__(cls, *args, **kwargs):
         """单例"""
@@ -87,7 +89,7 @@ class Jx3WebSocket(object):
         说明:
             初始化实例并连接ws服务器
         """
-        if self.connect:
+        if self.connect or self.is_connecting:
             return None
 
         ws_path = jx3api_config.ws_path
@@ -96,6 +98,7 @@ class Jx3WebSocket(object):
             ws_token = ""
         headers = {"token": ws_token}
         logger.debug(f"<g>ws_server</g> | 正在链接jx3api的ws服务器：{ws_path}")
+        self.is_connecting = True
         for i in range(1, 101):
             try:
                 logger.debug(f"<g>ws_server</g> | 正在开始第 {i} 次尝试")
@@ -114,6 +117,7 @@ class Jx3WebSocket(object):
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
                 await asyncio.sleep(1)
 
+        self.is_connecting = False
         if not self.connect:
             # 未连接成功，发送消息给bot，如果有
             self.connect = None

@@ -1,5 +1,6 @@
 import asyncio
 import random
+from datetime import datetime, timedelta
 
 from nonebot import get_driver, on, on_regex
 from nonebot.adapters.onebot.v11 import Bot, PrivateMessageEvent
@@ -13,10 +14,11 @@ from src.modules.user_info import UserInfo
 from src.params import PluginConfig
 from src.utils.browser import browser
 from src.utils.log import logger
+from src.utils.scheduler import scheduler
 from src.utils.utils import GroupList_Async
 
 from ._jx3_event import RecvEvent, WsNotice
-from .data_source import get_ws_status
+from .data_source import get_ws_status, ws_init
 from .jx3_websocket import ws_client
 
 __plugin_meta__ = PluginMetadata(
@@ -72,9 +74,7 @@ async def _():
     logger.info("<g>正在初始化浏览器...</g>")
     await browser.init()
     logger.info("<y>浏览器初始化完毕。</y>")
-    logger.info("<g>正在链接jx3api的ws服务器...</g>")
-    await ws_client.init()
-    logger.info("<y>jx3api的ws服务器已链接。</y>")
+    scheduler.add_job(func=ws_init, next_run_time=datetime.now() + timedelta(seconds=2))
 
 
 @driver.on_shutdown

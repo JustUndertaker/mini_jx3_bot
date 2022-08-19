@@ -1,7 +1,19 @@
 from src.modules.group_info import GroupInfo
 from src.params import GroupSetting
+from src.utils.log import logger
 
 from . import _jx3_event as Event
+from .jx3_websocket import ws_client
+
+
+async def ws_init():
+    """初始化连接ws服务器"""
+    logger.info("<g>正在链接jx3api的ws服务器...</g>")
+    flag = await ws_client.init()
+    if flag:
+        logger.info("<y>jx3api的ws服务器已链接。</y>")
+    else:
+        logger.info("<r>jx3api的ws服务器连接失败！</r>")
 
 
 async def get_ws_status(group_id: int, event: Event.RecvEvent) -> bool:

@@ -37,7 +37,13 @@
                                         <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
-                                        <td class='text-center'>{{ one.sale }}</td>
+                                        <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
+                                            {{ one.sales }}
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -54,7 +60,13 @@
                                         <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
-                                        <td class='text-center'>{{ one.sale }}</td>
+                                        <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
+                                            {{ one.sales }}
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -73,7 +85,13 @@
                                         <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
-                                        <td class='text-center'>{{ one.sale }}</td>
+                                        <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
+                                            {{ one.sales }}
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -90,7 +108,13 @@
                                         <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
-                                        <td class='text-center'>{{ one.sale }}</td>
+                                        <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
+                                            {{ one.sales }}
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -109,7 +133,13 @@
                                         <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
-                                        <td class='text-center'>{{ one.sale }}</td>
+                                        <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
+                                            {{ one.sales }}
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -126,7 +156,13 @@
                                         <td class='text-center text-warning'>{{ one.date }}</td>
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
-                                        <td class='text-center'>{{ one.sale }}</td>
+                                        <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
+                                            {{ one.sales }}
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

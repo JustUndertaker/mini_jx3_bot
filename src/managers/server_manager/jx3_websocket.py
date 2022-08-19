@@ -41,6 +41,7 @@ class Jx3WebSocket(object):
 
         except ConnectionClosedOK:
             logger.debug("<g>jx3api > ws链接已主动关闭！</g>")
+            self.connect = None
             await self._raise_notice("jx3api > ws已正常关闭！")
 
         except ConnectionClosedError as e:
@@ -111,10 +112,11 @@ class Jx3WebSocket(object):
                 break
             except Exception as e:
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
-                asyncio.sleep(1)
+                await asyncio.sleep(1)
 
         if not self.connect:
             # 未连接成功，发送消息给bot，如果有
+            self.connect = None
             await self._raise_notice("jx3api > ws服务器连接失败，请查看日志或者重连。")
             return False
         return True

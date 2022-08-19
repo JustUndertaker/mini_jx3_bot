@@ -97,9 +97,9 @@ async def _():
 # ----------------------------------------------------------------
 #  server操作的几个mathcer
 # ----------------------------------------------------------------
-check_ws = on_regex(pattern=r"^查看连接$", permission=SUPERUSER, priority=5, block=True)
-connect_ws = on_regex(pattern=r"^连接服务$", permission=SUPERUSER, priority=5, block=True)
-close_ws = on_regex(pattern=r"^关闭连接$", permission=SUPERUSER, priority=5, block=True)
+check_ws = on_regex(pattern=r"^查看连接$", permission=SUPERUSER, priority=2, block=True)
+connect_ws = on_regex(pattern=r"^连接服务$", permission=SUPERUSER, priority=2, block=True)
+close_ws = on_regex(pattern=r"^关闭连接$", permission=SUPERUSER, priority=2, block=True)
 
 
 @check_ws.handle()

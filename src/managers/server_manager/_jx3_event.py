@@ -1,4 +1,3 @@
-import time
 from abc import abstractmethod
 from datetime import datetime
 from typing import Literal, Optional
@@ -48,12 +47,8 @@ class WsNotice(BaseEvent):
 
     __event__ = "WsNotice"
     post_type: str = "WsNotice"
-    message: str = ""
+    message: str
     """通知内容"""
-
-    def __init__(self, message: str):
-        super().__init__()
-        self.message = message
 
     @overrides(BaseEvent)
     def get_type(self) -> str:
@@ -152,10 +147,7 @@ class ServerStatusEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        if self.status == 1:
-            status = "已开服"
-        else:
-            status = "已维护"
+        status = "已开服" if self.status else "已维护"
         log = f"开服推送事件：[{self.server}]状态-{status}"
         return log
 
@@ -212,8 +204,8 @@ class SerendipityEvent(RecvEvent):
 
     @validator("time", pre=True)
     def check_time(cls, v):
-        start_trans = time.localtime(int(v))
-        return time.strftime("%m/%d %H:%M", start_trans)
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%m/%d %H:%M")
 
     @property
     def log(self) -> str:
@@ -242,8 +234,8 @@ class HorseRefreshEvent(RecvEvent):
 
     @validator("time", pre=True)
     def check_time(cls, v):
-        start_trans = time.localtime(int(v))
-        return time.strftime("%H:%M:%S", start_trans)
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%H:%M:%S")
 
     @property
     def log(self) -> str:
@@ -274,8 +266,8 @@ class HorseCatchedEvent(RecvEvent):
 
     @validator("time", pre=True)
     def check_time(cls, v):
-        start_trans = time.localtime(int(v))
-        return time.strftime("%H:%M:%S", start_trans)
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%H:%M:%S")
 
     @property
     def log(self) -> str:
@@ -300,8 +292,8 @@ class FuyaoRefreshEvent(RecvEvent):
 
     @validator("time", pre=True)
     def check_time(cls, v):
-        start_trans = time.localtime(int(v))
-        return time.strftime("%H:%M:%S", start_trans)
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%H:%M:%S")
 
     @property
     def log(self) -> str:
@@ -326,8 +318,8 @@ class FuyaoNamedEvent(RecvEvent):
 
     @validator("time", pre=True)
     def check_time(cls, v):
-        start_trans = time.localtime(int(v))
-        return time.strftime("%H:%M:%S", start_trans)
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%H:%M:%S")
 
     @property
     def log(self) -> str:
@@ -360,8 +352,8 @@ class FireworksEvent(RecvEvent):
 
     @validator("time", pre=True)
     def check_time(cls, v):
-        start_trans = time.localtime(int(v))
-        return time.strftime("%H:%M:%S", start_trans)
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%H:%M:%S")
 
     @property
     def log(self) -> str:
@@ -392,8 +384,8 @@ class XuanJingEvent(RecvEvent):
 
     @validator("time", pre=True)
     def check_time(cls, v):
-        start_trans = time.localtime(int(v))
-        return time.strftime("%H:%M:%S", start_trans)
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%H:%M:%S")
 
     @property
     def log(self) -> str:
@@ -420,8 +412,8 @@ class GameSysMsgEvent(RecvEvent):
 
     @validator("time", pre=True)
     def check_time(cls, v):
-        start_trans = time.localtime(int(v))
-        return time.strftime("%H:%M:%S", start_trans)
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%H:%M:%S")
 
     @property
     def log(self) -> str:

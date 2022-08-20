@@ -1,0 +1,10 @@
+**/__pycache__/
+venv/
+workspace.code-workspace
+.git/
+.github/
+.dockerignore
+.gitignore
+*.Dockerfile
+*.log
+README.md

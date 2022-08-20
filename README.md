@@ -31,3 +31,27 @@ _✨基于[nonebot2](https://github.com/nonebot/nonebot2)的剑网三群聊机�
 ## 联系我
 一个游戏策划，QQ群：776825118
 
+
+## docker 部署
+
+安装 docker
+
+`docker -v  2> /dev/null|| curl -sSL https://get.daocloud.io/docker | sh`
+
+其中 .env.prod 中的所有环境变量都可以通过 -e 的形式加在容器启动命令中
+
+`docker run --name="mini_jx3_bot" -e superusers=["你的QQ"] -e botname="团子"  -p 8080:8080 -itd ermaozi/mini_jx3_bot`
+
+把数据存在本地防止数据随容器丢失, 同理, 日志目录也可以从本地挂载, 方便日志查看. 日志路径: /mini_jx3_bot/logs
+
+`mkdir ~/data/`
+
+`docker run --name="mini_jx3_bot" -v ~/data:/mini_jx3_bot/data -e superusers=["你的QQ"] -e botname="团子"  -p 8080:8080 -itd ermaozi/mini_jx3_bot`
+
+容器自启动
+
+`docker update --restart=always mini_jx3_bot`
+
+容器自动更新
+
+ `docker run -d --name watchtower --restart always -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup -i 300 mini_jx3_bot`

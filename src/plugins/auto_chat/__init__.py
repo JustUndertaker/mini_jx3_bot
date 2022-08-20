@@ -9,6 +9,7 @@ from nonebot.rule import Rule
 
 from src.modules.group_info import GroupInfo
 from src.params import PluginConfig
+from src.config import default_config
 
 from .data_source import get_random_msg
 
@@ -53,6 +54,6 @@ async def check(matcher: Matcher, event: GroupMessageEvent) -> str:
 @auto_chat.handle()
 async def _(bot: Bot, event: GroupMessageEvent, text: str = Depends(check)):
     """自动插话"""
-    nickname = list(bot.config.nickname)[0]
+    nickname = default_config.botname
     msg = await get_random_msg(event.group_id, nickname, text)
     await auto_chat.finish(msg)

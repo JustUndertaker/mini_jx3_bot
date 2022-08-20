@@ -145,7 +145,6 @@ dmypy.json
 /logs
 /node_modules
 docker-compose.yml
-Dockerfile
 pyproject.toml
 workspace.code-workspace
 pyclean.bat

@@ -6,6 +6,7 @@ from nonebot.rule import to_me
 from src.internal.nlp import chat
 from src.params import PluginConfig
 from src.utils.log import logger
+from src.config import default_config
 
 __plugin_meta__ = PluginMetadata(
     name="智能闲聊",
@@ -21,7 +22,7 @@ chat_query = on_message(rule=to_me(), permission=GROUP, priority=9, block=True)
 @chat_query.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     """智能闲聊"""
-    nickname = list(bot.config.nickname)[0]
+    nickname = default_config.botname
     message = event.get_plaintext()
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 请求：{message}")
     msg = await chat.chat(nickname, message)

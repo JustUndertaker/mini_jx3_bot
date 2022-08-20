@@ -28,6 +28,7 @@ from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
 from src.utils.utils import GroupList_Async
+from src.config import default_config
 
 from . import data_source as source
 
@@ -237,7 +238,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     """菜单"""
     pagename = "菜单.html"
     meau_data = await source.get_meau_data(event.group_id)
-    nickname = list(bot.config.nickname)[0]
+    nickname = default_config.botname
     bot_id = bot.self_id
 
     img = await browser.template_to_image(

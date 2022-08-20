@@ -5,6 +5,7 @@ from nonebot.adapters.onebot.v11 import GROUP, Bot, GroupMessageEvent, MessageSe
 from nonebot.plugin import PluginMetadata
 
 from src.params import PluginConfig, cost_gold
+from src.config import default_config
 
 from .config import GUAXIANG
 from .model import Quadrant
@@ -25,7 +26,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     msg = "起卦中..."
     await suangua.send(MessageSegment.at(event.user_id) + msg)
 
-    msg = get_forward_msg(bot_id=bot.self_id, nickname=list(bot.config.nickname)[0])
+    msg = get_forward_msg(bot_id=bot.self_id, nickname=default_config.botname)
     await bot.send_group_forward_msg(group_id=event.group_id, messages=msg)
     await suangua.finish()
 

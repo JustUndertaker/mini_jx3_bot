@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from nonebot import get_driver
@@ -63,6 +64,7 @@ class DefaultConfig(BaseModel, extra=Extra.ignore):
     """
     默认设置
     """
+    botname: str = os.getenv("botname", default="团子")
 
     server: str = Field("幽月轮", alias="default_server")
     """默认绑定区服"""

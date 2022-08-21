@@ -245,6 +245,8 @@ def handle_data_recruit(data: dict) -> list[dict]:
     """处理招募信息"""
     req_data = []
     get_data: list[data] = data.get("data")
+    if len(get_data) > 50:
+        get_data = get_data[:50]
     for one in get_data:
         one_data = {
             "activity": one.get("activity"),

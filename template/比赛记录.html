@@ -95,10 +95,10 @@
                         <tr class="text-center">
                             <th scope="col">心法</th>
                             <th scope="col">比赛模式</th>
-                            <th scope="col">段位</th>
                             <th scope="col">评分变化</th>
                             <th scope="col">比赛时长</th>
                             <th scope="col">结束时间</th>
+                            <th scope="col">比赛结果</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -108,10 +108,8 @@
                                 <img src="sect/{{ one.kungfu }}.png" width="40" height="40">
                             </td>
                             <td>
-                                {{ one.pvpType }}
-                            </td>
-                            <td>
-                                <strong>{{ one.avgGrade }}段</strong>
+                                <strong>{{ one.avgGrade }}段
+                                    <span class="badge bg-primary">{{ one.pvpType }}</span></strong>
                             </td>
                             {% if one.won %}
                             <td>{{ one.totalMmr }} <img src="img/up.png" width="10" height="10"> <strong
@@ -122,6 +120,13 @@
                             {% endif %}
                             <td>{{ one.time }}</td>
                             <td>{{ one.ago }}</td>
+                            <td>
+                                {% if one.won %}
+                                <span class="badge bg-success fs-5">胜利</span>
+                                {% else %}
+                                <span class="badge bg-danger fs-5">失败</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

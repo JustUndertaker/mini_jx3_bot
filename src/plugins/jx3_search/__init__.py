@@ -821,7 +821,7 @@ async def _(
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | {type_} | 请求：server:{server}"
     )
-    response = await api.rank_faction(server=server, type=type_)
+    response = await api.rank_tong(server=server, type=type_)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await matcher.finish(msg)

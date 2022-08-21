@@ -406,7 +406,7 @@ class JX3API:
             * `server`：：服务器名
         """
         ...
-    async def rank_faction(self, *, type: str, server: str) -> Response:
+    async def rank_tong(self, *, type: str, server: str) -> Response:
         """
         说明:
             帮会排行榜。

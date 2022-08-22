@@ -36,7 +36,7 @@
                                 <th scope="col">角色</th>
                                 <th scope="col">阵营</th>
                                 <th scope="col">帮会</th>
-                                <th scope="col">分数</th>
+                                <th scope="col">{{ tittle }}</th>
                             </tr>
                         </thead>
                         <tbody class="fs-6 text-center">
@@ -49,7 +49,7 @@
                                 <td scope="col">
                                     <img src="img/{{ one.camp }}.png" width="40" height="35">{{ one.camp }}
                                 </td>
-                                <td scope="col">{{ one.faction }}</td>
+                                <td scope="col">{{ one.gang }}</td>
                                 <td scope="col">{{ one.score }}</td>
                             </tr>
                             {% endfor %}

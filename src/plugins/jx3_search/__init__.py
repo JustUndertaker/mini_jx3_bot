@@ -291,6 +291,38 @@ def get_type():
     return Depends(dependency)
 
 
+def get_tittle():
+    """排行榜-获取标题"""
+
+    def dependency(regex_dict: dict = RegexDict()) -> str:
+        _type = regex_dict.get("type2")
+        if not _type:
+            _type = regex_dict.get("type1")
+        match _type:
+            case "声望榜":
+                return "声望"
+            case "老江湖":
+                return "资历"
+            case "兵甲榜":
+                return "装分"
+            case "名师榜":
+                return "师徒值"
+            case "战阶榜":
+                return "战阶分数"
+            case "薪火榜":
+                return "薪火点"
+            case "梓行榜":
+                return "梓行点"
+            case "爱心榜":
+                return "爱心值"
+            case "神兵榜":
+                return "总装分"
+            case _:
+                return ""
+
+    return Depends(dependency)
+
+
 def get_camp():
     """帮会排名-获取阵营"""
 
@@ -796,6 +828,7 @@ async def _(
     event: GroupMessageEvent,
     server: str = Depends(get_server),
     type_: str = get_type(),
+    tittle: str = get_tittle(),
 ):
     """个人排名查询"""
     logger.info(
@@ -807,9 +840,11 @@ async def _(
         await matcher.finish(msg)
 
     data = response.data
+    for one in data:
+        one["score"] = "{:,}".format(one["score"])
     pagename = "个人排行.html"
     img = await browser.template_to_image(
-        pagename=pagename, server=server, type=type_, data=data
+        pagename=pagename, server=server, type=type_, tittle=tittle, data=data
     )
     await matcher.finish(MessageSegment.image(img))
 
@@ -821,6 +856,7 @@ async def _(
     event: GroupMessageEvent,
     server: str = Depends(get_server),
     type_: str = get_type(),
+    tittle: str = get_tittle(),
     camp: str = get_camp(),
 ):
     """帮会排名"""
@@ -834,9 +870,11 @@ async def _(
         await matcher.finish(msg)
 
     data = response.data
+    for one in data:
+        one["score"] = "{:,}".format(one["score"])
     pagename = "帮会排行.html"
     img = await browser.template_to_image(
-        pagename=pagename, server=server, type=type_, data=data
+        pagename=pagename, server=server, type=type_, tittle=tittle, data=data
     )
     await matcher.finish(MessageSegment.image(img))
 

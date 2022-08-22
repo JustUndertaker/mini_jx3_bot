@@ -30,21 +30,21 @@
                     </div>
                     {% endfor %}
                 </div>
-                <hr>
-                <h2 class="text-center"><strong>装备分数：{{ data.score }}</strong></h2>
-                <hr>
+                <h2 class="tittle-with-hr text-center">
+                    <span><strong>装备分数：{{ data.score }}</strong></span>
+                </h2>
                 {% endif %}
                 <!--角色装备-->
                 <div class="row">
                     {% for one in data.equip %}
                     <div class="row">
                         <div class="col-1">
-                            <div style="border: 3px solid {{one.color}}; margin: 0 -10px 0 0;">
+                            <div style="border: 3px solid {{ one.color }}; margin: 0 -10px 0 0;">
                                 <img src="{{ one.icon }}" width="70" height="70">
                             </div>
                         </div>
                         <div class="col-4">
-                            <p style="margin:1px;font-size: 25px;"><strong style="color: {{one.color}};">{{ one.name
+                            <p style="margin:1px;font-size: 25px;"><strong style="color: {{ one.color }};">{{ one.name
                                     }}</strong>({{one.quality}})</p>
                             <p style="margin:1px;">{{ one.modifyType }}</p>
                             <p style="margin:1px;color: darkgray;">{{ one.source }}</p>

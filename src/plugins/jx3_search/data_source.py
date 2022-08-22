@@ -22,9 +22,10 @@ def handle_data_price(data: list[list[dict]]) -> dict:
     return req_data
 
 
-def handle_data_serendipity(data: list[dict]) -> list[dict]:
-    """处理奇遇统计"""
-    req_data = []
+def handle_data_serendipity(data: list[dict]) -> dict:
+    """处理角色奇遇"""
+    world_serendipity = []
+    pet_serendipity = []
     for one_data in data:
         get_time: int = one_data["time"]
         if get_time == 0:
@@ -40,7 +41,17 @@ def handle_data_serendipity(data: list[dict]) -> list[dict]:
             "day": day,
             "serendipity": one_data["serendipity"],
         }
-        req_data.append(one_dict)
+        level: int = one_data["level"]
+        if level > 2:
+            pet_serendipity.append(one_dict)
+        else:
+            world_serendipity.append(one_dict)
+    req_data = {
+        "world_serendipity": world_serendipity,
+        "pet_serendipity": pet_serendipity,
+        "num_world": len(world_serendipity),
+        "num_pet": len(pet_serendipity),
+    }
     return req_data
 
 

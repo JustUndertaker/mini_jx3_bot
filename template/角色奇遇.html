@@ -34,7 +34,21 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    {% for one in data %}
+                    {% for one in data.world_serendipity %}
+                    <div class="col-4">
+                        <div class="card border-0" style="background-color: transparent;width: 18rem;">
+                            <img src="serendipity/{{ one.serendipity }}.png">
+                            <div class="card-body text-center fs-5">
+                                <p><img src="img/calendar.png" height="30" width="30">{{ one.time }}</p>
+                                <p>{{ one.day }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-with-hr fs-5">
+                        <span>奇遇 {{ data.num_world }} 番 | 珍宠 {{ data.num_pet }} 番</span>
+                    </div>
+                    {% for one in data.pet_serendipity %}
                     <div class="col-4">
                         <div class="card border-0" style="background-color: transparent;width: 18rem;">
                             <img src="serendipity/{{ one.serendipity }}.png">

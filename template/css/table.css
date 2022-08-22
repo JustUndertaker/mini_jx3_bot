@@ -1,3 +1,53 @@
 .table tbody tr td {
     vertical-align: middle;
 }
+
+.text-with-hr {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+/*
+横线，并通过z-index：-1将or附近的横线遮盖住
+*/
+.text-with-hr:before {
+    position: absolute;
+    content: '';
+    top: 25px;
+    left: 0px;
+    width: 100%;
+    border-bottom: 2px solid #c2c0c0;
+    z-index: -1;
+}
+
+.text-with-hr span {
+    display: inline-block;
+    background-image: url('../img/bg.png');
+    padding: 10px;
+}
+
+.tittle-with-hr {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+/*
+横线，并通过z-index：-1将or附近的横线遮盖住
+*/
+.tittle-with-hr:before {
+    position: absolute;
+    content: '';
+    top: 30px;
+    left: 0px;
+    width: 100%;
+    border-bottom: 2px solid #c2c0c0;
+    z-index: -1;
+}
+
+.tittle-with-hr span {
+    display: inline-block;
+    background-image: url('../img/bg.png');
+    padding: 10px;
+}

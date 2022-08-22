@@ -739,6 +739,12 @@ async def _(
 
     data = response.data
     get_time = datetime.fromtimestamp(data.get("time")).strftime("%H:%M:%S")
+    data: list[dict] = data.get("data")
+    num = len(data)
+    if num > 50:
+        data = data[:50]
+    else:
+        num = None
     get_data = source.handle_data_recruit(data)
     pagename = "团队招募.html"
     img = await browser.template_to_image(
@@ -746,6 +752,7 @@ async def _(
         server=server,
         time=get_time,
         data=get_data,
+        num=num,
     )
     await recruit_query.finish(MessageSegment.image(img))
 

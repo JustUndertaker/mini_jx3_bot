@@ -241,13 +241,10 @@ def handle_data_firework(data: list[dict]) -> list[dict]:
     return req_data
 
 
-def handle_data_recruit(data: dict) -> list[dict]:
+def handle_data_recruit(data: list[dict]) -> list[dict]:
     """处理招募信息"""
     req_data = []
-    get_data: list[data] = data.get("data")
-    if len(get_data) > 50:
-        get_data = get_data[:50]
-    for one in get_data:
+    for one in data:
         one_data = {
             "activity": one.get("activity"),
             "level": one.get("level"),

@@ -59,9 +59,14 @@
                         </tbody>
                     </table>
                 </div>
+                {% if num %}
                 <div class="row">
-                    <p class="text-center text-danger fs-5">如超过50条数据请使用关键字过滤</p>
+                    <p class="text-center text-danger fs-4">50/{{ num }}</p>
                 </div>
+                <div class="row">
+                    <p class="text-center text-danger">超过50条数据，请使用关键字过滤</p>
+                </div>
+                {% endif %}
             </div>
             <div class="card-footer">
                 <h6 class="text-center fs-5">数据来源：www.jx3api.com</h6>

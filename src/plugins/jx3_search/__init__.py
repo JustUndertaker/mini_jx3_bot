@@ -895,6 +895,9 @@ async def _(
         await shilian_query.finish(msg)
 
     data = response.data
+    for one in data:
+        one["total"] = "{:,}".format(one["total"])
+        one["score"] = "{:,}".format(one["score"])
     pagename = "试炼排行.html"
     img = await browser.template_to_image(pagename=pagename, server=server, data=data)
     await shilian_query.finish(MessageSegment.image(img))

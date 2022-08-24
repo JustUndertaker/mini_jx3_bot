@@ -166,8 +166,8 @@ def bot_income():
         matcher: Matcher,
         event: Union[GroupIncreaseNoticeEvent, GroupDecreaseNoticeEvent],
     ):
-        if event.self_id != event.user_id:
-            await matcher.skip()
+        if not event.is_tome():
+            matcher.skip()
 
     return Depends(check)
 
@@ -179,8 +179,8 @@ def someone_income():
         matcher: Matcher,
         event: Union[GroupIncreaseNoticeEvent, GroupDecreaseNoticeEvent],
     ):
-        if event.self_id == event.user_id:
-            await matcher.skip()
+        if event.is_tome():
+            matcher.skip()
 
     return Depends(check)
 

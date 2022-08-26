@@ -263,10 +263,8 @@ def get_keyword() -> str:
         _keyword = regex_dict.get("keyword")
         if _keyword:
             return _keyword
-        _keyword = regex_dict.get("server1")
-        if _keyword:
-            server = api.app_server(name=_keyword)
-            if not server:
+        if _keyword := regex_dict.get("server1"):
+            if api.app_server(name=_keyword):
                 keyword = None
             else:
                 keyword = _keyword

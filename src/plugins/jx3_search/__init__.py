@@ -165,49 +165,67 @@ help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
 # ----------------------------------------------------------------
 
 
-async def get_server(
-    matcher: Matcher, event: GroupMessageEvent, regex_dict: dict = RegexDict()
-) -> str:
+def get_server() -> str:
     """
     说明:
         Dependency，获取匹配字符串中的server，如果没有则获取群绑定的默认server
     """
-    _server = regex_dict.get("server")
-    if _server:
-        server = api.app_server(name=_server)
-        if not server:
-            msg = f"未找到服务器[{_server}]，请验证后查询。"
-            await matcher.finish(msg)
-    else:
-        server = await GroupInfo.get_server(event.group_id)
-    return server
+
+    async def dependency(
+        matcher: Matcher, event: GroupMessageEvent, regex_dict: dict = RegexDict()
+    ) -> str:
+
+        _server = regex_dict.get("server")
+        if _server:
+            server = api.app_server(name=_server)
+            if not server:
+                msg = f"未找到服务器[{_server}]，请验证后查询。"
+                await matcher.finish(msg)
+        else:
+            server = await GroupInfo.get_server(event.group_id)
+        return server
+
+    return Depends(dependency)
 
 
-async def get_value(regex_dict: dict = RegexDict()) -> str:
+def get_value() -> str:
     """
     说明:
         Dependency，获取匹配字符串中的value字段
     """
-    value = regex_dict.get("value1")
-    return value if value else regex_dict.get("value2")
+
+    async def dependency(regex_dict: dict = RegexDict()) -> str:
+
+        value = regex_dict.get("value1")
+        return value if value else regex_dict.get("value2")
+
+    return Depends(dependency)
 
 
-async def get_profession(matcher: Matcher, name: str = Depends(get_value)) -> str:
+def get_profession() -> str:
     """
     说明:
         Dependency，通过别名获取职业名称
     """
-    profession = JX3PROFESSION.get_profession(name)
-    if profession:
-        return profession
 
-    # 未找到职业
-    msg = f"未找到职业[{name}]，请检查参数。"
-    await matcher.finish(msg)
+    async def dependency(matcher: Matcher, name: str = Depends(get_value)) -> str:
+
+        profession = JX3PROFESSION.get_profession(name)
+        if profession:
+            return profession
+
+        # 未找到职业
+        msg = f"未找到职业[{name}]，请检查参数。"
+        await matcher.finish(msg)
+
+    return Depends(dependency)
 
 
 def get_server_with_keyword():
-    """获取server，会判断是不是keyword"""
+    """
+    说明:
+        Dependency，获取server，会判断是不是keyword
+    """
 
     async def dependency(
         matcher: Matcher, event: GroupMessageEvent, regex_dict: dict = RegexDict()
@@ -236,7 +254,10 @@ def get_server_with_keyword():
 
 
 def get_keyword():
-    """招募查询-关键字"""
+    """
+    说明:
+        Dependency，招募查询-关键字
+    """
 
     async def dependency(regex_dict: dict = RegexDict()) -> Optional[str]:
         _keyword = regex_dict.get("keyword")
@@ -257,7 +278,10 @@ def get_keyword():
 
 
 def get_type():
-    """排行榜-获取类型"""
+    """
+    说明:
+        Dependency，排行榜-获取类型
+    """
 
     def dependency(regex_dict: dict = RegexDict()) -> str:
         _type = regex_dict.get("type2")
@@ -289,7 +313,10 @@ def get_type():
 
 
 def get_tittle():
-    """排行榜-获取标题"""
+    """
+    说明:
+        Dependency，排行榜-获取标题
+    """
 
     def dependency(regex_dict: dict = RegexDict()) -> str:
         _type = regex_dict.get("type2")
@@ -321,7 +348,10 @@ def get_tittle():
 
 
 def get_camp():
-    """帮会排名-获取阵营"""
+    """
+    说明:
+        Dependency，帮会排名-获取阵营
+    """
 
     async def dependency(matcher: Matcher, name: str = Depends(get_value)) -> str:
         match name:
@@ -372,7 +402,7 @@ def cold_down(name: str, cd_time: int) -> None:
 
 
 @daily_query.handle(parameterless=[cold_down(name="日常查询", cd_time=0)])
-async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+async def _(event: GroupMessageEvent, server: str = get_server()):
     """日常查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 日常查询 | 请求：{server}"
@@ -400,7 +430,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
 
 
 @server_query.handle(parameterless=[cold_down(name="开服查询", cd_time=0)])
-async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+async def _(event: GroupMessageEvent, server: str = get_server()):
     """开服查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 开服查询 | 请求：{server}"
@@ -417,7 +447,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
 
 
 @gold_query.handle(parameterless=[cold_down(name="金价查询", cd_time=0)])
-async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+async def _(event: GroupMessageEvent, server: str = get_server()):
     """金价查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 金价查询 | 请求：{server}"
@@ -441,7 +471,7 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
 
 
 @medicine_query.handle(parameterless=[cold_down(name="小药查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+async def _(event: GroupMessageEvent, name: str = get_profession()):
     """小药查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 小药查询 | 请求：{name}")
     response = await api.app_heighten(name=name)
@@ -463,7 +493,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
 
 
 @equip_group_query.handle(parameterless=[cold_down(name="配装查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+async def _(event: GroupMessageEvent, name: str = get_profession()):
     """配装查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 配装查询 | 请求：{name}")
     response = await api.app_equip(name=name)
@@ -482,7 +512,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
 
 
 @macro_query.handle(parameterless=[cold_down(name="宏查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+async def _(event: GroupMessageEvent, name: str = get_profession()):
     """宏查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 宏查询 | 请求：{name}")
     response = await api.app_macro(name=name)
@@ -501,7 +531,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
 
 
 @zhenyan_query.handle(parameterless=[cold_down(name="阵眼查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
+async def _(event: GroupMessageEvent, name: str = get_profession()):
     """阵眼查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 阵眼查询 | 请求：{name}")
     response = await api.app_matrix(name=name)
@@ -518,7 +548,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_profession)):
 
 
 @condition_query.handle(parameterless=[cold_down(name="前置查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
+async def _(event: GroupMessageEvent, name: str = get_value()):
     """前置查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 前置查询 | 请求：{name}")
     response = await api.app_require(name=name)
@@ -533,7 +563,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
 
 
 @strategy_query.handle(parameterless=[cold_down(name="攻略查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
+async def _(event: GroupMessageEvent, name: str = get_value()):
     """攻略查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 攻略查询 | 请求：{name}")
     if api.config.api_token:
@@ -580,7 +610,7 @@ async def _(event: GroupMessageEvent):
 
 
 @price_query.handle(parameterless=[cold_down(name="物价查询", cd_time=10)])
-async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
+async def _(event: GroupMessageEvent, name: str = get_value()):
     """物价查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 物价查询 | 请求：{name}")
     if api.config.api_token:
@@ -610,8 +640,8 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
 @serendipity_query.handle(parameterless=[cold_down(name="角色奇遇", cd_time=10)])
 async def _(
     event: GroupMessageEvent,
-    server: str = Depends(get_server),
-    name: str = Depends(get_value),
+    server: str = get_server(),
+    name: str = get_value(),
 ):
     """角色奇遇查询"""
     logger.info(
@@ -636,8 +666,8 @@ async def _(
 @serendipity_list_query.handle(parameterless=[cold_down(name="奇遇统计", cd_time=10)])
 async def _(
     event: GroupMessageEvent,
-    server: str = Depends(get_server),
-    name: str = Depends(get_value),
+    server: str = get_server(),
+    name: str = get_value(),
 ):
     """奇遇统计查询"""
     logger.info(
@@ -658,7 +688,7 @@ async def _(
 
 
 @serendipity_summary_query.handle(parameterless=[cold_down(name="奇遇汇总", cd_time=10)])
-async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
+async def _(event: GroupMessageEvent, server: str = get_server()):
     """奇遇汇总查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 奇遇汇总查询 | 请求：{server}"
@@ -680,8 +710,8 @@ async def _(event: GroupMessageEvent, server: str = Depends(get_server)):
 @match_query.handle(parameterless=[cold_down(name="战绩查询", cd_time=10)])
 async def _(
     event: GroupMessageEvent,
-    server: str = Depends(get_server),
-    name: str = Depends(get_value),
+    server: str = get_server(),
+    name: str = get_value(),
 ):
     """战绩查询"""
     logger.info(
@@ -705,8 +735,8 @@ async def _(
 @equip_query.handle(parameterless=[cold_down(name="装备属性", cd_time=10)])
 async def _(
     event: GroupMessageEvent,
-    server: str = Depends(get_server),
-    name: str = Depends(get_value),
+    server: str = get_server(),
+    name: str = get_value(),
 ):
     """装备属性查询"""
     logger.info(
@@ -730,8 +760,8 @@ async def _(
 @firework_query.handle(parameterless=[cold_down(name="烟花记录", cd_time=10)])
 async def _(
     event: GroupMessageEvent,
-    server: str = Depends(get_server),
-    name: str = Depends(get_value),
+    server: str = get_server(),
+    name: str = get_value(),
 ):
     """烟花记录查询"""
     logger.info(
@@ -823,7 +853,7 @@ async def _(
 async def _(
     matcher: Matcher,
     event: GroupMessageEvent,
-    server: str = Depends(get_server),
+    server: str = get_server(),
     type_: str = get_type(),
     tittle: str = get_tittle(),
 ):
@@ -851,7 +881,7 @@ async def _(
 async def _(
     matcher: Matcher,
     event: GroupMessageEvent,
-    server: str = Depends(get_server),
+    server: str = get_server(),
     type_: str = get_type(),
     tittle: str = get_tittle(),
     camp: str = get_camp(),
@@ -879,8 +909,8 @@ async def _(
 @shilian_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
 async def _(
     event: GroupMessageEvent,
-    server: str = Depends(get_server),
-    school: str = Depends(get_value),
+    server: str = get_server(),
+    school: str = get_value(),
 ):
     """试炼之地排行"""
     logger.info(

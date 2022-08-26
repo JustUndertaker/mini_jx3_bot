@@ -221,7 +221,7 @@ def get_profession() -> str:
     return Depends(dependency)
 
 
-def get_server_with_keyword():
+def get_server_with_keyword() -> str:
     """
     说明:
         Dependency，获取server，会判断是不是keyword
@@ -253,7 +253,7 @@ def get_server_with_keyword():
     return Depends(dependency)
 
 
-def get_keyword():
+def get_keyword() -> str:
     """
     说明:
         Dependency，招募查询-关键字
@@ -277,7 +277,7 @@ def get_keyword():
     return Depends(dependency)
 
 
-def get_type():
+def get_type() -> str:
     """
     说明:
         Dependency，排行榜-获取类型
@@ -312,7 +312,7 @@ def get_type():
     return Depends(dependency)
 
 
-def get_tittle():
+def get_tittle() -> str:
     """
     说明:
         Dependency，排行榜-获取标题
@@ -347,7 +347,7 @@ def get_tittle():
     return Depends(dependency)
 
 
-def get_camp():
+def get_camp() -> str:
     """
     说明:
         Dependency，帮会排名-获取阵营

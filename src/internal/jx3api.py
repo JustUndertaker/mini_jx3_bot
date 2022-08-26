@@ -3,7 +3,7 @@ jx3api接口的实现，用于连接api网站的数据处理
 """
 
 from functools import partial
-from typing import Any
+from typing import Any, Optional
 
 from httpx import AsyncClient
 from pydantic import BaseModel
@@ -11,6 +11,24 @@ from typing_extensions import Protocol
 
 from src.config import Jx3ApiConfig, jx3api_config
 from src.utils.log import logger
+
+SERVER_DICT = {
+    "长安城": ["长安城", "长安"],
+    "龙争虎斗": ["龙争虎斗", "龙虎"],
+    "蝶恋花": ["蝶恋花", "蝶服"],
+    "剑胆琴心": ["剑胆琴心", "剑胆", "煎蛋", "剑胆金榜", "侠者成歌"],
+    "幽月轮": ["幽月轮", "六合一"],
+    "乾坤一掷": ["乾坤一掷", "华乾"],
+    "斗转星移": ["斗转星移", "姨妈", "风雨大姨妈", "姨妈服", "大唐万象"],
+    "唯我独尊": ["唯我独尊", "唯满侠", "鹅服"],
+    "梦江南": ["梦江南", "双梦镇", "双梦"],
+    "绝代天骄": ["绝代天骄", "绝代", "电八"],
+    "天鹅坪": ["天鹅坪", "纵月", "纵月六只鹅", "双剑"],
+    "破阵子": ["破阵子", "念破"],
+    "飞龙在天": ["飞龙在天", "飞龙", "双二"],
+    "青梅煮酒": ["青梅煮酒", "青梅"],
+}
+"""区服列表"""
 
 
 class _ApiCall(Protocol):
@@ -55,6 +73,22 @@ class JX3API:
         token = self.config.api_token or ""
         headers = {"token": token, "User-Agent": "Nonebot2-jx3_bot"}
         self.client = AsyncClient(headers=headers)
+
+    def app_server(self, *, name: str) -> Optional[str]:
+        """
+        说明:
+            主从大区
+
+        参数:
+            * `name`：大区名称
+
+        返回:
+            * `str`：主区名称
+        """
+        for key, value in SERVER_DICT.items():
+            if name in value:
+                return key
+        return None
 
     async def call_api(self, url: str, **data: Any) -> Response:
         """请求api网站数据"""

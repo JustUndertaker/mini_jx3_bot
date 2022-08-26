@@ -1,3 +1,5 @@
+from typing import Optional
+
 from httpx import AsyncClient
 from pydantic import BaseModel
 
@@ -181,13 +183,16 @@ class JX3API:
             * `name`：地图名称/马驹名称
         """
         ...
-    async def app_server(self, *, name: str) -> Response:
+    def app_server(self, *, name: str) -> Optional[str]:
         """
         说明:
             主从大区
 
         参数:
             * `name`：大区名称
+
+        返回:
+            * `str`：主区名称
         """
         ...
     async def app_random(self) -> Response:

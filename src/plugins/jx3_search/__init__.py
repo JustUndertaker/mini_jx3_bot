@@ -174,11 +174,10 @@ async def get_server(
     """
     _server = regex_dict.get("server")
     if _server:
-        response = await api.app_server(name=_server)
-        if response.code != 200:
+        server = api.app_server(name=_server)
+        if not server:
             msg = f"未找到服务器[{_server}]，请验证后查询。"
             await matcher.finish(msg)
-        server: str = response.data["server"]
     else:
         server = await GroupInfo.get_server(event.group_id)
     return server
@@ -215,21 +214,19 @@ def get_server_with_keyword():
     ) -> str:
         _server = regex_dict.get("server2")
         if _server:
-            response = await api.app_server(name=_server)
-            if response.code != 200:
+            server = api.app_server(name=_server)
+            if not server:
                 msg = f"未找到服务器[{_server}]，请验证后查询。"
                 await matcher.finish(msg)
             else:
-                return response.data["server"]
+                return server
         else:
             _server = regex_dict.get("server1")
             if _server:
                 # 判断server是不是keyword
-                response = await api.app_server(name=_server)
-                if response.code != 200:
+                server = api.app_server(name=_server)
+                if not server:
                     server = await GroupInfo.get_server(event.group_id)
-                else:
-                    server = response.data["server"]
             else:
                 # 单招募
                 server = await GroupInfo.get_server(event.group_id)
@@ -247,8 +244,8 @@ def get_keyword():
             return _keyword
         _keyword = regex_dict.get("server1")
         if _keyword:
-            response = await api.app_server(name=_keyword)
-            if response.code == 200:
+            server = api.app_server(name=_keyword)
+            if not server:
                 keyword = None
             else:
                 keyword = _keyword

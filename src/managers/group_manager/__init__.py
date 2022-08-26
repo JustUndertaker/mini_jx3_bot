@@ -194,10 +194,9 @@ def someone_income():
 async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
     """绑定服务器"""
     logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 请求绑定服务器 | {name}")
-    response = await api.app_server(name=name)
-    if response.code != 200:
+    server = api.app_server(name=name)
+    if not server:
         await bind_server.finish(f"绑定失败，未找到服务器：{name}")
-    server = response.data["server"]
     await GroupInfo.bind_server(group_id=event.group_id, server=server)
     await bind_server.finish(f"绑定服务器【{server}】成功！")
 

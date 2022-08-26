@@ -260,8 +260,7 @@ def get_keyword() -> str:
     """
 
     async def dependency(regex_dict: dict = RegexDict()) -> Optional[str]:
-        _keyword = regex_dict.get("keyword")
-        if _keyword:
+        if _keyword := regex_dict.get("keyword"):
             return _keyword
         if _keyword := regex_dict.get("server1"):
             if api.app_server(name=_keyword):

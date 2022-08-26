@@ -135,49 +135,78 @@ ticket_clean = on_regex(
 # ----------------------------------------------------------------------------
 
 
-def get_value(regex_dict: dict = RegexDict()) -> str:
+def get_value() -> str:
     """
     说明:
-        Dependcey，获取命令中的value值
+        Dependency，获取命令中的value值
 
     返回:
         * `value` ：value值
     """
-    return regex_dict["value"]
+
+    def dependency(regex_dict: dict = RegexDict()) -> str:
+        return regex_dict["value"]
+
+    return Depends(dependency)
 
 
-def get_status(regex_dict: dict = RegexDict()) -> bool:
+def get_status() -> bool:
     """
     说明:
-        Dependcey，获取命令中的开关状态
+        Dependency，获取命令中的开关状态
 
     返回:
         * `bool`：开关状态
     """
-    return regex_dict["command"] == "打开"
+
+    def dependency(regex_dict: dict = RegexDict()) -> bool:
+        return regex_dict["command"] == "打开"
+
+    return Depends(dependency)
 
 
-def get_borod_group(regex_dict: dict = RegexDict()) -> int:
-    """获取广播的群号"""
-    return int(regex_dict["value"])
+def get_borod_group() -> int:
+    """
+    说明:
+        Dependency，获取广播的群号
+    """
+
+    def dependency(regex_dict: dict = RegexDict()) -> int:
+        return int(regex_dict["value"])
+
+    return Depends(dependency)
 
 
-def get_borod_msg(event: PrivateMessageEvent) -> Message:
-    """获取广播消息"""
-    msg = event.get_message()
-    msg_head = "来自管理员的广播消息：\n\n"
-    msg0 = msg_head + " ".join(str(msg[0]).split(" ")[2:])
-    msg[0] = MessageSegment.text(msg0)
-    return msg
+def get_borod_msg() -> Message:
+    """
+    说明:
+        Dependency，获取广播消息
+    """
+
+    def dependency(event: PrivateMessageEvent) -> Message:
+        msg = event.get_message()
+        msg_head = "来自管理员的广播消息：\n\n"
+        msg0 = msg_head + " ".join(str(msg[0]).split(" ")[2:])
+        msg[0] = MessageSegment.text(msg0)
+        return msg
+
+    return Depends(dependency)
 
 
-def get_borod_msg_all(event: PrivateMessageEvent) -> Message:
-    """获取全体广播信息"""
-    msg = event.get_message()
-    msg_head = "来自管理员的广播消息：\n\n"
-    msg0 = msg_head + " ".join(str(msg[0]).split(" ")[1:])
-    msg[0] = MessageSegment.text(msg0)
-    return msg
+def get_borod_msg_all() -> Message:
+    """
+    说明:
+        Dependency，获取全体广播信息
+    """
+
+    def dependency(event: PrivateMessageEvent) -> Message:
+        msg = event.get_message()
+        msg_head = "来自管理员的广播消息：\n\n"
+        msg0 = msg_head + " ".join(str(msg[0]).split(" ")[1:])
+        msg[0] = MessageSegment.text(msg0)
+        return msg
+
+    return Depends(dependency)
 
 
 # ----------------------------------------------------------------------------
@@ -222,7 +251,7 @@ async def _(bot: Bot, event: PrivateMessageEvent):
 
 
 @friend_delete.handle()
-async def _(bot: Bot, user_id: int = Depends(get_value)):
+async def _(bot: Bot, user_id: str = get_value()):
     """删除好友"""
     logger.info(f"<g>超级用户管理</g> | 请求删除好友：{user_id}")
     user_list = await bot.get_friend_list()
@@ -254,12 +283,12 @@ async def _(bot: Bot, event: PrivateMessageEvent):
 
 
 @group_delete.handle()
-async def _(bot: Bot, group_id: int = Depends(get_value)):
+async def _(bot: Bot, group_id: str = get_value()):
     """退群"""
     logger.info(f"<g>超级用户管理</g> | 请求退群：{group_id}")
-    group_name = await GroupInfo.get_group_name(group_id)
+    group_name = await GroupInfo.get_group_name(int(group_id))
     if group_name:
-        await bot.set_group_leave(group_id=group_id, is_dismiss=True)
+        await bot.set_group_leave(group_id=int(group_id), is_dismiss=True)
         msg = f"退出群【{group_name}】({group_id})。"
     else:
         msg = f"未找到群：{group_id}"
@@ -269,8 +298,8 @@ async def _(bot: Bot, group_id: int = Depends(get_value)):
 @borodcast.handle()
 async def _(
     bot: Bot,
-    group_id: int = Depends(get_borod_group),
-    message: Message = Depends(get_borod_msg),
+    group_id: int = get_borod_group(),
+    message: Message = get_borod_msg(),
 ):
     """广播消息"""
     logger.info(f"<g>超级用户管理</g> | 广播消息 | {group_id} | {message}")
@@ -284,7 +313,7 @@ async def _(
 
 
 @borodcast_all.handle()
-async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
+async def _(bot: Bot, message: Message = get_borod_msg_all()):
     """广播全体消息"""
     logger.info(f"<g>超级用户管理</g> | 全体广播 | {message}")
     success = 0
@@ -305,12 +334,12 @@ async def _(bot: Bot, message: Message = Depends(get_borod_msg_all)):
 
 
 @handle_robot.handle()
-async def _(group_id: int = Depends(get_value), status: bool = Depends(get_status)):
+async def _(group_id: str = get_value(), status: bool = get_status()):
     """打开关闭机器人"""
     logger.info(f"<g>超级用户管理</g> | 打开关闭机器人 | {group_id} | {status}")
-    flag = await GroupInfo.get_group_name(group_id)
+    flag = await GroupInfo.get_group_name(int(group_id))
     if flag:
-        await GroupInfo.set_status(group_id, status)
+        await GroupInfo.set_status(int(group_id), status)
         msg = "设置成功！"
     else:
         msg = f"设置失败，未找到群：{group_id}"
@@ -337,7 +366,7 @@ async def _(event: PrivateMessageEvent):
 
 
 @ticket_add.handle()
-async def _(event: PrivateMessageEvent, ticket: str = Depends(get_value)):
+async def _(event: PrivateMessageEvent, ticket: str = get_value()):
     """添加ticket"""
     logger.info(f"<g>超级用户管理</g> | 请求添加ticket | {ticket}")
 
@@ -352,7 +381,7 @@ async def _(event: PrivateMessageEvent, ticket: str = Depends(get_value)):
 
 
 @ticket_del.handle()
-async def _(event: PrivateMessageEvent, index: str = Depends(get_value)):
+async def _(event: PrivateMessageEvent, index: str = get_value()):
     """删除ticket"""
     logger.info(f"<g>超级用户管理</g> | 请求删除ticket | index:{index}")
     id = int(index)

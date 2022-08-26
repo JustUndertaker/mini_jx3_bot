@@ -47,47 +47,62 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
 # -----------------------------------------------------------------------------
 # Depends: 依赖注入函数
 # -----------------------------------------------------------------------------
-def get_group_setting(matcher: Matcher, regex_dict: dict = RegexDict()) -> GroupSetting:
+def get_group_setting() -> GroupSetting:
     """
-    获取群设置类型
+    说明:
+        Dependency，获取群设置类型
     """
-    match regex_dict["value"]:
-        case "进群通知":
-            return GroupSetting.进群通知
-        case "离群通知":
-            return GroupSetting.离群通知
-        case "晚安通知":
-            return GroupSetting.晚安通知
-        case "开服推送":
-            return GroupSetting.开服推送
-        case "新闻推送":
-            return GroupSetting.新闻推送
-        case "奇遇推送":
-            return GroupSetting.奇遇推送
-        case "抓马监控":
-            return GroupSetting.抓马监控
-        case "扶摇监控":
-            return GroupSetting.扶摇监控
-        case _:
-            matcher.skip()
+
+    def dependency(matcher: Matcher, regex_dict: dict = RegexDict()) -> GroupSetting:
+        match regex_dict["value"]:
+            case "进群通知":
+                return GroupSetting.进群通知
+            case "离群通知":
+                return GroupSetting.离群通知
+            case "晚安通知":
+                return GroupSetting.晚安通知
+            case "开服推送":
+                return GroupSetting.开服推送
+            case "新闻推送":
+                return GroupSetting.新闻推送
+            case "奇遇推送":
+                return GroupSetting.奇遇推送
+            case "抓马监控":
+                return GroupSetting.抓马监控
+            case "扶摇监控":
+                return GroupSetting.扶摇监控
+            case _:
+                matcher.skip()
+
+    return Depends(dependency)
 
 
-async def get_plugin_name(matcher: Matcher, regex_dict: dict = RegexDict()) -> str:
+def get_plugin_name() -> str:
     """
-    获取插件模块名称
+    说明:
+        Dependency，获取插件模块名称
     """
-    plugin_name = regex_dict["value"]
-    module_name = plugin_manager.get_module_name(plugin_name)
-    if not module_name:
-        await matcher.finish(f"未找到插件[{plugin_name}]。")
-    return module_name
+
+    async def dependency(matcher: Matcher, regex_dict: dict = RegexDict()) -> str:
+        plugin_name = regex_dict["value"]
+        module_name = plugin_manager.get_module_name(plugin_name)
+        if not module_name:
+            await matcher.finish(f"未找到插件[{plugin_name}]。")
+        return module_name
+
+    return Depends(dependency)
 
 
-def get_status(regex_dict: dict = RegexDict()) -> bool:
+def get_status() -> bool:
     """
-    获取开关状态
+    说明:
+        Dependency，获取开关状态
     """
-    return regex_dict["status"] == "打开"
+
+    def dependency(regex_dict: dict = RegexDict()) -> bool:
+        return regex_dict["status"] == "打开"
+
+    return Depends(dependency)
 
 
 # ----------------------------------------------------------------------------
@@ -109,8 +124,8 @@ plugin_status = on_regex(
 @group_status.handle()
 async def _(
     event: GroupMessageEvent,
-    config_type: GroupSetting = Depends(get_group_setting),
-    status: bool = Depends(get_status),
+    config_type: GroupSetting = get_group_setting(),
+    status: bool = get_status(),
 ):
     """群设置开关"""
     logger.info(
@@ -127,8 +142,8 @@ async def _(
 @plugin_status.handle()
 async def _(
     event: GroupMessageEvent,
-    module_name: str = Depends(get_plugin_name),
-    status: bool = Depends(get_status),
+    module_name: str = get_plugin_name(),
+    status: bool = get_status(),
     regex_dict: dict = RegexDict(),
 ):
     """设置插件开关"""

@@ -98,59 +98,84 @@ get_notice = on_notice(priority=3, block=True)
 # -------------------------------------------------------------
 
 
-def get_value(regex_dict: dict = RegexDict()) -> str:
+def get_value() -> str:
     """
     说明:
-        Dependcey，获取value值
+        Dependency，获取value值
 
     返回:
         * `value`：value值
     """
-    return regex_dict["value"]
+
+    def dependency(regex_dict: dict = RegexDict()) -> str:
+        return regex_dict["value"]
+
+    return Depends(dependency)
 
 
-def get_status(regex_dict: dict = RegexDict()) -> bool:
+def get_status() -> bool:
     """
     说明:
-        Dependcey，获取命令中的开关
+        Dependency，获取命令中的开关
 
     返回:
         * `bool`：命令开关
     """
-    return regex_dict["command"] == "开"
+
+    def dependency(regex_dict: dict = RegexDict()) -> bool:
+        return regex_dict["command"] == "开"
+
+    return Depends(dependency)
 
 
-def get_notice_type(event: GroupMessageEvent) -> NoticeType:
+def get_notice_type() -> NoticeType:
     """
     说明:
-        Dependcey，返回通知类型
+        Dependency，返回通知类型
 
     返回:
         * `NoticeType`：通知类型枚举
     """
-    msg = event.get_plaintext()[:4]
-    match msg:
-        case "晚安通知":
-            return NoticeType.晚安通知
-        case "离群通知":
-            return NoticeType.离群通知
-        case "进群通知":
-            return NoticeType.进群通知
+
+    def dependency(event: GroupMessageEvent) -> NoticeType:
+
+        msg = event.get_plaintext()[:4]
+        match msg:
+            case "晚安通知":
+                return NoticeType.晚安通知
+            case "离群通知":
+                return NoticeType.离群通知
+            case "进群通知":
+                return NoticeType.进群通知
+
+    return Depends(dependency)
 
 
-async def get_didi_msg(bot: Bot, event: GroupMessageEvent) -> Message:
-    """返回要说的话"""
-    msg = event.get_message()
-    group = await bot.get_group_info(group_id=event.group_id)
-    group_name = group["group_name"]
-    user_name = event.sender.card if event.sender.card != "" else event.sender.nickname
-    msg_header = f"收到 | {user_name}({event.user_id}) | @群【{group_name}】({event.group_id}) | 的滴滴消息\n\n"
-    msg[0] = MessageSegment.text(msg_header + str(msg[0])[3:])
-    return msg
+def get_didi_msg() -> Message:
+    """
+    说明:
+        Dependency，返回要说的话
+    """
+
+    async def dependency(bot: Bot, event: GroupMessageEvent) -> Message:
+        msg = event.get_message()
+        group = await bot.get_group_info(group_id=event.group_id)
+        group_name = group["group_name"]
+        user_name = (
+            event.sender.card if event.sender.card != "" else event.sender.nickname
+        )
+        msg_header = f"收到 | {user_name}({event.user_id}) | @群【{group_name}】({event.group_id}) | 的滴滴消息\n\n"
+        msg[0] = MessageSegment.text(msg_header + str(msg[0])[3:])
+        return msg
+
+    return Depends(dependency)
 
 
 def to_me():
-    """检测事件与机器人有关"""
+    """
+    说明:
+        Dependency，检测事件与机器人有关
+    """
 
     async def check(matcher: Matcher, event: PokeNotifyEvent):
         if not event.is_tome():
@@ -160,7 +185,10 @@ def to_me():
 
 
 def bot_income():
-    """通知事件是否与机器人相关"""
+    """
+    说明:
+        Dependency，通知事件是否与机器人相关
+    """
 
     async def check(
         matcher: Matcher,
@@ -173,7 +201,10 @@ def bot_income():
 
 
 def someone_income():
-    """通知事件与机器人无关"""
+    """
+    说明:
+        Dependency，通知事件与机器人无关
+    """
 
     async def check(
         matcher: Matcher,
@@ -191,7 +222,7 @@ def someone_income():
 
 
 @bind_server.handle()
-async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
+async def _(event: GroupMessageEvent, name: str = get_value()):
     """绑定服务器"""
     logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 请求绑定服务器 | {name}")
     server = api.app_server(name=name)
@@ -202,7 +233,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
 
 
 @set_activity.handle()
-async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
+async def _(event: GroupMessageEvent, name: str = get_value()):
     """设置活跃值"""
     logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置活跃值 | {name}")
     activity = int(name)
@@ -211,7 +242,7 @@ async def _(event: GroupMessageEvent, name: str = Depends(get_value)):
 
 
 @robot_status.handle()
-async def _(event: GroupMessageEvent, status: bool = Depends(get_status)):
+async def _(event: GroupMessageEvent, status: bool = get_status()):
     """设置机器人开关"""
     logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置机器人开关 | {status}")
     await GroupInfo.set_status(group_id=event.group_id, status=status)
@@ -220,9 +251,7 @@ async def _(event: GroupMessageEvent, status: bool = Depends(get_status)):
 
 
 @notice.handle()
-async def _(
-    event: GroupMessageEvent, notice_type: NoticeType = Depends(get_notice_type)
-):
+async def _(event: GroupMessageEvent, notice_type: NoticeType = get_notice_type()):
     """设置通知内容"""
     logger.info(
         f"<y>群管理</y> | <g>群{event.group_id}</g> | 设置通知内容 | {notice_type} | {event.get_message()}"
@@ -254,7 +283,7 @@ async def _():
 
 
 @didi.handle()
-async def _(bot: Bot, event: GroupMessageEvent, msg: Message = Depends(get_didi_msg)):
+async def _(bot: Bot, event: GroupMessageEvent, msg: Message = get_didi_msg()):
     """滴滴功能"""
     logger.info(f"<y>群管理</y> | <g>群{event.group_id}</g> | 滴滴功能 | {msg}")
     superusers = list(bot.config.superusers)

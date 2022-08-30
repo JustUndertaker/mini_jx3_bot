@@ -2,7 +2,7 @@ version: "3"
 
 networks:
   nonebot:
-    external: true
+    external: false
 
 services:
   bot:
@@ -15,21 +15,21 @@ services:
       - nonebot
     environment:
       # nb2配置
-      - superusers = [""]                     # 超级用户，这里一般是你的大号QQ
-      - nickname = ["团子"]                   # 机器人昵称
+      - superusers=[""]                     # 超级用户，这里一般是你的大号QQ
+      - nickname=["团子"]                   # 机器人昵称
       # jx3api配置
-      - jx3api_token = ""                     # jx3api的高级功能token，没有可以不填
-      - jx3api_ws_token = ""                  # jx3api的ws消息token，没有可以不填
+      - jx3api_token=""                     # jx3api的高级功能token，没有可以不填
+      - jx3api_ws_token=""                  # jx3api的ws消息token，没有可以不填
       # 智能聊天配置
-      - nlp_secretId = ""                     # 腾讯云API的secretId
-      - nlp_secretKey = ""
+      - nlp_secretId=""                     # 腾讯云API的secretId
+      - nlp_secretKey=""
       # 语音聊天配置
-      - voice_appkey = ""                     # 阿里云的语音接口配置
-      - voice_access = ""
-      - voice_secret = ""
+      - voice_appkey=""                     # 阿里云的语音接口配置
+      - voice_access=""
+      - voice_secret=""
       # 天气插件配置
-      - weather_api_key = ""                  # 和风天气apikey
-      - weather_api_type = 0                  # api_key类型，普通版:0，个人开发版:1，商业版:2
+      - weather_api_key=""                  # 和风天气apikey
+      - weather_api_type=0                  # api_key类型，普通版:0，个人开发版:1，商业版:2
 
   gocq:
     image: namiya233/go-cqhttp:latest

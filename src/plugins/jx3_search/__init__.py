@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from nonebot import on_regex
+from nonebot import MatcherGroup, on_regex
 from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent, MessageSegment
 from nonebot.matcher import Matcher
 from nonebot.params import Depends, RegexDict
@@ -64,100 +64,43 @@ class REGEX(Enum):
     梓行榜 = r"^(?P<type1>梓行榜)$|^(?P<type2>梓行榜) (?P<server>[\S]+)$"
     爱心榜 = r"^(?P<type1>爱心榜) (?P<value1>[\S]+)$|^(?P<type2>爱心榜) (?P<server>[\S]+) (?P<value2>[\S]+)$"
     神兵榜 = r"^(?P<type1>神兵榜) (?P<value1>[\S]+)$|^(?P<type2>神兵榜) (?P<server>[\S]+) (?P<value2>[\S]+)$"
-    试炼榜 = (
-        r"^试炼榜 (?P<value1>[\S]+)$|^试炼榜 (?P<server>[\S]+) (?P<value2>[\S]+)$"
-    )
+    试炼榜 = r"^试炼榜 (?P<value1>[\S]+)$|^试炼榜 (?P<server>[\S]+) (?P<value2>[\S]+)$"
 
 
 # ----------------------------------------------------------------
 #   matcher列表，定义查询的mathcer
 # ----------------------------------------------------------------
-daily_query = on_regex(
-    pattern=REGEX.日常任务.value, permission=GROUP, priority=5, block=True
-)
-server_query = on_regex(
-    pattern=REGEX.开服检查.value, permission=GROUP, priority=5, block=True
-)
-gold_query = on_regex(
-    pattern=REGEX.金价比例.value, permission=GROUP, priority=5, block=True
-)
-medicine_query = on_regex(
-    pattern=REGEX.推荐小药.value, permission=GROUP, priority=5, block=True
-)
-equip_group_query = on_regex(
-    pattern=REGEX.推荐装备.value, permission=GROUP, priority=5, block=True
-)
-macro_query = on_regex(
-    pattern=REGEX.查宏命令.value, permission=GROUP, priority=5, block=True
-)
-zhenyan_query = on_regex(
-    pattern=REGEX.阵眼效果.value, permission=GROUP, priority=5, block=True
-)
-condition_query = on_regex(
-    pattern=REGEX.奇遇前置.value, permission=GROUP, priority=5, block=True
-)
-strategy_query = on_regex(
-    pattern=REGEX.奇遇攻略.value, permission=GROUP, priority=5, block=True
-)
-update_query = on_regex(
-    pattern=REGEX.更新公告.value, permission=GROUP, priority=5, block=True
-)
-price_query = on_regex(
-    pattern=REGEX.物品价格.value, permission=GROUP, priority=5, block=True
-)
-serendipity_query = on_regex(
-    pattern=REGEX.奇遇查询.value, permission=GROUP, priority=5, block=True
-)
-serendipity_list_query = on_regex(
-    pattern=REGEX.奇遇统计.value, permission=GROUP, priority=5, block=True
-)
-serendipity_summary_query = on_regex(
-    pattern=REGEX.奇遇汇总.value, permission=GROUP, priority=5, block=True
-)
-saohua_query = on_regex(
-    pattern=REGEX.随机骚话.value, permission=GROUP, priority=5, block=True
-)
-match_query = on_regex(
-    pattern=REGEX.比赛战绩.value, permission=GROUP, priority=5, block=True
-)
-equip_query = on_regex(
-    pattern=REGEX.装备属性.value, permission=GROUP, priority=5, block=True
-)
-firework_query = on_regex(
-    pattern=REGEX.烟花记录.value, permission=GROUP, priority=5, block=True
-)
-recruit_query = on_regex(
-    pattern=REGEX.招募查询.value, permission=GROUP, priority=5, block=True
-)
-zili_query = on_regex(pattern=REGEX.资历榜.value, permission=GROUP, priority=5, block=True)
-shengwang_query = on_regex(
-    pattern=REGEX.声望榜.value, permission=GROUP, priority=5, block=True
-)
-laojianghu_query = on_regex(
-    pattern=REGEX.老江湖.value, permission=GROUP, priority=5, block=True
-)
-bingjia_query = on_regex(
-    pattern=REGEX.兵甲榜.value, permission=GROUP, priority=5, block=True
-)
-mingshi_query = on_regex(
-    pattern=REGEX.名师榜.value, permission=GROUP, priority=5, block=True
-)
-zhanjie_query = on_regex(
-    pattern=REGEX.战阶榜.value, permission=GROUP, priority=5, block=True
-)
-zixing_query = on_regex(
-    pattern=REGEX.梓行榜.value, permission=GROUP, priority=5, block=True
-)
-aixin_query = on_regex(
-    pattern=REGEX.爱心榜.value, permission=GROUP, priority=5, block=True
-)
-shenbing_query = on_regex(
-    pattern=REGEX.神兵榜.value, permission=GROUP, priority=5, block=True
-)
-shilian_query = on_regex(
-    pattern=REGEX.试炼榜.value, permission=GROUP, priority=5, block=True
-)
-help = on_regex(pattern=r"^帮助$", permission=GROUP, priority=5, block=True)
+matcher_group = MatcherGroup(permission=GROUP, priority=5, block=True)
+daily_query = matcher_group.on_regex(pattern=REGEX.日常任务.value)
+server_query = matcher_group.on_regex(pattern=REGEX.开服检查.value)
+gold_query = matcher_group.on_regex(pattern=REGEX.金价比例.value)
+medicine_query = matcher_group.on_regex(pattern=REGEX.推荐小药.value)
+equip_group_query = matcher_group.on_regex(pattern=REGEX.推荐装备.value)
+macro_query = matcher_group.on_regex(pattern=REGEX.查宏命令.value)
+zhenyan_query = matcher_group.on_regex(pattern=REGEX.阵眼效果.value)
+condition_query = matcher_group.on_regex(pattern=REGEX.奇遇前置.value)
+strategy_query = matcher_group.on_regex(pattern=REGEX.奇遇攻略.value)
+update_query = matcher_group.on_regex(pattern=REGEX.更新公告.value)
+price_query = matcher_group.on_regex(pattern=REGEX.物品价格.value)
+serendipity_query = matcher_group.on_regex(pattern=REGEX.奇遇查询.value)
+serendipity_list_query = matcher_group.on_regex(pattern=REGEX.奇遇统计.value)
+serendipity_summary_query = matcher_group.on_regex(pattern=REGEX.奇遇汇总.value)
+saohua_query = matcher_group.on_regex(pattern=REGEX.随机骚话.value)
+match_query = matcher_group.on_regex(pattern=REGEX.比赛战绩.value)
+equip_query = matcher_group.on_regex(pattern=REGEX.装备属性.value)
+firework_query = matcher_group.on_regex(pattern=REGEX.烟花记录.value)
+recruit_query = matcher_group.on_regex(pattern=REGEX.招募查询.value)
+zili_query = matcher_group.on_regex(pattern=REGEX.资历榜.value)
+shengwang_query = on_regex(pattern=REGEX.声望榜.value)
+laojianghu_query = matcher_group.on_regex(pattern=REGEX.老江湖.value)
+bingjia_query = matcher_group.on_regex(pattern=REGEX.兵甲榜.value)
+mingshi_query = matcher_group.on_regex(pattern=REGEX.名师榜.value)
+zhanjie_query = matcher_group.on_regex(pattern=REGEX.战阶榜.value)
+zixing_query = matcher_group.on_regex(pattern=REGEX.梓行榜.value)
+aixin_query = matcher_group.on_regex(pattern=REGEX.爱心榜.value)
+shenbing_query = matcher_group.on_regex(pattern=REGEX.神兵榜.value)
+shilian_query = matcher_group.on_regex(pattern=REGEX.试炼榜.value)
+help = matcher_group.on_regex(pattern=r"^帮助$")
 
 
 # ----------------------------------------------------------------

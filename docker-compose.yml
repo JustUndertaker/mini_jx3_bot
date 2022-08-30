@@ -37,6 +37,8 @@ services:
     container_name: go_cqhttp
     volumes:
       - "/etc/localtime:/etc/localtime"
+      - "/your_config/config.yml:/data/config.yml"    # 这里your_config需要填写你的gocq config配置文件位置
+      - "/your_config/device.json:/data/device.json"  # 这里your_config需要填写你的gocq device.json文件位置，没有可以不写
     networks:
       - nonebot
 

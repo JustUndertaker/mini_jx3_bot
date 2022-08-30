@@ -15,6 +15,7 @@ services:
       - nonebot
     environment:
       # nb2配置
+      - host=0.0.0.0                        # 由于组网原因，需要监听0.0.0.0
       - superusers=[""]                     # 超级用户，这里一般是你的大号QQ
       - nickname=["团子"]                   # 机器人昵称
       # jx3api配置
@@ -37,8 +38,9 @@ services:
     container_name: go_cqhttp
     volumes:
       - "/etc/localtime:/etc/localtime"
-      - "/your_config/config.yml:/data/config.yml"    # 这里your_config需要填写你的gocq config配置文件位置
-      - "/your_config/device.json:/data/device.json"  # 这里your_config需要填写你的gocq device.json文件位置，没有可以不写
+      - "/your_config/config.yml:/data/config.yml"        # 这里your_config需要填写你的gocq config配置文件位置
+      - "/your_config/device.json:/data/device.json"      # 这里your_config需要填写你的gocq device.json文件位置
+      - "/your_config/session.token:/data/session.token"  # 这里your_config需要填写你的gocq token文件位置
     networks:
       - nonebot
 

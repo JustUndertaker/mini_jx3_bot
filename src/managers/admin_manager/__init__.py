@@ -2,7 +2,7 @@ import asyncio
 import random
 import time
 
-from nonebot import on_regex, on_request
+from nonebot import on_request
 from nonebot.adapters import Event
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -13,7 +13,6 @@ from nonebot.adapters.onebot.v11 import (
     PrivateMessageEvent,
 )
 from nonebot.params import Depends, RegexDict
-from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
 
@@ -21,7 +20,7 @@ from src.config import default_config
 from src.internal.jx3api import JX3API
 from src.modules.group_info import GroupInfo
 from src.modules.ticket_info import TicketInfo
-from src.params import PluginConfig
+from src.params import PluginConfig, admin_matcher_group
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
@@ -55,81 +54,32 @@ def check_event() -> Rule:
 # ----------------------------------------------------------------------------
 get_request = on_request(priority=3, block=True)  # 请求事件
 # ticket管理器
-ticket = on_regex(
-    pattern=r"^ticket$",
-    rule=check_event(),
-    permission=SUPERUSER,
-    priority=2,
-    block=True,
-)
+ticket = admin_matcher_group.on_regex(pattern=r"^ticket$")
 # 好友列表
-friend_list = on_regex(
-    pattern=r"^好友列表$", rule=check_event(), permission=SUPERUSER, priority=3, block=True
-)
+friend_list = admin_matcher_group.on_regex(pattern=r"^好友列表$")
 # 删除好友
-friend_delete = on_regex(
-    pattern=r"^删除好友 (?P<value>[\d]+)$",
-    rule=check_event(),
-    permission=SUPERUSER,
-    priority=3,
-    block=True,
-)
+friend_delete = admin_matcher_group.on_regex(pattern=r"^删除好友 (?P<value>[\d]+)$")
 # 群列表
-group_list = on_regex(
-    pattern=r"^群列表$", rule=check_event(), permission=SUPERUSER, priority=3, block=True
-)
+group_list = admin_matcher_group.on_regex(pattern=r"^群列表$")
 # 退群
-group_delete = on_regex(
-    pattern=r"^退群 (?P<value>[\d]+)$",
-    rule=check_event(),
-    permission=SUPERUSER,
-    priority=3,
-    block=True,
-)
+group_delete = admin_matcher_group.on_regex(pattern=r"^退群 (?P<value>[\d]+)$")
 # 广播
-borodcast = on_regex(
-    pattern=r"^广播 (?P<value>[\d]+) ",
-    rule=check_event(),
-    permission=SUPERUSER,
-    priority=3,
-    block=True,
-)
+borodcast = admin_matcher_group.on_regex(pattern=r"^广播 (?P<value>[\d]+) ")
 # 全体广播
-borodcast_all = on_regex(
-    pattern=r"^全体广播 ", rule=check_event(), permission=SUPERUSER, priority=3, block=True
-)
+borodcast_all = admin_matcher_group.on_regex(pattern=r"^全体广播 ")
 # 打开关闭机器人
-handle_robot = on_regex(
-    pattern=r"^(?P<command>打开|关闭) (?P<value>[0-9]+)$",
-    rule=check_event(),
-    permission=SUPERUSER,
-    priority=3,
-    block=True,
+handle_robot = admin_matcher_group.on_regex(
+    pattern=r"^(?P<command>打开|关闭) (?P<value>[\d]+)$"
 )
 # 帮助
-help = on_regex(
-    pattern=r"^帮助$", rule=check_event(), permission=SUPERUSER, priority=3, block=True
-)
+help = admin_matcher_group.on_regex(pattern=r"^帮助$")
 # 添加ticket
-ticket_add = on_regex(
-    pattern=r"^添加 (?P<value>[^\s]+)$",
-    rule=check_event(),
-    permission=SUPERUSER,
-    priority=3,
-    block=True,
-)
+ticket_add = admin_matcher_group.on_regex(pattern=r"^添加 (?P<value>[^\s]+)$")
 # 删除ticket
-ticket_del = on_regex(
-    pattern=r"^删除 (?P<value>[\d]+)$",
-    rule=check_event(),
-    permission=SUPERUSER,
-    priority=3,
-    block=True,
-)
+ticket_del = admin_matcher_group.on_regex(pattern=r"^删除 (?P<value>[\d]+)$")
 # 清理ticket
-ticket_clean = on_regex(
-    pattern=r"^清理$", rule=check_event(), permission=SUPERUSER, priority=3, block=True
-)
+ticket_clean = admin_matcher_group.on_regex(pattern=r"^清理$")
+
 # ----------------------------------------------------------------------------
 #  Depends依赖
 # ----------------------------------------------------------------------------

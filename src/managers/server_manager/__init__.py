@@ -1,16 +1,15 @@
 import asyncio
 import random
 
-from nonebot import get_driver, on, on_regex
+from nonebot import get_driver, on
 from nonebot.adapters.onebot.v11 import Bot, PrivateMessageEvent
-from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from tortoise import Tortoise
 
 from src.internal.plugin_manager import plugin_manager
 from src.modules.group_info import GroupInfo
 from src.modules.user_info import UserInfo
-from src.params import PluginConfig
+from src.params import PluginConfig, admin_matcher_group
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.utils import GroupList_Async
@@ -96,9 +95,9 @@ async def _():
 # ----------------------------------------------------------------
 #  server操作的几个mathcer
 # ----------------------------------------------------------------
-check_ws = on_regex(pattern=r"^查看连接$", permission=SUPERUSER, priority=2, block=True)
-connect_ws = on_regex(pattern=r"^连接服务$", permission=SUPERUSER, priority=2, block=True)
-close_ws = on_regex(pattern=r"^关闭连接$", permission=SUPERUSER, priority=2, block=True)
+check_ws = admin_matcher_group.on_regex(pattern=r"^查看连接$")
+connect_ws = admin_matcher_group.on_regex(pattern=r"^连接服务$")
+close_ws = admin_matcher_group.on_regex(pattern=r"^关闭连接$")
 
 
 @check_ws.handle()
@@ -140,8 +139,8 @@ async def _(event: PrivateMessageEvent):
 #       ws消息事件处理
 # ----------------------------------------------------------------
 
-ws_recev = on(type="WsRecv", priority=4, block=True)
-ws_notice = on(type="WsNotice", priority=4, block=True)
+ws_recev = on(type="WsRecv", priority=2, block=True)
+ws_notice = on(type="WsNotice", priority=2, block=True)
 
 
 @ws_recev.handle()

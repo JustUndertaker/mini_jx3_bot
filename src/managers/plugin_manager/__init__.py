@@ -1,16 +1,14 @@
-from nonebot import on_regex
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.exception import IgnoredException
 from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
 from nonebot.params import Depends, RegexDict
-from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 
 from src.internal.plugin_manager import plugin_manager
 from src.modules.group_info import GroupInfo
 from src.modules.plugin_info import PluginInfo
-from src.params import GROUP_ADMIN, GroupSetting, PluginConfig
+from src.params import GroupSetting, PluginConfig, group_matcher_group
 from src.utils.log import logger
 
 __plugin_meta__ = PluginMetadata(
@@ -112,13 +110,10 @@ def get_status() -> bool:
 #   2层通用一个“打开|关闭 [name]”指令，所以要做2次判断，目前通过优先级来传递
 # -----------------------------------------------------------------------------
 regex = r"^(?P<status>打开|关闭) (?P<value>[\u4e00-\u9fa5]+)$"
-group_status = on_regex(
-    pattern=regex, permission=SUPERUSER | GROUP_ADMIN, priority=2, block=False
-)  # 群设置
-
-plugin_status = on_regex(
-    pattern=regex, permission=SUPERUSER | GROUP_ADMIN, priority=3, block=True
-)  # 插件设置
+# 群设置
+group_status = group_matcher_group.on_regex(pattern=regex, block=False)
+# 插件设置
+plugin_status = group_matcher_group.on_regex(pattern=regex)
 
 
 @group_status.handle()

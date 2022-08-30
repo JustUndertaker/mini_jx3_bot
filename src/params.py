@@ -3,14 +3,20 @@
 """
 from enum import Enum, auto
 
+from nonebot import MatcherGroup
 from nonebot.adapters.onebot.v11 import (
+    GROUP,
     GROUP_ADMIN,
     GROUP_OWNER,
     GroupMessageEvent,
+    MessageEvent,
     MessageSegment,
+    PrivateMessageEvent,
 )
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
+from nonebot.permission import SUPERUSER
+from nonebot.rule import Rule
 
 # from nonebot.permission import Permission
 from pydantic import BaseModel
@@ -60,16 +66,6 @@ def cost_gold(gold: int):
     return Depends(dependency)
 
 
-# async def _group_admin() -> bool:
-#    # TODO:待实现
-#    return False
-#
-# GROUP_ADMIN=Permission(_group_admin)
-
-GROUP_ADMIN = GROUP_ADMIN | GROUP_OWNER
-"""匹配群管理员权限"""
-
-
 class GroupSetting(Enum):
     """
     群设置枚举
@@ -93,3 +89,35 @@ class NoticeType(Enum):
     晚安通知 = auto()
     离群通知 = auto()
     进群通知 = auto()
+
+
+def _check_event() -> Rule:
+    """匹配私聊消息"""
+
+    def check(event: MessageEvent) -> bool:
+        return isinstance(event, PrivateMessageEvent)
+
+    return Rule(check)
+
+
+admin_matcher_group = MatcherGroup(
+    rule=_check_event(), permission=SUPERUSER, priority=2, block=True
+)
+"""
+说明:
+    超级管理员命令组，超级管理员私聊触发，用于创建matcher
+"""
+
+group_matcher_group = MatcherGroup(
+    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER, priority=3, block=True
+)
+"""
+说明:
+    群管理命令组，群管和超级用户可以使用，用于创建matcher
+"""
+
+user_matcher_group = MatcherGroup(permission=GROUP, priority=5, block=True)
+"""
+说明：
+    用户权限命令组，用于群组内普通用户创建matcher
+"""

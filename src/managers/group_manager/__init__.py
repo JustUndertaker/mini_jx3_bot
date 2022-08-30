@@ -3,7 +3,7 @@ import random
 import time
 from typing import Union
 
-from nonebot import get_bots, on_notice, on_regex
+from nonebot import get_bots, on_notice
 from nonebot.adapters.onebot.v11 import (
     Bot,
     FriendAddNoticeEvent,
@@ -14,16 +14,20 @@ from nonebot.adapters.onebot.v11 import (
     MessageSegment,
     PokeNotifyEvent,
 )
-from nonebot.adapters.onebot.v11.permission import GROUP
 from nonebot.params import Depends, Matcher, RegexDict
-from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 
 from src.internal.jx3api import JX3API
 from src.internal.plugin_manager import plugin_manager
 from src.modules.group_info import GroupInfo
 from src.modules.user_info import UserInfo
-from src.params import GROUP_ADMIN, GroupSetting, NoticeType, PluginConfig
+from src.params import (
+    GroupSetting,
+    NoticeType,
+    PluginConfig,
+    group_matcher_group,
+    user_matcher_group,
+)
 from src.utils.browser import browser
 from src.utils.log import logger
 from src.utils.scheduler import scheduler
@@ -50,46 +54,19 @@ __plugin_meta__ = PluginMetadata(
 api = JX3API()
 
 # 绑定服务器
-bind_server = on_regex(
-    pattern=r"^绑定 (?P<value>[\u4e00-\u9fa5]+)$",
-    permission=SUPERUSER | GROUP_ADMIN,
-    priority=2,
-    block=True,
-)
-
+bind_server = group_matcher_group.on_regex(pattern=r"^绑定 (?P<value>[\u4e00-\u9fa5]+)$")
 # 设置活跃值[0-99]
-set_activity = on_regex(
-    pattern=r"^活跃值 (?P<value>(\d){1,2})$",
-    permission=SUPERUSER | GROUP_ADMIN,
-    priority=2,
-    block=True,
-)
-
+set_activity = group_matcher_group.on_regex(pattern=r"^活跃值 (?P<value>(\d){1,2})$")
 # 设置机器人开关
-robot_status = on_regex(
-    pattern=r"^机器人 (?P<command>[开关])$",
-    permission=SUPERUSER | GROUP_ADMIN,
-    priority=2,
-    block=True,
-)
-
+robot_status = group_matcher_group.on_regex(pattern=r"^机器人 (?P<command>[开关])$")
 # 晚安通知，离群通知，进群通知
-notice = on_regex(
-    pattern=r"^((晚安)|(离群)|(进群))通知 ",
-    permission=SUPERUSER | GROUP_ADMIN,
-    priority=2,
-    block=True,
-)
-
+notice = group_matcher_group.on_regex(pattern=r"^((晚安)|(离群)|(进群))通知 ")
 # 菜单
-meau = on_regex(pattern=r"^((菜单)|(状态))$", permission=GROUP, priority=3, block=True)
-
+meau = user_matcher_group.on_regex(pattern=r"^((菜单)|(状态))$", priority=3)
 # 管理员帮助
-admin_help = on_regex(pattern=r"^管理员帮助$", permission=GROUP, priority=3, block=True)
-
+admin_help = user_matcher_group.on_regex(pattern=r"^管理员帮助$", priority=3)
 # 滴滴
-didi = on_regex(pattern=r"^滴滴 ", permission=GROUP_ADMIN, priority=3, block=True)
-
+didi = user_matcher_group.on_regex(pattern=r"^滴滴 ", priority=3)
 # 通知事件
 get_notice = on_notice(priority=3, block=True)
 

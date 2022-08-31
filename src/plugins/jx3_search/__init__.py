@@ -149,7 +149,7 @@ def get_profession() -> str:
         Dependency，通过别名获取职业名称
     """
 
-    async def dependency(matcher: Matcher, name: str = Depends(get_value)) -> str:
+    async def dependency(matcher: Matcher, name: str = get_value()) -> str:
 
         profession = JX3PROFESSION.get_profession(name)
         if profession:

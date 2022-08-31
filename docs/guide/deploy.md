@@ -220,3 +220,18 @@ services:
     networks:
       - nonebot
 ```
+::: warning 注意
+因为组网的原因，gocq的config.yml需要修改一下ws地址：
+```yaml
+message:
+  # 上报数据类型
+  # 可选: string,array
+  post-format: array
+
+servers:
+  - ws-reverse:
+      # 反向WS Universal 地址
+      # 注意 设置了此项地址后下面两项将会被忽略
+      universal: ws://mini_jx3_api:8080/onebot/v11/ws
+```
+:::

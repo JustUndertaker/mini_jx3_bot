@@ -4,7 +4,8 @@ ENV LANG=zh_CN.UTF-8 \
     LANGUAGE=zh_CN.UTF-8 \
     LC_CTYPE=zh_CN.UTF-8 \
     LC_ALL=zh_CN.UTF-8 \
-    TZ=Asia/Shanghai
+    TZ=Asia/Shanghai \
+    DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /mini_jx3_bot
 

@@ -25,23 +25,23 @@ class JX3API:
     config: Jx3ApiConfig
     """api设置"""
 
-    async def app_daily(self, *, server: str, next: int = ...) -> Response:
+    async def app_daily(self, *, server: str, predict: int = ...) -> Response:
         """
         说明：
             今天、明天、后天等的日常任务，七点自动更新。
 
         参数：
             * `server`：服务器名
-            * `next`: 可选，查询天数，默认为0
+            * `predict`: 可选，查询天数，默认为0
         """
         ...
-    async def app_calculate(self, *, count: int = ...) -> Response:
+    async def app_predict(self, *, limit: int = ...) -> Response:
         """
         说明:
             搜索当天前后指定日期的日常信息
 
         参数:
-            * `count`：可选，计算天数，搜索当天前后指定日期的日常信息
+            * `limit`：可选，计算天数，搜索当天前后指定日期的日常信息
         """
         ...
     async def app_check(self, *, server: str) -> Response:

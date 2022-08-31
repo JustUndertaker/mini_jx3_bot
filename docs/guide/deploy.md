@@ -145,7 +145,7 @@ docker run -it --name bot -p 8080:8080 \
 ::: tip 映射配置文件
 你也将.env文件映射到容器根目录，使用 -v 参数：
 ```bash
-docker run -it --name bot -p 8080:8080 -v ./.env:./.env mini_jx3_bot:latest
+docker run -it --name bot -p 8080:8080 -v ./.env:./.env -d mini_jx3_bot:latest
 ```
 :::
 至此，nonebot2服务已经部署完毕，接下来需要部署gocq。

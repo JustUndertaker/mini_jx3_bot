@@ -121,24 +121,24 @@ docker pull justundertaker/mini_jx3_bot:latest
 ```bash
 docker run -it --name bot -p 8080:8080 \
     -e host=0.0.0.0 \
-       superusers=[""] \
-       nickname=["团子"] \
-       jx3api_token="" \
-       jx3api_ws_token="" \
-       nlp_secretId="" \
-       nlp_secretKey="" \
-       voice_appkey="" \
-       voice_access="" \
-       voice_secret="" \
-       weather_api_key="" \
-       weather_api_type=0 \
-    mini_jx3_bot:latest
+    -e superusers="[\"123\"]" \
+    -e nickname="[\"团子\"]" \
+    -e jx3api_token="" \
+    -e jx3api_ws_token="" \
+    -e nlp_secretId="" \
+    -e nlp_secretKey="" \
+    -e voice_appkey="" \
+    -e voice_access="" \
+    -e voice_secret="" \
+    -e weather_api_key="" \
+    -e weather_api_type=0 \
+    -d justundertaker/mini_jx3_bot:latest
 ```
 :::tip 参数讲解：
  - -p 8080:8080：前面的8080对应的是宿主机映射端口，可以自己修改，对应gocq地址也要修改；后面的8080是容器内端口，需要与env里设置的port保持一致。
- - host=0.0.0.0：容器内监听所有地址，实际上只会监听到映射出来的地址。
- - superusers=[""]：引号内要填你的超级管理员QQ，一般是大号QQ
- - nickname=[""]：机器人昵称
+ - -e host=0.0.0.0：容器内监听所有地址，实际上只会监听到映射出来的地址。
+ - -e superusers="[\"123\"]"：引号内要填你的超级管理员QQ，一般是大号QQ
+ - -e nickname="[\"团子\"]"：机器人昵称
 
 其他-e参数，实际上都是.env里面的内容，将你需要填写的内容放到环境变量中即可，特别的superusers和nickname的写法需要写成 [""] 形式。
 :::
@@ -166,9 +166,9 @@ gocq配置内容参考：[#gocq配置](#gocq配置)
 ```bash
 docker run -it --name gocq --network host \
     -v /your_config/config.yml:/data/config.yml \
-       /your_config/device.json:/data/device.json \
-       /your_config/session.token:/data/session.token \
-    namiya233/go-cqhttp:latest
+    -v /your_config/device.json:/data/device.json \
+    -v /your_config/session.token:/data/session.token \
+    -d namiya233/go-cqhttp:latest
 ```
 这里的 your_config 修改成你的配置文件路径即可。
 ## 使用docker-compose部署

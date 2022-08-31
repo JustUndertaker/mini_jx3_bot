@@ -232,6 +232,7 @@ servers:
   - ws-reverse:
       # 反向WS Universal 地址
       # 注意 设置了此项地址后下面两项将会被忽略
-      universal: ws://mini_jx3_api:8080/onebot/v11/ws
+      universal: ws://mini_jx3_bot:8080/onebot/v11/ws
 ```
+这里ws地址需要是bot的容器名。
 :::

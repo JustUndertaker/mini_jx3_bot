@@ -54,7 +54,7 @@ class NLP:
             * `str`：回复内容
         """
         try:
-            req: Response = await self.api.transmit_chat(
+            req: Response = await self.api.chat_tencent(
                 secretId=self.nlp_config.secretId,
                 secretKey=self.nlp_config.secretKey,
                 name=nickname,
@@ -130,9 +130,7 @@ class NLP:
         """
         logger.debug(f"请求语音合成：{text}")
         try:
-            req: Response = await self.api.transmit_alitts(
-                text=text, **self.voice_config
-            )
+            req: Response = await self.api.voice_alitts(text=text, **self.voice_config)
             if req.code == 200:
                 logger.debug("请求语音成功！")
                 return req.data["url"]

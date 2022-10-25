@@ -25,62 +25,103 @@ class JX3API:
     config: Jx3ApiConfig
     """api设置"""
 
-    async def app_daily(self, *, server: str, predict: int = ...) -> Response:
+    # ------------------------------------------------------------
+    #                      Free  API
+    # ------------------------------------------------------------
+    async def active_current(self, *, server: str, num: int = ...) -> Response:
         """
         说明：
             今天、明天、后天等的日常任务，七点自动更新。
 
         参数：
             * `server`：服务器名
-            * `predict`: 可选，查询天数，默认为0
+            * `num`: 可选，查询天数，默认为0
         """
         ...
-    async def app_predict(self, *, limit: int = ...) -> Response:
+    async def active_calculate(self, *, num: int = ...) -> Response:
         """
         说明:
             搜索当天前后指定日期的日常信息
 
         参数:
-            * `limit`：可选，计算天数，搜索当天前后指定日期的日常信息
+            * `num`：可选，计算天数，搜索当天前后指定日期的日常信息
         """
         ...
-    async def app_check(self, *, server: str) -> Response:
+    async def trade_demon(self, *, server: str, limit: int = ...) -> Response:
         """
         说明：
-            检查目标服务器的开服状态，可用于开服监控。
+            当前时间的金币比例
+
+        参数:
+            * `server`：服务器名
+            * `limit`： 单页数量，设置单页返回的数量；默认值 : 10。
+        """
+        ...
+    async def server_check(self, *, server: str) -> Response:
+        """
+        说明：
+            服务器当前的状态 [ 已开服/维护中 ]
 
         参数：
             * `server`：服务器名
         """
         ...
-    async def app_status(self, *, server: str) -> Response:
+    async def server_status(self, *, server: str) -> Response:
         """
         说明:
-            检查指定区服的状态，不适用于开服监控
+            服务器当前的状态 [ 维护/正常/繁忙/爆满 ]
 
         参数:
             * `server`：服务器名
         """
         ...
-    async def app_demon(self, *, server: str) -> Response:
-        """
-        说明：
-            检查近十天的金价比例，数据仅供参考。
-
-        参数:
-            * `server`：服务器名
-        """
-        ...
-    async def app_exam(self, *, question: str) -> Response:
+    async def server_search(self, *, name: str) -> Response:
         """
         说明:
-            搜索科举题目的答案，支持首字母，支持模糊搜索。
+            简称搜索主次服务器
+
+        参数:
+            * `name`：区服别名，查询指定别名的区服信息。
+        """
+        ...
+    async def exam_search(self, *, question: str, limit: int = ...) -> Response:
+        """
+        说明:
+            搜索科举试题的答案
 
         参数:
             * `question`：科举题目，搜索目标题目答案
+            * `limit`：单页数量，设置单页返回的数量；默认值 : 10。
         """
         ...
-    async def app_flower(
+    async def web_news(self, *, limit: int = ...) -> Response:
+        """
+        说明:
+            搜索官方近期发布的最新公告，新闻等相关内容。
+
+        参数:
+            * `limit`：单页数量，设置单页返回的数量；默认值 : 10。
+        """
+        ...
+    async def web_announce(self, *, limit: int = ...) -> Response:
+        """
+        说明:
+            搜索官方近期发布的维护公告。
+
+        参数:
+            * `limit`：单页数量，设置单页返回的数量；默认值 : 10。
+        """
+        ...
+    async def trade_feiniu(self, *, name: str) -> Response:
+        """
+        说明:
+            废牛物品价格统计
+
+        参数:
+            * `name`：物品名称，查询指定物品的价格信息。
+        """
+        ...
+    async def home_flower(
         self, *, server: str, map: str = ..., flower: str = ...
     ) -> Response:
         """
@@ -93,88 +134,85 @@ class JX3API:
             * `flower`：可选， 用于筛选鲜花
         """
         ...
-    async def app_furniture(self, *, name: str) -> Response:
+    async def home_furniture(self, *, name: str) -> Response:
         """
         说明:
-            家园家具信息
+            家园装饰属性详细
 
         参数:
-            * `name`：家具名称
+            * `name`：装饰名称，查询指定装饰的详细信息。
         """
         ...
-    async def app_travel(self, *, name: str) -> Response:
+    async def home_travel(self, *, name: str) -> Response:
         """
         说明:
-            搜索地图产出的详细家具属性。
+            器物谱地图产出装饰
 
         参数:
-            * `name`：地图名称，搜索产出家具详细属性，不支持模糊搜索
+            * `name`：地图名称，查询指定地图的产出装饰
         """
         ...
-    async def app_heighten(self, *, name: str) -> Response:
+    async def school_snacks(self, *, name: str) -> Response:
         """
         说明:
-            推荐当前赛季所使用的小吃小药。
-
-        参数:
-            * `name`：心法名称
-        """
-        ...
-    async def app_equip(self, *, name: str) -> Response:
-        """
-        说明:
-            推荐当前赛季所使用的装备。
+            推荐的小吃小药
 
         参数:
             * `name`：心法名称
         """
         ...
-    async def app_macro(self, *, name: str) -> Response:
+    async def school_equip(self, *, name: str) -> Response:
         """
         说明:
-            推荐当前赛季热门的宏命令。
+            推荐的角色配装(萌新系列)
 
         参数:
             * `name`：心法名称
         """
         ...
-    async def app_news(self, *, limit: int = ...) -> Response:
+    async def school_matrix(self, *, name: str) -> Response:
         """
         说明:
-            搜索官方近期发布的最新公告，新闻等相关内容。
-
-        参数:
-            * `limit`：可选，限制返回数量，可选范围1-50，默认10
-        """
-        ...
-    async def app_announce(self, *, limit: int = ...) -> Response:
-        """
-        说明:
-            搜索官方近期发布的维护公告。
-
-        参数:
-            * `limit`：可选，限制返回数量，可选范围1-50，默认10
-        """
-        ...
-    async def app_matrix(self, *, name: str) -> Response:
-        """
-        说明:
-            搜索心法阵眼效果
+            职业阵眼效果
 
         参数:
             * `name`：心法名称
         """
         ...
-    async def app_price(self, *, name: str) -> Response:
+    async def school_macro(self, *, name: str) -> Response:
         """
         说明:
-            搜索黑市的外观物品最新价格。
+            推荐的宏命令
 
         参数:
-            * `name`：物品名称
+            * `name`：心法名称
         """
         ...
-    async def app_horse(self, *, name: str) -> Response:
+    async def lucky_sub_require(self, *, name: str) -> Response:
+        """
+        说明:
+            触发奇遇的前置条件
+
+        参数:
+            * `name`：奇遇名称，查询指定奇遇的前置条件。
+        """
+        ...
+    async def lucky_sub_strategy(self, *, name: str) -> Response:
+        """
+        说明:
+            奇遇任务流程
+
+        参数:
+            * `name`：奇遇名称，查询指定奇遇的任务流程；
+        """
+        ...
+    async def chat_random(self) -> Response:
+        """
+        说明:
+            召唤一条骚话。
+        """
+        ...
+    async def useless_refresh(self, *, name: str) -> Response:
         """
         说明:
             搜索某个地图刷新的马驹名称和刷新位置。
@@ -195,103 +233,146 @@ class JX3API:
             * `str`：主区名称
         """
         ...
-    async def app_random(self) -> Response:
+    # -------------------------------------------------------------------
+    #                            VIP API
+    # -------------------------------------------------------------------
+    async def token_ticket(self, *, ticket: str) -> Response:
         """
         说明:
-            召唤一条骚话。
+            推栏 token 是否有效
+
+        参数:
+            * `ticket`：推栏标识，检查指定标识是否有效；
         """
         ...
-    async def app_require(self, *, name: str) -> Response:
+    async def trade_search(self, *, name: str) -> Response:
         """
         说明:
-            搜索目标奇遇的前置要求。
+            黑市物品价格统计
+
+        参数:
+            * `name`：物品名称
+        """
+        ...
+    async def movie_editor(self, *, name: str) -> Response:
+        """
+        说明:
+            动画编辑器物品编号
+
+        参数:
+            * `name`：物品名称，查询指定名称的物品编号信息。
+        """
+        ...
+    async def lucky_require(self, *, name: str) -> Response:
+        """
+        说明:
+            触发奇遇的前置条件
 
         参数:
             * `name`：奇遇名称
         """
         ...
-    async def app_strategy(self, *, name: str) -> Response:
-        """
-        说明:
-            搜索某个奇遇的任务攻略，不需要token
-
-        参数:
-            * `name`：奇遇名称
-        """
-        ...
-    async def next_price(self, *, name: str) -> Response:
-        """
-        说明:
-            搜索外观物品最新价格，统计了各个来源的数据，补充了更多的关键字。
-
-        参数:
-            * `name`： 外观简称
-        """
-        ...
-    async def next_strategy(self, *, name: str) -> Response:
-        """
-        说明:
-            搜索某个奇遇的任务攻略。
-
-        参数:
-            * `name`：奇遇名称
-        """
-        ...
-    async def next_serendipity(
+    async def lucky_serendipity(
         self, *, server: str, name: str, ticket: str
     ) -> Response:
         """
         说明:
-            搜索某个角色触发的所有奇遇记录。
+            角色奇遇触发记录(不保证遗漏)
 
         参数:
-            * `server`：服务器名
-            * `name`：角色名
+            * `server`：区服名称，筛选记录
+            * `name`：角色名称，查询指定角色的触发记录
+            * `ticket`：推栏标识，检查数据完整性
+        """
+        ...
+    async def lucky_statistical(
+        self, *, server: str, name: str, limit: int = ...
+    ) -> Response:
+        """
+        说明:
+            统计奇遇近期触发角色记录
+
+        参数:
+            * `server`：区服名称，筛选记录
+            * `name`：奇遇名称，统计指定奇遇触发记录
+            * `limit`：单页数量，设置单页返回的数量；默认值 : 20
+        """
+        ...
+    async def lucky_collect(self, *, server: str, days: int = ...) -> Response:
+        """
+        说明:
+            统计奇遇近期触发角色记录
+
+        参数:
+            * `server`：区服名称，筛选记录
+            * `days`：汇总时间，汇总指定天数内的奇遇记录；默认值 : 7
+        """
+        ...
+    async def lucky_server_serendipity(self, *, name: str) -> Response:
+        """
+        说明:
+            统计全服奇遇记录
+
+        参数:
+            * `name`：奇遇名称，查询指定奇遇的全服记录
+        """
+        ...
+    async def lucky_server_statistical(
+        self, *, name: str, limit: int = ...
+    ) -> Response:
+        """
+        说明:
+            统计全服近期奇遇记录
+
+        参数:
+            * `name`：奇遇名称，查询指定奇遇的全服记录
+            * `limit`：单页数量，设置单页返回的数量；默认值 : 20
+        """
+        ...
+    async def lucky_strategy(self, *, name: str) -> Response:
+        """
+        说明:
+            奇遇任务流程
+
+        参数:
+            * `name`：奇遇名称，查询指定奇遇的任务流程
+        """
+        ...
+    async def arena_recent(
+        self, *, server: str, name: str, ticket: str, mode: int = ...
+    ) -> Response:
+        """
+        说明:
+            角色近期战绩记录
+
+        参数:
+            * `server`：区服名称，筛选记录
+            * `name`：角色名称，查询指定角色的战绩记录
+            * `ticket`：推栏标识，检查请求权限
+            * `mode`：可选，比赛模式，可选值22/33/55，未输入或输入0 时返回全部模式记录。
+        """
+        ...
+    async def arena_awesome(
+        self, *, ticket: str, mode: int = ..., limit: int = ...
+    ) -> Response:
+        """
+        说明:
+            名剑排行
+
+        参数:
+            * `ticket`：推栏标识，检查请求权限
+            * `mode`：可选，比赛模式，可选值22/33/55，默认值33
+            * `limit`：单页数量，设置单页返回的数量；默认值 : 20
+        """
+        ...
+    async def arena_schools(self, *, ticket: str, mode: int = ...) -> Response:
+        """
+        说明:
+            名剑统计
+
+        参数:
             * `ticket`：推栏app的ticket
-        """
-        ...
-    async def next_statistical(
-        self, *, server: str, serendipity: str = ..., limit: int = ...
-    ) -> Response:
-        """
-        说明:
-            搜索某个奇遇最近触发人。
-
-        参数:
-            * `server`：服务器名
-            * `serendipity`：可选，奇遇名，默认空（返回全部奇遇）
-            * `limit`：可选，返回条目，支持1-50，默认20
-        """
-        ...
-    async def next_collect(self, *, server: str, days: int = ...) -> Response:
-        """
-        说明:
-            统计指定时间内触发次数和最后触发人。
-
-        参数:
-            * `server`：服务器名
-            * `days`：可选，指定统计天数的触发次数，默认值7（统计七天内的记录）
-        """
-        ...
-    async def server_serendipity(self, *, serendipity: str) -> Response:
-        """
-        说明:
-            查询全服的指定奇遇数据。
-
-        参数:
-            * `serendipity`：奇遇名
-        """
-        ...
-    async def server_statistical(
-        self, *, serendipity: str, limit: int = ...
-    ) -> Response:
-        """
-        说明:
-            统计全服的指定奇遇触发记录。
-
-        参数:
-            * `serndipity`：奇遇名
-            * `limit`：可选，返回条目，支持1-50，默认20
+            * `mode`：比赛模式，可选值22/33/55，默认值33。
         """
         ...
     async def next_fall(self, *, server: str, name: str) -> Response:
@@ -304,121 +385,147 @@ class JX3API:
             * `name`：特殊物品名称，如天乙玄晶
         """
         ...
-    async def next_sum(self, *, server: str) -> Response:
-        """
-        说明:
-            统计服务器掉落物品
-
-        参数:
-            * `server`：服务器名
-        """
-        ...
-    async def next_seniority(
-        self, *, server: str, ticket: str, kungfu: str = ...
-    ) -> Response:
-        """
-        说明:
-            搜索某个门派的资历排行榜。
-
-        参数:
-            * `server`：服务器名
-            * `ticket`：推栏app的ticket
-            * `kungfu`：可选，输入指定门派缩写（如：万花、七秀），默认值ALL（返回全门派）
-        """
-        ...
-    async def next_arena(
-        self, *, server: str, name: str, ticket: str, match: int = ...
-    ) -> Response:
-        """
-        说明:
-            搜索某个角色的战绩评分和近期战斗记录。
-
-        参数:
-            * `server`：服务器名
-            * `name`：角色名
-            * `ticket`：推栏app的ticket
-            * `match`：可选，比赛模式，可选值22/33/55，未输入或输入0 时返回全部模式记录。
-        """
-        ...
-    async def next_awesome(self, *, ticket: str, match: int = ...) -> Response:
-        """
-        说明:
-            搜索某个比赛模式的战绩排名记录。
-
-        参数:
-            * `ticket`：推栏app的ticket
-            * `match`：可选，比赛模式，可选值22/33/55，默认值33。
-        """
-        ...
-    async def next_schools(self, *, ticket: str, match: int = ...) -> Response:
-        """
-        说明:
-            搜索某个比赛模式的门派排名统计。
-
-        参数:
-            * `ticket`：推栏app的ticket
-            * `match`：比赛模式，可选值22/33/55，默认值33。
-        """
-        ...
     async def role_roleInfo(self, *, server: str, name: str) -> Response:
         """
         说明:
-            搜索某个角色的信息。
+            角色详细信息
 
         参数:
             * `server`：服务器名
             * `name`：角色名
+        """
+        ...
+    async def save_roleInfo(self, *, server: str, roleId: str, ticket: str) -> Response:
+        """
+        说明:
+            自动更新角色信息
+
+        参数:
+            * `server`：区服名称，查询指定区服的角色信息
+            * `roleId`：角色数字账号，查询指定数字账号的角色信息
+            * `ticket`：推栏标识，检查请求权限
+        """
+        ...
+    async def role_teamCdList(self, *, server: str, name: str, ticket: str) -> Response:
+        """
+        说明:
+            角色副本通关记录
+
+        参数:
+            * `server`：区服名称，筛选记录
+            * `name`：角色名称，查询指定角色的副本通关记录
+            * `ticket`：推栏标识，检查请求权限
+        """
+        ...
+    async def role_achievement(
+        self, *, server: str, role: str, name: str, ticket: str
+    ) -> Response:
+        """
+        说明:
+            角色成就进度
+
+        参数:
+            * `server`：区服名称，筛选记录
+            * `role`：角色名称，查询指定角色的副本通关记录
+            * `name`：成就/系列名称，查询指定成就/系列的完成进度
+            * `ticket`：推栏标识，检查请求权限
         """
         ...
     async def role_attribute(self, *, server: str, name: str, ticket: str) -> Response:
         """
         说明:
-            搜索某个角色的装备和属性。
+            角色装备属性详情
 
         参数:
-            * `server`：服务器名
-            * `name`：角色名
-            * `ticket`：推栏app的ticket
+            * `server`：区服名称，筛选记录
+            * `name`：角色名称，查询指定角色的装备属性
+            * `ticket`：推栏标识，检查请求权限
         """
         ...
     async def role_firework(self, *, server: str, name: str) -> Response:
         """
         说明:
-            搜索某个角色的烟花赠送或接收记录。
+            角色烟花燃放记录
 
         参数:
-            * `server`：服务器名
-            * `name`：角色名
+            * `server`：区服名称，筛选记录
+            * `name`：角色名称，查询指定角色的烟花燃放记录
         """
         ...
-    async def next_recruit(self, *, server: str, keyword: str = ...) -> Response:
+    async def team_items_statistical(
+        self, *, server: str, name: str, limit: int = ...
+    ) -> Response:
+        """
+        说明:
+            副本特殊物品掉落（仅支持当前赛季副本）
+
+        参数:
+            * `server`：区服名称，筛选记录
+            * `name`：物品名称，查询指定物品近期副本掉落
+            * `limit`：单页数量，设置单页返回的数量；默认值 : 20
+        """
+        ...
+    async def team_items_collect(self, *, server: str, days: int = ...) -> Response:
+        """
+        说明:
+            副本所有物品掉落汇总（仅支持当前赛季副本）
+
+        参数:
+            * `server`：区服名称，筛选记录
+            * `days`：单页数量，设置单页返回的数量；默认值 : 7
+        """
+        ...
+    async def team_member_recruit(self, *, server: str, keyword: str = ...) -> Response:
         """
         说明:
             查询指定区服的团队招募信息。
 
         参数:
-            * `server`：服务器名
-            * `keyword`：关键字，可选,从团长名称，活动名称，招募内容中筛选关键字；
+            * `server`：区服名称，筛选记录
+            * `keyword`：关键字，筛选团长名称，活动名称，招募信息；
         """
         ...
-    async def rank_role(self, *, type: str, server: str) -> Response:
+    async def data_school_seniority(
+        self, *, ticket: str, school: str = ..., server: str = ...
+    ) -> Response:
         """
         说明:
-            个人排行榜。
+            游戏资历榜单
 
         参数:
-            * `type`：排名类型，可选范围[名士五十强 老江湖五十强 兵甲藏家五十强 名师五十强 阵营英雄五十强 薪火相传五十强 庐园广记一百强]；
-            * `server`：：服务器名
+            * `ticket`：推栏标识，检查请求权限
+            * `school`：门派简称，查询指定门派的资历榜单，默认值 : ALL
+            * `server`：区服名称，筛选记录，默认值 : ALL
         """
         ...
-    async def rank_tong(self, *, type: str, server: str) -> Response:
+    async def rank_various(self, *, type: str, server: str) -> Response:
         """
         说明:
-            帮会排行榜。
+            客户端个人榜单
 
         参数:
-            * `type`：排名类型，可选范围[浩气神兵宝甲五十强 恶人神兵宝甲五十强 浩气爱心帮会五十强 恶人爱心帮会五十强]；
-            * `server`：：服务器名
+            * `type`：榜单类型，可选范围[名士五十强 老江湖五十强 兵甲藏家五十强 名师五十强 阵营英雄五十强 薪火相传五十强 庐园广记一百强]
+            * `server`：区服名称，筛选记录
+        """
+        ...
+    async def rank_tribe(self, *, type: str, server: str) -> Response:
+        """
+        说明:
+            客户端帮会榜单
+
+        参数:
+            * `type`：榜单类型，可选范围[浩气神兵宝甲五十强 恶人神兵宝甲五十强 浩气爱心帮会五十强 恶人爱心帮会五十强]
+            * `server`：区服名称，筛选记录
+        """
+        ...
+    async def rank_excellent(self, *, type: str, server: str) -> Response:
+        """
+        说明:
+            客户端战功榜单
+
+        参数:
+            * `type`：榜单类型，可选范围[赛季恶人五十强 赛季浩气五十强 上周恶人五十强 上周浩气五十强 本周恶人五十强 本周浩气五十强]
+            * `server`：区服名称，筛选记录
         """
         ...
     async def rank_trials(self, *, server: str, school: str) -> Response:
@@ -427,16 +534,37 @@ class JX3API:
             试炼之地排名。
 
         参数:
-            * `server`：服务器名
-            * `school`：门派名
+            * `server`：区服名称，筛选记录
+            * `school`：门派简称，查询指定门派的试炼榜单
         """
         ...
-    async def transmit_chat(
+    # ------------------------------------------------------------
+    #                      VRF  API
+    # ------------------------------------------------------------
+    async def music_tencent(self, *, name: str) -> Response:
+        """
+        说明:
+            搜索腾讯音乐歌曲编号。
+
+        参数:
+            * `name`：歌曲名称，搜索指定歌曲的音乐编号
+        """
+        ...
+    async def music_netease(self, *, name: str) -> Response:
+        """
+        说明:
+            搜索网易云音乐歌曲编号。
+
+        参数:
+            * `name`：歌曲名称，搜索指定歌曲的音乐编号
+        """
+        ...
+    async def chat_tencent(
         self, *, secretId: str, secretKey: str, name: str, question: str
     ) -> Response:
         """
         说明:
-            腾讯云智能闲聊（NLP），不是SDK版本。
+            腾讯云智障聊天
 
         参数:
             * `secretId`：腾讯云secretId
@@ -445,7 +573,7 @@ class JX3API:
             * `question`：对话内容
         """
         ...
-    async def transmit_alitts(
+    async def voice_alitts(
         self,
         *,
         appkey: str,
@@ -461,7 +589,7 @@ class JX3API:
     ) -> Response:
         """
         说明:
-            阿里云语音合成（TTS），不是SDK版本。
+            阿里云语音合成（TTS）
 
         参数:
             * `appkey`：阿里云appkey
@@ -475,278 +603,18 @@ class JX3API:
             * `pitch_rate`： 音调，取值范围：-500～500，默认：0
         """
         ...
-    async def transmit_idiom(self, *, word: str) -> Response:
+    async def useless_flatterer(self) -> Response:
+        """
+        说明:
+            召唤一条舔狗日记。
+        """
+        ...
+    async def idiom_search(self, *, name: str) -> Response:
         """
         说明:
             搜索下一个成语，已清除收尾同音的成语。
 
         参数:
-            * `word`：输入四字成语，已去除收尾同音成语。
-        """
-        ...
-    async def transmit_random(self) -> Response:
-        """
-        说明:
-            召唤一条舔狗日志。
-        """
-        ...
-    async def cloud_demon(self, *, server: str, robot: str = ...) -> Response:
-        """
-        说明:
-            图片api，检查近十天的金价比例，数据仅供参考。
-
-        参数:
-            * `server`：服务器名
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_flower(
-        self, *, server: str, flower: str, robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，检查当天鲜花最高价格收购线路。
-
-        参数:
-            * `server`：服务器名
-            * `flower`：鲜花名
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_price(self, *, name: str, robot: str = ...) -> Response:
-        """
-        说明:
-            图片api，搜索黑市的外观物品最新价格。
-
-        参数:
-            * `name`：物品/外观名称
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_serendipity(
-        self, *, server: str, name: str, ticket: str, robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，搜索某个角色触发的所有奇遇记录。
-
-        参数:
-            * `server`：服务器名
-            * `name`：角色名
-            * `ticket`：推栏app的ticket
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_statistical(
-        self, *, serendipity: str, robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，搜索某个奇遇最近触发人。
-
-        参数:
-            * `serendipity`：服务器名
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_collect(self, *, server: str, robot: str = ...) -> Response:
-        """
-        说明:
-            图片api，统计指定时间内触发次数和最后触发人。
-
-        参数:
-            * `server`：服务器名
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_seniority(
-        self, *, server: str, ticket: str, kungfu: str = ..., robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，搜索某个门派的资历排行榜。
-
-        参数:
-            * `server`：服务器名
-            * `ticket`：推栏app的ticket
-            * `kungfu`：可选，门派缩写（如：万花、七秀）默认值ALL
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_attribute(
-        self, *, server: str, name: str, ticket: str, robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，搜索某个角色的装备和属性。
-
-        参数:
-            * `server`：服务器名
-            * `name`：角色名
-            * `ticket`：推栏app的ticket
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_arena(
-        self, *, server: str, name: str, ticket: str, match: int = ..., robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，搜索某个角色的战绩评分和近期战斗记录。
-
-        参数:
-            * `server`：服务器名
-            * `name`：角色名
-            * `ticket`：推栏app的ticket
-            * `match`：可选，比赛模式，可选值22/33/55，未输入或输入0 时返回全部模式记录
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_awesome(
-        self, *, ticket: str, match: int = ..., robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，搜索某个比赛模式的战绩排名记录。
-
-        参数:
-            * `ticket`：推栏app的ticket
-            * `match`：可选，比赛模式，可选值22/33/55，默认值33
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_schools(
-        self, *, ticket: str, match: int = ..., robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，搜索某个比赛模式的门派排名统计。
-
-        参数：
-            * `ticket`：推栏app的ticket
-            * `match`：可选，比赛模式，可选值22/33/55，默认值33
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_server_demon(self, *, robot: str = ...) -> Response:
-        """
-        说明:
-            图片api，统计全服的金价数据。
-
-        参数:
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_calculate(self, *, robot: str = ...) -> Response:
-        """
-        说明:
-            图片api，推算前后十五天的日常。
-
-        参数:
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_server_statistical(
-        self, *, serendipity: str, robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，统计全服的奇遇数据。
-
-        参数:
-            * `serendipity`：奇遇名
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_server_serendipity(
-        self, *, serendipity: str, robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，查询全服的奇遇数据。
-
-        参数:
-            * `serendipity`：奇遇名
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_fall(self, *, server: str, name: str, robot: str = ...) -> Response:
-        """
-        说明:
-            图片api，统计服务器物品掉落
-
-        参数:
-            * `server`：服务器名
-            * `name`：道具名
-        """
-        ...
-    async def cloud_sum(self, *, server: str, robot: str = ...) -> Response:
-        """
-        说明:
-            图片api，汇总服务器特殊掉落
-
-        参数:
-            * `server`：服务器名
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_firework(
-        self, *, server: str, name: str, robot: str = ...
-    ) -> Response:
-        """
-        说明:
-            图片api，查询指定玩家的烟花燃放记录。
-
-        参数:
-            * `server`：服务器名
-            * `name`：玩家名
-            * `robot`：可选，用于自定义水印
-        """
-        ...
-    async def cloud_circles(self, *, url: str = ..., text: str = ...) -> Response:
-        """
-        说明:
-            图片api，合成一张水墨圈圈的图片。
-
-        参数:
-            * `url`： 可选，图片链接，可以传入QQ号或者完整的URL,传入URL需要注意URL自身的拼接符
-            * `text`：可选，需要合成的字符串，建议输入角色名称
-        """
-        ...
-    async def token_calculate(
-        self,
-        *,
-        cursor: int,
-        size: int,
-        gameVersion: int,
-        zoneName: str,
-        serverName: str,
-        forceId: int,
-        ts: str
-    ) -> Response:
-        """
-        说明:
-            对推栏的请求加密计算。
-
-        参数:
-            略
-        """
-        ...
-    async def token_ticket(self, *, ticket: str) -> Response:
-        """
-        说明:
-            查询ticket的可用性。
-
-        参数:
-            * `ticket`：推栏app的ticket
-        """
-        ...
-    async def token_socket(self, *, token: str) -> Response:
-        """
-        说明:
-            查询Ws Token的服务到期时间。
-
-        参数:
-            * `token`：ws token，不是api token
+            * `name`：输入四字成语，已去除收尾同音成语。
         """
         ...

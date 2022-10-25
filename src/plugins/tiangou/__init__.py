@@ -26,7 +26,7 @@ tiangou = on_regex(pattern=tiangou_regex, permission=GROUP, priority=5, block=Tr
 async def _(event: GroupMessageEvent):
     """舔狗日记"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 请求日记")
-    response = await api.transmit_random()
+    response = await api.useless_flatterer()
     msg = None
     if response.code == 200:
         text = response.data["text"]

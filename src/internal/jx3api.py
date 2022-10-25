@@ -27,6 +27,7 @@ SERVER_DICT = {
     "破阵子": ["破阵子", "念破"],
     "飞龙在天": ["飞龙在天", "飞龙", "双二"],
     "青梅煮酒": ["青梅煮酒", "青梅", "双四"],
+    "横刀断浪": ["横刀断浪", "电五"],
 }
 """区服列表"""
 
@@ -71,7 +72,7 @@ class JX3API:
         if not self.config.api_url.endswith("/"):
             self.config.api_url += "/"
         token = self.config.api_token or ""
-        headers = {"token": token, "User-Agent": "Nonebot2-jx3_bot"}
+        headers = {"token": token, "User-Agent": "Nonebot2-jx3-bot"}
         self.client = AsyncClient(headers=headers)
 
     def app_server(self, *, name: str) -> Optional[str]:
@@ -102,5 +103,5 @@ class JX3API:
     def __getattr__(self, name: str) -> _ApiCall:
         # 拼接url
         logger.debug(f"<y>jx3api请求功能:</y> | {name}")
-        url = self.config.api_url + name.replace("_", "/", 1)
+        url = self.config.api_url + name.replace("_", "/")
         return partial(self.call_api, url)

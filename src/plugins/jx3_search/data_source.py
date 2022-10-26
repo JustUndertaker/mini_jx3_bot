@@ -98,6 +98,7 @@ def handle_data_match(data: dict) -> dict:
     """处理战绩数据"""
     req_data = {}
     req_data["performance"] = data["performance"]
+    req_data["camp"] = data["campName"]
     history: list = data["history"]
     req_data["history"] = []
     for one_data in history:
@@ -148,14 +149,13 @@ def handle_data_match(data: dict) -> dict:
             timeArray = time.localtime(end_time)
             one_req_data["ago"] = time.strftime("%Y年%m月%d日", timeArray)
         req_data["history"].append(one_req_data)
-        req_data["camp"] = data.get("forceName", "")
     return req_data
 
 
 def handle_data_equip(data: dict) -> dict:
     """处理装备属性"""
     req_data = {}
-    req_data["kungfu"] = data["forceName"]
+    req_data["kungfu"] = data["kungfuName"]
     info = data["panelList"]
     if info:
         req_data["score"] = info.get("score")

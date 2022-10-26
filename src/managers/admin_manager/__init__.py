@@ -320,7 +320,7 @@ async def _(event: PrivateMessageEvent, ticket: str = get_value()):
     """添加ticket"""
     logger.info(f"<g>超级用户管理</g> | 请求添加ticket | {ticket}")
 
-    response = await api.token_ticket(ticket=ticket)
+    response = await api.data_token_ticket(ticket=ticket)
     if response.code == 200:
         await TicketInfo.append_ticket(ticket)
         msg = "添加ticket成功！"

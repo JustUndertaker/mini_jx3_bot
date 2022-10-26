@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import NoReturn, Optional
 
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment
 from nonebot.matcher import Matcher
@@ -340,12 +340,12 @@ def cold_down(name: str, cd_time: int) -> None:
 
 
 @daily_query.handle(parameterless=[cold_down(name="日常查询", cd_time=0)])
-async def _(event: GroupMessageEvent, server: str = get_server()):
+async def _(event: GroupMessageEvent, server: str = get_server()) -> NoReturn:
     """日常查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 日常查询 | 请求：{server}"
     )
-    response = await api.app_daily(server=server)
+    response = await api.data_active_current(server=server)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await daily_query.finish(msg)
@@ -368,12 +368,12 @@ async def _(event: GroupMessageEvent, server: str = get_server()):
 
 
 @server_query.handle(parameterless=[cold_down(name="开服查询", cd_time=0)])
-async def _(event: GroupMessageEvent, server: str = get_server()):
+async def _(event: GroupMessageEvent, server: str = get_server()) -> NoReturn:
     """开服查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 开服查询 | 请求：{server}"
     )
-    response = await api.app_check(server=server)
+    response = await api.data_server_check(server=server)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await server_query.finish(msg)
@@ -385,12 +385,12 @@ async def _(event: GroupMessageEvent, server: str = get_server()):
 
 
 @gold_query.handle(parameterless=[cold_down(name="金价查询", cd_time=0)])
-async def _(event: GroupMessageEvent, server: str = get_server()):
+async def _(event: GroupMessageEvent, server: str = get_server()) -> NoReturn:
     """金价查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 金价查询 | 请求：{server}"
     )
-    response = await api.app_demon(server=server)
+    response = await api.data_trade_demon(server=server)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await gold_query.finish(msg)
@@ -409,10 +409,10 @@ async def _(event: GroupMessageEvent, server: str = get_server()):
 
 
 @medicine_query.handle(parameterless=[cold_down(name="小药查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = get_profession()):
+async def _(event: GroupMessageEvent, name: str = get_profession()) -> NoReturn:
     """小药查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 小药查询 | 请求：{name}")
-    response = await api.app_heighten(name=name)
+    response = await api.data_school_snacks(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await medicine_query.finish(msg)
@@ -431,10 +431,10 @@ async def _(event: GroupMessageEvent, name: str = get_profession()):
 
 
 @equip_group_query.handle(parameterless=[cold_down(name="配装查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = get_profession()):
+async def _(event: GroupMessageEvent, name: str = get_profession()) -> NoReturn:
     """配装查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 配装查询 | 请求：{name}")
-    response = await api.app_equip(name=name)
+    response = await api.data_school_equip(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await equip_group_query.finish(msg)
@@ -450,10 +450,10 @@ async def _(event: GroupMessageEvent, name: str = get_profession()):
 
 
 @macro_query.handle(parameterless=[cold_down(name="宏查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = get_profession()):
+async def _(event: GroupMessageEvent, name: str = get_profession()) -> NoReturn:
     """宏查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 宏查询 | 请求：{name}")
-    response = await api.app_macro(name=name)
+    response = await api.data_school_macro(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await macro_query.finish(msg)
@@ -469,10 +469,10 @@ async def _(event: GroupMessageEvent, name: str = get_profession()):
 
 
 @zhenyan_query.handle(parameterless=[cold_down(name="阵眼查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = get_profession()):
+async def _(event: GroupMessageEvent, name: str = get_profession()) -> NoReturn:
     """阵眼查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 阵眼查询 | 请求：{name}")
-    response = await api.app_matrix(name=name)
+    response = await api.data_school_matrix(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await zhenyan_query.finish(msg)
@@ -486,10 +486,13 @@ async def _(event: GroupMessageEvent, name: str = get_profession()):
 
 
 @condition_query.handle(parameterless=[cold_down(name="前置查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = get_value()):
+async def _(event: GroupMessageEvent, name: str = get_value()) -> NoReturn:
     """前置查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 前置查询 | 请求：{name}")
-    response = await api.app_require(name=name)
+    if api.config.api_token:
+        response = await api.data_lucky_require(name=name)
+    else:
+        response = await api.data_lucky_sub_require(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await condition_query.finish(msg)
@@ -501,13 +504,13 @@ async def _(event: GroupMessageEvent, name: str = get_value()):
 
 
 @strategy_query.handle(parameterless=[cold_down(name="攻略查询", cd_time=0)])
-async def _(event: GroupMessageEvent, name: str = get_value()):
+async def _(event: GroupMessageEvent, name: str = get_value()) -> NoReturn:
     """攻略查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 攻略查询 | 请求：{name}")
     if api.config.api_token:
-        response = await api.next_strategy(name=name)
+        response = await api.data_lucky_strategy(name=name)
     else:
-        response = await api.app_strategy(name=name)
+        response = await api.data_lucky_sub_strategy(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await strategy_query.finish(msg)
@@ -518,7 +521,7 @@ async def _(event: GroupMessageEvent, name: str = get_value()):
 
 
 @update_query.handle(parameterless=[cold_down(name="更新公告", cd_time=0)])
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent) -> NoReturn:
     """更新公告"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 更新公告查询")
     url = "https://jx3.xoyo.com/launcher/update/latest.html"
@@ -530,10 +533,10 @@ async def _(event: GroupMessageEvent):
 
 
 @saohua_query.handle(parameterless=[cold_down(name="骚话", cd_time=0)])
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent) -> NoReturn:
     """骚话"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 骚话 | 请求骚话")
-    response = await api.app_random()
+    response = await api.data_chat_random()
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await saohua_query.finish(msg)
@@ -548,13 +551,13 @@ async def _(event: GroupMessageEvent):
 
 
 @price_query.handle(parameterless=[cold_down(name="物价查询", cd_time=10)])
-async def _(event: GroupMessageEvent, name: str = get_value()):
+async def _(event: GroupMessageEvent, name: str = get_value()) -> NoReturn:
     """物价查询"""
     logger.info(f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 物价查询 | 请求：{name}")
     if api.config.api_token:
-        response = await api.next_price(name=name)
+        response = await api.data_trade_search(name=name)
     else:
-        response = await api.app_price(name=name)
+        response = await api.data_trade_feiniu(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await price_query.finish(msg)
@@ -580,14 +583,14 @@ async def _(
     event: GroupMessageEvent,
     server: str = get_server(),
     name: str = get_value(),
-):
+) -> NoReturn:
     """角色奇遇查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 角色奇遇查询 | 请求：server:{server},name:{name}"
     )
 
     ticket = await TicketInfo.get_ticket()
-    response = await api.next_serendipity(server=server, name=name, ticket=ticket)
+    response = await api.data_lucky_serendipity(server=server, name=name, ticket=ticket)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await serendipity_query.finish(msg)
@@ -606,12 +609,12 @@ async def _(
     event: GroupMessageEvent,
     server: str = get_server(),
     name: str = get_value(),
-):
+) -> NoReturn:
     """奇遇统计查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 奇遇统计查询 | 请求：server:{server},serendipity:{name}"
     )
-    response = await api.next_statistical(server=server, serendipity=name)
+    response = await api.data_lucky_statistical(server=server, name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await serendipity_list_query.finish(msg)
@@ -626,12 +629,12 @@ async def _(
 
 
 @serendipity_summary_query.handle(parameterless=[cold_down(name="奇遇汇总", cd_time=10)])
-async def _(event: GroupMessageEvent, server: str = get_server()):
+async def _(event: GroupMessageEvent, server: str = get_server()) -> NoReturn:
     """奇遇汇总查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 奇遇汇总查询 | 请求：{server}"
     )
-    response = await api.next_collect(server=server)
+    response = await api.data_lucky_collect(server=server)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await serendipity_summary_query.finish(msg)
@@ -650,13 +653,13 @@ async def _(
     event: GroupMessageEvent,
     server: str = get_server(),
     name: str = get_value(),
-):
+) -> NoReturn:
     """战绩查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 战绩查询 | 请求：server:{server},name:{name}"
     )
     ticket = await TicketInfo.get_ticket()
-    response = await api.next_arena(server=server, name=name, ticket=ticket)
+    response = await api.data_arena_recent(server=server, name=name, ticket=ticket)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await match_query.finish(msg)
@@ -675,13 +678,13 @@ async def _(
     event: GroupMessageEvent,
     server: str = get_server(),
     name: str = get_value(),
-):
+) -> NoReturn:
     """装备属性查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 装备属性查询 | 请求：server:{server},name:{name}"
     )
     ticket = await TicketInfo.get_ticket()
-    response = await api.role_attribute(server=server, name=name, ticket=ticket)
+    response = await api.data_role_attribute(server=server, name=name, ticket=ticket)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await equip_query.finish(msg)
@@ -700,12 +703,12 @@ async def _(
     event: GroupMessageEvent,
     server: str = get_server(),
     name: str = get_value(),
-):
+) -> NoReturn:
     """烟花记录查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 烟花记录查询 | 请求：server:{server},name:{name}"
     )
-    response = await api.role_firework(server=server, name=name)
+    response = await api.data_role_firework(server=server, name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await firework_query.finish(msg)
@@ -724,12 +727,12 @@ async def _(
     event: GroupMessageEvent,
     server: str = get_server_with_keyword(),
     keyword: Optional[str] = get_keyword(),
-):
+) -> NoReturn:
     """招募查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 招募查询 | 请求：server:{server},keyword:{keyword}"
     )
-    response = await api.next_recruit(server=server, keyword=keyword)
+    response = await api.data_team_member_recruit(server=server, keyword=keyword)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await recruit_query.finish(msg)
@@ -759,7 +762,7 @@ async def _(
     event: GroupMessageEvent,
     server: str = get_server_with_keyword(),
     kungfu: Optional[str] = get_keyword(),
-):
+) -> NoReturn:
     """资历榜"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 资历排行 | 请求：server:{server},kunfu:{kungfu}"
@@ -767,7 +770,9 @@ async def _(
     ticket = await TicketInfo.get_ticket()
     if not kungfu:
         kungfu = "ALL"
-    response = await api.next_seniority(server=server, kungfu=kungfu, ticket=ticket)
+    response = await api.data_school_seniority(
+        server=server, school=kungfu, ticket=ticket
+    )
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await zili_query.finish(msg)
@@ -794,12 +799,12 @@ async def _(
     server: str = get_server(),
     type_: str = get_type(),
     tittle: str = get_tittle(),
-):
+) -> NoReturn:
     """个人排名查询"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | {type_} | 请求：server:{server}"
     )
-    response = await api.rank_role(server=server, type=type_)
+    response = await api.data_rank_various(server=server, type=type_)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await matcher.finish(msg)
@@ -823,13 +828,13 @@ async def _(
     type_: str = get_type(),
     tittle: str = get_tittle(),
     camp: str = get_camp(),
-):
+) -> NoReturn:
     """帮会排名"""
     type_ = camp + type_
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | {type_} | 请求：server:{server}"
     )
-    response = await api.rank_tong(server=server, type=type_)
+    response = await api.data_rank_tribe(server=server, type=type_)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await matcher.finish(msg)
@@ -849,12 +854,12 @@ async def _(
     event: GroupMessageEvent,
     server: str = get_server(),
     school: str = get_value(),
-):
+) -> NoReturn:
     """试炼之地排行"""
     logger.info(
         f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 试炼之地排行 | 请求：server:{server}，school:{school}"
     )
-    response = await api.rank_trials(server=server, school=school)
+    response = await api.data_rank_trials(server=server, school=school)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await shilian_query.finish(msg)
@@ -871,7 +876,7 @@ async def _(
 
 
 @help.handle()
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent) -> NoReturn:
     """帮助"""
     flag = bool(api.config.api_token)
     pagename = "查询帮助.html"

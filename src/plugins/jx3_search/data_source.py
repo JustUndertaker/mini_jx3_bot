@@ -80,16 +80,13 @@ def handle_data_serendipity_summary(data: list[dict]) -> list[dict]:
         one_data = _data["data"]
         get_time: int = one_data["time"]
         if get_time == 0:
-            time_str = "未知"
-            day = "过去太久啦"
+            time_str = "过去太久啦"
         else:
-            time_now = datetime.now()
             time_pass = datetime.fromtimestamp(get_time)
             time_str = time_pass.strftime("%Y-%m-%d %H:%M:%S")
-            day = f"{(time_now-time_pass).days} 天前"
         one_dict = {
             "time": time_str,
-            "day": day,
+            "count": _data["count"],
             "name": one_data["name"],
             "serendipity": _data["serendipity"],
         }
@@ -151,16 +148,15 @@ def handle_data_match(data: dict) -> dict:
             timeArray = time.localtime(end_time)
             one_req_data["ago"] = time.strftime("%Y年%m月%d日", timeArray)
         req_data["history"].append(one_req_data)
-        req_data["camp"] = data.get("camp", "")
+        req_data["camp"] = data.get("forceName", "")
     return req_data
 
 
 def handle_data_equip(data: dict) -> dict:
     """处理装备属性"""
     req_data = {}
-    req_data["kungfu"] = data["kungfu"]
-    req_data["dateTime"] = data["dateTime"]
-    info = data["info"]
+    req_data["kungfu"] = data["forceName"]
+    info = data["panelList"]
     if info:
         req_data["score"] = info.get("score")
 
@@ -184,7 +180,7 @@ def handle_data_equip(data: dict) -> dict:
         "5": "chocolate",
     }
     # 处理equip数据
-    equip: list[dict] = data["equip"]
+    equip: list[dict] = data["equipList"]
     data_equip = []
     for one in equip:
         _source = one.get("source")
@@ -194,7 +190,7 @@ def handle_data_equip(data: dict) -> dict:
             source = _source.split("；")[0]
         one_data = {
             "name": one["name"],
-            "kind": one["subKind"],
+            "kind": one["kind"],
             "icon": one["icon"],
             "quality": one["quality"],
             "color": color_level_map.get(one["color"], "black"),
@@ -221,7 +217,7 @@ def handle_data_equip(data: dict) -> dict:
     req_data["equip"] = data_equip
 
     # 处理qixue数据
-    qixue: list = data["qixue"]
+    qixue: list = data["qixueList"]
     data_qixue = []
     for one in qixue:
         if one["name"] == "未知":

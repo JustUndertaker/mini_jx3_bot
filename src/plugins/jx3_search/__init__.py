@@ -421,10 +421,10 @@ async def _(event: GroupMessageEvent, name: str = get_profession()) -> NoReturn:
     name = data.get("name")
     msg = (
         f"[{name}]小药：\n"
-        f'增强食品：{data.get("heighten_food")}\n'
-        f'辅助食品：{data.get("auxiliary_food")}\n'
-        f'增强药品：{data.get("heighten_drug")}\n'
-        f'辅助药品：{data.get("auxiliary_drug")}\n'
+        f'增强食品：{data.get("heightenFood")}\n'
+        f'辅助食品：{data.get("auxiliaryFood")}\n'
+        f'增强药品：{data.get("heightenDrug")}\n'
+        f'辅助药品：{data.get("auxiliaryDrug")}\n'
     )
 
     await medicine_query.finish(msg)
@@ -498,7 +498,7 @@ async def _(event: GroupMessageEvent, name: str = get_value()) -> NoReturn:
         await condition_query.finish(msg)
 
     data = response.data
-    url = data.get("upload")
+    url = data.get("url")
     msg = MessageSegment.image(url)
     await condition_query.finish(msg)
 
@@ -566,7 +566,7 @@ async def _(event: GroupMessageEvent, name: str = get_value()) -> NoReturn:
     pagename = "物品价格.html"
     item_name = data.get("name")
     item_info = data.get("info")
-    item_img = data.get("upload")
+    item_img = data.get("url")
     item_data = source.handle_data_price(data.get("data"))
     img = await browser.template_to_image(
         pagename=pagename,

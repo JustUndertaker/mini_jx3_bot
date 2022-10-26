@@ -65,6 +65,7 @@ class JX3PROFESSION(Enum):
         "奶花",
         "花奶",
     }
+    孤锋诀 = {"孤锋诀", "刀宗", "刀爹"}
 
     @classmethod
     def get_profession(cls, name: str) -> Optional[str]:

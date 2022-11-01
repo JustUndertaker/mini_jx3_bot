@@ -156,12 +156,12 @@ def handle_data_equip(data: dict) -> dict:
     """处理装备属性"""
     req_data = {}
     req_data["kungfu"] = data["kungfuName"]
-    info = data["panelList"]
+    info: dict = data["panelList"]
     if info:
         req_data["score"] = info.get("score")
 
         # 处理info数据
-        info_panel: list[dict] = info["panel"]
+        info_panel: list[dict] = info.get("panel", [])
         data_info = []
         for one in info_panel:
             value = str(one["value"])

@@ -100,7 +100,9 @@ class PluginManager:
         plugin_data = await PluginInfo.get_group_plugin_status(group_id)
         plugin_list = []
         for one in plugin_data:
-            plugin = self.plugins[one["module_name"]]
+            plugin = self.plugins.get(one["module_name"])
+            if plugin is None:
+                continue
             config: PluginConfig = plugin.metadata.config
             one_data = {
                 "plugin_name": plugin.metadata.name,

@@ -8,7 +8,6 @@ from src.internal.database import database_init
 from src.utils.scheduler import start_scheduler
 
 nonebot.init()
-app = nonebot.get_asgi()
 
 driver = nonebot.get_driver()
 driver.register_adapter(Adapter)

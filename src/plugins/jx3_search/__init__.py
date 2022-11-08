@@ -17,7 +17,7 @@ from src.utils.browser import browser
 from src.utils.log import logger
 
 from . import data_source as source
-from .config import DAILIY_LIST, JX3PROFESSION
+from .config import JX3PROFESSION
 
 __plugin_meta__ = PluginMetadata(
     name="剑三查询", description="剑三游戏查询，数据源使用jx3api", usage="参考“帮助”", config=PluginConfig()
@@ -355,16 +355,23 @@ async def _(event: GroupMessageEvent, server: str = get_server()) -> NoReturn:
     msg = (
         f"日常[{server}]\n"
         f'当前时间：{data.get("date","未知")} 星期{data.get("week","未知")}\n'
-        f'今日大战：{data.get("war","未知")}\n'
-        f'今日战场：{data.get("battle","未知")}\n'
-        f'公共任务：{data.get("relief","未知")}\n'
-        f'阵营任务：{data.get("camp","未知")}\n'
-        f'{DAILIY_LIST.get(data.get("week", "未知"))}'
+        f'【秘境大战】{data.get("war","未知")}\n'
+        f'【战场任务】{data.get("battle","未知")}\n'
+        f'【阵营任务】{data.get("camp","未知")}\n'
+        f'【公共任务】{data.get("relief","未知")}\n'
+        f'【门派事件】{data.get("school","未知")}\n'
     )
     if data.get("draw"):
-        msg += f'美人画像：{data.get("draw")}\n'
-    team: list = data.get("team")
-    msg += f"\n武林通鉴·公共任务\n{team[0]}\n" f"武林通鉴·秘境任务\n{team[1]}\n" f"武林通鉴·团队秘境\n{team[2]}"
+        msg += f'【美人画像】{data.get("draw")}\n'
+    prestige: list[str] = data.get("prestige", [])
+    team: list[str] = data.get("team")
+    msg += (
+        f'\n武林通鉴·家园声望\n{";".join(prestige)}'
+        f"\n武林通鉴·公共任务\n{team[0]}"
+        f"\n武林通鉴·秘境任务\n{team[1]}"
+        f"\n武林通鉴·团队秘境\n{team[2]}"
+    )
+
     await daily_query.finish(msg)
 
 

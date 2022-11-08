@@ -366,10 +366,10 @@ async def _(event: GroupMessageEvent, server: str = get_server()) -> NoReturn:
     prestige: list[str] = data.get("prestige", [])
     team: list[str] = data.get("team")
     msg += (
-        f'\n武林通鉴·家园声望\n{";".join(prestige)}'
-        f"\n武林通鉴·公共任务\n{team[0]}"
-        f"\n武林通鉴·秘境任务\n{team[1]}"
-        f"\n武林通鉴·团队秘境\n{team[2]}"
+        f'\n【家园声望·副本道具】\n{";".join(prestige)}'
+        f"\n【武林通鉴·公共任务】\n{team[0]}"
+        f"\n【武林通鉴·秘境任务】\n{team[1]}"
+        f"\n【武林通鉴·团队秘境】\n{team[2]}"
     )
 
     await daily_query.finish(msg)

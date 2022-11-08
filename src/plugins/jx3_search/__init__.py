@@ -94,6 +94,7 @@ laojianghu_query = user_matcher_group.on_regex(pattern=REGEX.老江湖.value)
 bingjia_query = user_matcher_group.on_regex(pattern=REGEX.兵甲榜.value)
 mingshi_query = user_matcher_group.on_regex(pattern=REGEX.名师榜.value)
 zhanjie_query = user_matcher_group.on_regex(pattern=REGEX.战阶榜.value)
+xinhuo_query = user_matcher_group.on_regex(pattern=REGEX.薪火榜.value)
 zixing_query = user_matcher_group.on_regex(pattern=REGEX.梓行榜.value)
 aixin_query = user_matcher_group.on_regex(pattern=REGEX.爱心榜.value)
 shenbing_query = user_matcher_group.on_regex(pattern=REGEX.神兵榜.value)
@@ -291,7 +292,7 @@ def get_camp() -> str:
         Dependency，帮会排名-获取阵营
     """
 
-    async def dependency(matcher: Matcher, name: str = Depends(get_value)) -> str:
+    async def dependency(matcher: Matcher, name: str = get_value()) -> str:
         match name:
             case "浩气" | "浩气盟":
                 return "浩气"
@@ -792,6 +793,7 @@ async def _(
 @bingjia_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
 @mingshi_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
 @zhanjie_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
+@xinhuo_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
 @zixing_query.handle(parameterless=[cold_down(name="排行榜", cd_time=10)])
 async def _(
     matcher: Matcher,

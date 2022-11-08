@@ -621,6 +621,15 @@ class JX3API:
     # ------------------------------------------------------------
     #                      VIEW  API
     # ------------------------------------------------------------
+    async def view_sand_search(self, *, server: str) -> Response:
+        """
+        说明：
+            图片api，查询阵营沙盘
+
+        参数:
+            * `server`：服务器名
+        """
+        ...
     async def view_active_calculate(
         self, *, robot: str, cache: int = ..., num: int = ...
     ) -> Response:

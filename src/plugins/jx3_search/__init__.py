@@ -53,6 +53,7 @@ class REGEX(Enum):
     装备属性 = r"^(?:(?:装备)|(?:属性)) (?P<value1>[\S]+)$|^(?:(?:装备)|(?:属性)) (?P<server>[\S]+) (?P<value2>[\S]+)$"
     烟花记录 = r"^烟花 (?P<value1>[\S]+)$|^烟花 (?P<server>[\S]+) (?P<value2>[\S]+)$"
     招募查询 = r"^招募$|^招募 (?P<server1>[\S]+)$|^招募 (?P<server2>[\S]+) (?P<keyword>[\S]+)$"
+    沙盘查询 = r"^沙盘$|^沙盘 (?P<server>[\S]+)$"
     资历榜 = r"^资历榜$|^资历榜 (?P<server1>[\S]+)$|^资历榜 (?P<server2>[\S]+) (?P<keyword>[\S]+)$"
     声望榜 = r"^(?P<type1>声望榜)$|^(?P<type2>声望榜) (?P<server>[\S]+)$"
     老江湖 = r"^(?P<type1>老江湖)$|^(?P<type2>老江湖) (?P<server>[\S]+)$"
@@ -88,6 +89,7 @@ match_query = user_matcher_group.on_regex(pattern=REGEX.比赛战绩.value)
 equip_query = user_matcher_group.on_regex(pattern=REGEX.装备属性.value)
 firework_query = user_matcher_group.on_regex(pattern=REGEX.烟花记录.value)
 recruit_query = user_matcher_group.on_regex(pattern=REGEX.招募查询.value)
+sand_query = user_matcher_group.on_regex(pattern=REGEX.沙盘查询.value)
 zili_query = user_matcher_group.on_regex(pattern=REGEX.资历榜.value)
 shengwang_query = user_matcher_group.on_regex(pattern=REGEX.声望榜.value)
 laojianghu_query = user_matcher_group.on_regex(pattern=REGEX.老江湖.value)
@@ -551,6 +553,22 @@ async def _(event: GroupMessageEvent) -> NoReturn:
 
     data = response.data
     await saohua_query.finish(data["text"])
+
+
+@sand_query.handle(parameterless=[cold_down(name="沙盘", cd_time=10)])
+async def _(event: GroupMessageEvent, server: str = get_server()) -> NoReturn:
+    """沙盘"""
+    logger.info(
+        f"<y>群{event.group_id}</y> | <g>{event.user_id}</g> | 沙盘查询 server：{server}"
+    )
+    response = await api.view_sand_search(server=server)
+    if response.code != 200:
+        msg = f"查询失败，{response.msg}"
+        await saohua_query.finish(msg)
+
+    data = response.data
+    url=data.get("url")
+    await sand_query.finish(MessageSegment.image(url))
 
 
 # -------------------------------------------------------------

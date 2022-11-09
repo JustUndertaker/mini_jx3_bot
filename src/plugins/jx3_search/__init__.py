@@ -567,7 +567,7 @@ async def _(event: GroupMessageEvent, server: str = get_server()) -> NoReturn:
         await saohua_query.finish(msg)
 
     data = response.data
-    url=data.get("url")
+    url = data.get("url")
     await sand_query.finish(MessageSegment.image(url))
 
 
@@ -583,7 +583,7 @@ async def _(event: GroupMessageEvent, name: str = get_value()) -> NoReturn:
     if api.config.api_token:
         response = await api.data_trade_search(name=name)
     else:
-        response = await api.data_trade_feiniu(name=name)
+        response = await api.data_trade_xiaohei(name=name)
     if response.code != 200:
         msg = f"查询失败，{response.msg}"
         await price_query.finish(msg)
@@ -592,7 +592,10 @@ async def _(event: GroupMessageEvent, name: str = get_value()) -> NoReturn:
     pagename = "物品价格.html"
     item_name = data.get("name")
     item_info = data.get("info")
-    item_img = data.get("url")
+    if api.config.api_token:
+        item_img = data.get("url")
+    else:
+        item_img=data.get("upload")
     item_data = source.handle_data_price(data.get("data"))
     img = await browser.template_to_image(
         pagename=pagename,

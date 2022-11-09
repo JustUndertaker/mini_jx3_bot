@@ -121,6 +121,15 @@ class JX3API:
             * `name`：物品名称，查询指定物品的价格信息。
         """
         ...
+    async def data_trade_xiaohei(self, *, name: str) -> Response:
+        """
+        说明:
+            小黑物品价格统计
+
+        参数:
+            * `name`：物品名称，查询指定物品的价格信息。
+        """
+        ...
     async def data_home_flower(
         self, *, server: str, map: str = ..., flower: str = ...
     ) -> Response:

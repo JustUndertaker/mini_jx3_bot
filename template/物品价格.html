@@ -16,18 +16,14 @@
                 <p class="text-center fs-2">{{ name }}</p>
             </div>
             <div class="card-body">
-                {% if image is defined %}
                 <div class="row">
                     <img src="{{ image }}">
                 </div>
-                {% endif %}
-                {% if info is defined %}
                 <div class="row">
                     <div class="alert alert-secondary text-center">
                         <p class="fs-2">{{ info }}</p>
                     </div>
                 </div>
-                {% endif %}
                 <table class="table table-bordered">
                     <tr>
                         <td>
@@ -42,7 +38,11 @@
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
                                         <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
                                             {{ one.sales }}
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -61,7 +61,11 @@
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
                                         <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
                                             {{ one.sales }}
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -82,7 +86,11 @@
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
                                         <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
                                             {{ one.sales }}
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -101,7 +109,11 @@
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
                                         <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
                                             {{ one.sales }}
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -122,7 +134,11 @@
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
                                         <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
                                             {{ one.sales }}
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -141,7 +157,11 @@
                                         <td class='text-center'>{{ one.server }}</td>
                                         <td class='text-center text-primary'>￥{{ one.value }}</td>
                                         <td class='text-center'>
+                                            {% if one.sale %}
+                                            {{ one.sale }}
+                                            {% else %}
                                             {{ one.sales }}
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}

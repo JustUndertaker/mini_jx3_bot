@@ -147,3 +147,4 @@ dmypy.json
 pyproject.toml
 workspace.code-workspace
 pyclean.bat
+.vscode/
